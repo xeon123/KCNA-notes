@@ -47,7 +47,7 @@
 	  kubectl -n argocd rollout restart deployment/argocd-server
 	  ```
     - Retrieve the admin password:
-	    - The initial admin password in Argo CD can be retrieved by querying the `argocd-initial-admin-secret using a kubectl` get secret command. When Argo CD is installed, it generates an initial admin user with a random password, which is stored in a Kubernetes secret named `argocd-initial-admin-secret`.
+	    - The initial admin password in Argo CD can be retrieved by **querying the `argocd-initial-admin-secret using a kubectl`** get secret command. When Argo CD is installed, it generates an initial admin user with a random password, which is stored in a Kubernetes secret named `argocd-initial-admin-secret`.
         ```bash
         kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d
         ```
@@ -68,7 +68,7 @@
 
 - A **GitOps continuous delivery tool** for Kubernetes.
 - Supports complex deployment workflows through integration with **Argo Workflows**.
-	- Argo Workflows is a GitOps engine that allows users to define workflows as code and execute them on Kubernetes. It's specifically designed to orchestrate complex workflows, including parallel jobs, making it an ideal choice for managing large-scale deployments on Kubernetes.
+	- **Argo Workflows** is a GitOps engine that allows users to define workflows as code and execute them on Kubernetes. It's specifically designed to orchestrate complex workflows, including **parallel jobs**, making it an ideal choice for managing large-scale deployments on Kubernetes.
 - Key Features:
     - **Sequential & Parallel Execution:** Run tasks in order or simultaneously.
     - **Advanced Automation:** Combine **CI/CD pipelines** for complex deployments.
@@ -87,8 +87,9 @@
 
 - A **GitOps continuous delivery tool** maintained by the CNCF.
 - Uses a **pull-based synchronization** model by default (auto-sync changes from Git).
-	- It is a GitOps tool designed to ensure that the desired state of a Kubernetes cluster, as defined in a Git repository, is continuously synchronized with the actual cluster state. Flux automatically applies changes to the cluster when it detects differences between the repository's configuration and the current state of the cluster.
+	- It is a GitOps tool designed to ensure that the **desired state of a Kubernetes cluster, as defined in a Git repository,** is continuously synchronized with the actual cluster state. Flux automatically applies changes to the cluster when it detects differences between the repository's configuration and the current state of the cluster.
 - Strongly integrated with the **GitOps Toolkit** for custom workflows.
+- GitOps Toolkit is a collection of specialized APIs and controllers built specifically to manage and automate the continuous delivery of Kubernetes resources in Flux.
 
 #### 🔧 **GitOps Toolkit Components**
 
@@ -101,13 +102,13 @@
 
 ### 🔥 **Argo CD vs. Flux: Key Differences**
 
-|Feature|**Argo CD**|**Flux**|
-|---|---|---|
-|**Architecture**|Centralized control|Decentralized, scalable across clusters|
-|**Sync Approach**|Manual or automatic sync|Always pull-based, continuous sync|
-|**Customization**|Workflow-based pipelines with automation|Highly customizable via GitOps Toolkit|
-|**Community Integration**|Strong CNCF support|Deeper integration with CNCF projects|
-|**Best Use Case**|Complex deployment workflows|Continuous sync across large environments|
+| Feature                   | **Argo CD**                              | **Flux**                                  |
+| ------------------------- | ---------------------------------------- | ----------------------------------------- |
+| **Architecture**          | Centralized control                      | Decentralized, scalable across clusters   |
+| **Sync Approach**         | Manual or automatic sync                 | Always pull-based, continuous sync        |
+| **Customization**         | Workflow-based pipelines with automation | Highly customizable via GitOps Toolkit    |
+| **Community Integration** | Strong CNCF support                      | Deeper integration with CNCF projects     |
+| **Best Use Case**         | Complex deployment workflows             | Continuous sync across large environments |
 
 ---
 
