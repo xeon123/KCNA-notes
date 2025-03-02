@@ -170,20 +170,17 @@ Container orchestration automates the operational tasks required to run containe
 - Run an **nginx pod**:
     `kubectl run nginx --image=nginx`
 - Check pod status:
-
     `kubectl get pods`
-    
 - View pod logs:
     `kubectl logs nginx`
 - Get detailed pod information (including IP and node details):
     `kubectl get pods -o yaml`
-
 ## **Accessing a Pod**
 
 - Pods are accessible within the cluster via their **IP addresses**.
 - External access requires **port forwarding**:
     `kubectl port-forward nginx 8080:80`
-- Access nginx via `localhost:8080`.
+	- Access nginx via `localhost:8080`.
 
 ## **Inter-Pod Communication**
 
@@ -195,7 +192,6 @@ Container orchestration automates the operational tasks required to run containe
 - **Using an Ubuntu pod** for interactive testing:
     
     `kubectl run ubuntu --image=ubuntu --command -- sleep infinity`
-    
     - Exec into the Ubuntu pod:
         `kubectl exec -it ubuntu -- bash`
     - Install `curl` and test access to nginx.
@@ -203,9 +199,7 @@ Container orchestration automates the operational tasks required to run containe
 ## **Cleanup**
 
 - Delete the created pods:
-    
     `kubectl delete pod nginx ubuntu --now`
-    
 
 ## **Alternative Pod Creation**
 
@@ -222,9 +216,7 @@ Container orchestration automates the operational tasks required to run containe
 ### **Generating YAML for a Pod**
 
 - Create an **nginx pod** and output its YAML:
-    
     `kubectl run nginx --image=nginx --dry-run=client -o yaml | tee nginx.yaml`
-    
 - This displays the YAML and saves it to `nginx.yaml`.
 
 ### **Understanding YAML Fields**
@@ -234,9 +226,7 @@ Container orchestration automates the operational tasks required to run containe
     - `Never` → Pod never restarts.
     - `OnFailure` → Pod restarts only if it fails.
 - To get details about any YAML field, use:
-    
-    `kubectl explain pod.spec.restartPolicy`
-    
+    `kubectl explain pod.spec.restartPolicy`    
 
 ### **Applying YAML Files**
 
@@ -244,27 +234,20 @@ Container orchestration automates the operational tasks required to run containe
     - `kubectl create -f file.yaml` → Creates a resource but fails if it already exists.
     - `kubectl apply -f file.yaml` → Ensures the resource exists and updates it if needed.
 - Example:
-    
     `kubectl create -f nginx.yaml kubectl apply -f nginx.yaml`
-    
 
 ### **Generating and Applying Multiple YAML Files**
 
 - Generate a **YAML file for an Ubuntu pod**:
-    
     `kubectl run ubuntu --image=ubuntu --dry-run=client -o yaml | tee ubuntu.yaml`
-    
 - Apply both YAML files:
-    
     ```bash
-    kubectl apply -f nginx.yaml\
+    kubectl apply -f nginx.yaml
     kubectl apply -f ubuntu.yaml
     ```
     
 - Delete the created pods:
-    
     `kubectl delete pod nginx ubuntu --now`
-    
 
 ### **Combining Multiple YAML Declarations**
 
@@ -276,7 +259,6 @@ Container orchestration automates the operational tasks required to run containe
     ```
     
 - Apply both resources with one command:
-    
     `kubectl apply -f combined.yaml`
 
 ## **Running a Kubernetes Pod with Multiple Containers**

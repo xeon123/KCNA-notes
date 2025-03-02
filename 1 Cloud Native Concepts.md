@@ -1,14 +1,13 @@
-
-#### What is Cloud Native?
+# What is Cloud Native?
 
 - **Definition**:
-    - Combines "cloud" (inclusive of public, private, and hybrid cloud environments) and "native" (designed for or built into a given system).
+    - Combines "cloud" (inclusive of public, private, and hybrid cloud environments) and "native" (designed for or built into a given system to enable scalability, resilience, and manageability).
     - Represents a collection of philosophies rather than a binary state.
 - **Philosophies**:
     - **Cloud Native Architecture**: Applications are built with best practices to run across diverse cloud environments.
     - **Cloud Native Culture**: Promotes organizational changes and optimal practices for design and implementation.
 
-#### Benefits of Cloud Native
+## Benefits of Cloud Native
 
 - Aligning with cloud native practices ensures applications:
     - Utilize cloud infrastructure effectively.
@@ -16,25 +15,25 @@
     - Progress beyond basic cloud hosting.
     - Built using Infrastructure-as-Code tools like Terraform for vendor-agnostic management.
 
-#### Misconceptions About Cloud Native
+## Misconceptions About Cloud Native
 
 - Running in the cloud doesn’t inherently make an application cloud native.
 - Using containers is beneficial but doesn’t automatically qualify an application as cloud native unless best practices are followed. They are a positive step towards Cloud Native.
 
-#### Key Practices in Cloud Native Development
+## Key Practices in Cloud Native Development
 
 - **Automation**: Setup and delivery processes are automated.
 - **Resilience**: Applications are designed to handle failures gracefully.
 - **Scalability**: Workloads adapt automatically to operational demands.
 - **Security by Default**: Applications ensure robust security measures.
 
-#### Challenges Addressed by Cloud Native
+## Challenges Addressed by Cloud Native
 
 - Single system errors.
 - Host resource limitations.
 - Issues like "noisy neighbors" in shared environments.
 
-#### Ecosystem and Governance
+## Ecosystem and Governance
 
 - **Linux Foundation**:
     - Established in 2000 to standardize Linux and promote its adoption. Merger between Open source Delevopment Labs and Free Standards Group.
@@ -90,3 +89,5 @@ While I recommend keeping an eye out for occasional discounts from the Linux Fou
 - For the KCNA examination, concentrate on the following aspects:
 	- IAC - Understand the meaning of Infrastructure as Code and its connection to Cloud Native principles.
 	- The roles of Speed, Efficiency, and Cost in the context of Cloud Native environments
+- To reduce the cost of the exams wait for sales, attend events like KubeCon/CloudNativeCon, and checking for discount codes on social media.
+- The GitHub repository under cncf/curriculum is the official source for the KCNA exam curriculum. It is regularly updated by the CNCF, making it the best place to find the latest information on exam topics, objectives, and changes.

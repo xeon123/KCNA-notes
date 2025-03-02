@@ -30,7 +30,10 @@
 
 #### **Modern Ingredients for Containers**
 
+Docker brought together two key ingredients: Linux Namespaces and control groups (cgroups). Linux Namespaces provide a way to isolate processes at the kernel level, while cgroups allow for resource allocation and isolation. By combining these technologies, Docker created a lightweight containerization platform that provided strong isolation guarantees.
+
 1. **Linux Namespaces (2002)**
+    - In 2002, the Linux kernel was modified to include 6 new namespaces.
     - Key for containerization, isolating processes, network stacks, mount points, hostnames, and inter-process communication.
     - Examples include `PID`, `NET`, `MNT`, `UTS`, `IPC`, and `USER` namespaces.
         - `USER`: Isolate the user ID space allowing processes within a namespace to have their own unique set of ids seprarate from the rest of the system.
@@ -40,7 +43,7 @@
         - `MNT`: an independent filesystem hierarchy providing processes with an independent view of the filesystem, able to mount and unmount filesystems within a namespace.
         - `UTS`: Unix Time Sharing for isolating the hostname and domain names.
         - `IPC`: Inter-process communication namespace, allowing for exchange of data between processes in forms of messages.
-2. **Control Groups (Cgroups, 2006)**
+2. **Control Groups (cgroups, 2006)**
     - Developed by Google, merged into Linux in 2008.
     - Enabled 
         - resource limits: how much of a resource can be used
@@ -57,27 +60,28 @@
 
 #### **Docker: A Game-Changer**
 ![[Containers with Dockers containarised deployments.png]]
-- Launched in 2013, Docker combined namespaces and cgroups into a user-friendly platform.
+- Launched in 2013, Docker combined namespaces and `cgroups`  into a user-friendly platform.
 - Simplified adoption of containerization, enabling scalable and efficient application management.
-	- Docker containers are preferred over virtual machines because they are faster to deploy and consume less system resources. Containers share the same kernel as the host operating system, which means that they don't require a separate operating system instance like virtual machines do. This makes them much more lightweight and efficient in terms of resource usage.
+	- Docker containers are preferred over virtual machines because they are lightweight and efficient in terms of resource usage.
+	- Containers share the same kernel as the host operating system, which means that they don't require a separate operating system instance like virtual machines do. 
 - Container runtime is on the top of the OS and maximizes the use of available resources.
 	- We can run applications via the container runtime.
 - Containers share the host OS kernel, reducing overhead compared to virtual machines.
 	- There is no OS layer for each container, as the container shares the kernel of the main OS.
-- Uses namespaces and cgroups to provide isolated environment within their own users, hostnames, IP addresses, mount points and resource allocations.
+- Uses namespaces and `cgroups` to provide isolated environment within their own users, hostnames, IP addresses, mount points and resource allocations.
 - The success of Docker can be attributed to the ease of use for adoption. Docker brought containerization to the market with simple CLI based offering.
 
 #### Key Takeaways
 
 - Containerization evolved from mainframe virtualization, Unix advancements, and Linux innovations.
 - Docker and Kubernetes made these technologies accessible and practical for modern applications.
-- Containers leverage isolation (namespaces) and resource control (Cgroups) for lightweight, scalable, and efficient deployment.
+- Containers leverage isolation (namespaces) and resource control (cgroups) for lightweight, scalable, and efficient deployment.
 
 ## Docker installation
 
 ### Traditional Docker Architecture
 
-- **Layers**: Hardware → OS → Docker runtime (containerd and runc).
+- **Layers**: Hardware → OS → Docker runtime (containerd and `runc`).
 - **Minimum requirement**: Linux kernel version 3.1 or higher.
 - **Use case**: CLI for building and running containers.
 
@@ -101,8 +105,6 @@
     Adjust resource limits (Mac), though limited on Windows (WSL).
 - **Kubernetes Integration**:  
     Enable Kubernetes in preferences to run and manage Kubernetes commands (`kubectl`).
-
-
 ## Container Images
 
 A **container image** is a portable, self-contained bundle of software and its dependencies, enabling consistent software execution across environments. Often called "Docker images," they are more accurately referred to as **OCI-compliant container images**. These images can be used with Docker, Kubernetes, or any platform supporting OCI standards.
@@ -122,7 +124,7 @@ A **container image** is a portable, self-contained bundle of software and its d
     - Containers add a writable layer on top for changes during runtime.
 4. **Union File System:**
     - Docker make use of a Union File System.
-    - Merges layers into a single view for the user. 
+	    - Merges layers into a single view for the user. 
     - On the top of the layers there is a writable layer.
         - Changes during runtime are stored in the writable layer, leaving underlying layers unchanged. E.g., if we delete a file that is part of a container image, we only make a reference in the writable layer. The file would still exists, but will no longer be visible to us.
         - The advantages is that if we are using multiple containers, we are using space efficiently as the only layer that changes is the thin writable layer.
@@ -151,13 +153,13 @@ A **container image** is a portable, self-contained bundle of software and its d
 	- Docker uses a client-server architecture, typically with both components running locally on Docker Desktop.
 		- ![[Containers with Dockers Docker version.png]]
 		- Docker is using containerd
-			- it is a high-level abstraction constructed on the top of runc, and manage the lifecycle of the containers.
-			- containerd was donated to CNCF and now is a graduated project.
-		- Docker is using runc
-			- runc is a container runtime designed to manage the lifecycle of the containers
-			- Docker donated runc to OCI
+			- It is a high-level abstraction constructed on the top of `runc`, and manage the lifecycle of the containers.
+			- `containerd`was donated to CNCF and now is a graduated project.
+		- Docker is using `runc`
+			- `runc` is a container runtime designed to manage the lifecycle of the containers
+				- Docker donated `runc` to OCI
 - **Container Runtime Basics**:
-    - Docker leverages containerd (donated to CNCF) and runc (donated to OCI) as foundational technologies.
+    - Docker leverages containerd (donated to CNCF) and `runc` (donated to OCI) as foundational technologies.
 - **Using the Funbox Image**:
     - Pull the image using `docker pull wernight/funbox`.
     - Run containers with commands like `docker run -it --rm wernight/funbox`, exploring options such as `-i` (interactive), `-t` (terminal), and `--rm` (auto-remove on exit).
@@ -174,7 +176,7 @@ A **container image** is a portable, self-contained bundle of software and its d
 			- Running a container as a non-root user reduces the attack surface and prevents malicious code from gaining elevated privileges.
     - Use `--rm` for transient containers to ensure they are cleaned up automatically.
     - Use `bash` to access inside the container
-	    - `docker runn -it --rm wernight/funbox bash`
+	    - `docker run -it --rm wernight/funbox bash`
 
 ## Container Networking Service and Volumes
 
@@ -192,7 +194,7 @@ e241e9c6325d   nginx     "/docker-entrypoint.…"   39 seconds ago   Up 38 secon
 - **Exploring a Running Container**:
     - `docker exec` enables you to execute a process inside the container.
     - Use `docker exec -it <container-id> bash` to access a running container and inspect or modify its contents.
-    - Example: Locate and edit the `index.html` file (`find / -name index.html`), then update it (e.g., `echo Hello > index.html`).
+	    - Example: Locate and edit the `index.html` file (`find / -name index.html`), then update it (e.g., `echo Hello > index.html`).
 - **Persistent Changes with Volumes**:
     - Modify the Nginx content by mounting a host directory as a volume:
         - Create a directory on the host and add content (`echo "Hello from James" > index.html`).
