@@ -46,7 +46,12 @@ CMD ["./cmatrix"]
 ```
 
 - The `CMD` instruction specifies the default command that will be executed when the container starts running, whereas the `RUN` instruction executes commands during the Docker image build process.
+	- The primary difference between the `CMD` and `RUN` instructions in a Dockerfile lies in their purpose and timing of execution. The `CMD` instruction specifies the default command that will be executed when the container starts running, whereas the `RUN` instruction executes commands during the Docker image build process.
 - `ENTRYPOINT` specifies the command that should be executed when the container is started. It sets the default command and parameters that will be used when running the image, unless overridden by the user.
+- `LABEL`is used to specify metadata
+	- `org.opencontainers.image.authors` is defined in the Open Container Initiative (OCI) specification as a way to provide information about the authors of the container image.
+	- `org.opencontainers.image.maintainers` is used to specify who maintains or updates the image over time
+- `WORKDIR` sets the working directory for subsequent instructions in the Dockerfile. This allows the Docker builder to change the current directory and execute commands within that context.
 ### Steps for Execution
 
 #### 1. **Building the Container Image**:
@@ -141,6 +146,8 @@ RUN autoreconf -i && \
 FROM alpine:latest
 
 # Install runtime dependencies
+# add-user create a new user with reduced privileges.
+# By creating a non-root user, we can avoid running our application with root privileges. Additionally, using a non-root user helps prevent accidental modifications to system files.
 RUN apk add --no-cache \
     ncurses \
     ncurses-terminfo-base \
@@ -153,6 +160,7 @@ COPY --from=builder /app/cmatrix /usr/local/bin/cmatrix
 USER thomas
 
 # Default command
+# ENTRYPOINT instruction specifies the command that should be executed when the container is started. It sets the default command and parameters that will be used when running the image, unless overridden by the user.
 ENTRYPOINT ["cmatrix"]
 CMD ["-b"]
 ```
@@ -226,14 +234,14 @@ or load the image locally
 docker buildx build --platform linux/amd64,linux/arm64/v8 . -t cmatrix-multi --load
 ```
 
-- Buildx, you can build your image for multiple target platforms simultaneously, which simplifies the process of creating and maintaining multi-arch images.
+- Buildx, you can build your image for **multiple target platforms simultaneously**, which simplifies the process of creating and maintaining multi-arch images.
 You can test your image
 
 ```bash
 docker run --rm -it cmatrix-multi -ab -u 2 -C magenta
 ```
 
-Remove stopped containers, unused networks, dangling images, and dangling build cache.
+**Remove stopped containers, unused networks, dangling images, and dangling build cache.**
 
 ```bash
 docker system prune

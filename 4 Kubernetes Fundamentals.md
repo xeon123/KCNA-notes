@@ -1,7 +1,14 @@
 
 # Container Orchestration
 
-Container orchestration automates the operational tasks required to run containers.
+**Container orchestration automates the operational tasks required to run containers.**
+- This includes tasks such as:
+	- Scaling containerized applications up or down
+	- Managing resource allocation (e.g., CPU, memory)
+	- Handling rolling updates and deployments
+	- Monitoring application health and performance
+	- Providing high availability and fault tolerance.
+- Orchestration tools help ensure that containers are running smoothly, efficiently, and in a way that aligns with the needs of the application.
 
 ### Key features of container orchestration
 
@@ -16,6 +23,7 @@ Container orchestration automates the operational tasks required to run containe
 	- This enables developers to focus on writing code, rather than worrying about the underlying infrastructure.
 - Orchestrators available are: Nomad, Openshift, Docker, and Kubernetes.
 	- Openshift provide additional functionality and a support model to Kubernetes.
+	- Kubernetes is widely regarded as the gold standard for Container Orchestration due to its robust feature set, large community support, and widespread adoption across industries and organizations. Originally developed by Google and later open-sourced, Kubernetes has become the de facto standard for container orchestration and management.
 - CRDs (Custom Resource Definitions) are a means of expanding Kubernetes to have functionality outside of its core features. 
 	- CRDs allow developers to define new resources and APIs that can be used to extend the Kubernetes platform. 
 	- By creating custom resources, developers can add new features and functionality to their clusters without having to modify the underlying Kubernetes codebase.

@@ -16,7 +16,7 @@
 2. **Chroot (1979)**
     - Introduced in Unix Version 7, enabling process isolation by changing the root directory.
         - Changes the root directory for a process and its children.
-            - Chroot is a process that allows you to change the root directory for a running process and its children, effectively isolating them from the rest of the system. This is commonly used in containerization and virtualization technologies.
+            - **chroot is a process that allows you to change the root directory** for a running process and its children, effectively isolating them from the rest of the system. This is commonly used in containerization and virtualization technologies.
         - This enabled process and its children can only see the files and directories within the new root directory. Prevented to access the files from outside the root directory.
     - Limited by shared resources (e.g., hostname, IP addresses are still visible and accessible). Cannot run superuser processes, directories must be `root:root`  owned. 
 3. **FreeBSD Jails (2000)**
@@ -30,12 +30,15 @@
 
 #### **Modern Ingredients for Containers**
 
-Docker brought together two key ingredients: Linux Namespaces and control groups (cgroups). Linux Namespaces provide a way to isolate processes at the kernel level, while cgroups allow for resource allocation and isolation. By combining these technologies, Docker created a lightweight containerization platform that provided strong isolation guarantees.
+Docker brought together two key ingredients: **Linux Namespaces and control groups (cgroups)**. Linux Namespaces provide a **way to isolate processes at the kernel level**, while cgroups allow for **resource allocation and isolation**. By combining these technologies, Docker created a lightweight containerization platform that provided strong isolation guarantees.
+
+Docker was originally called **DotCloud**, which was a cloud platform-as-a-service (PaaS) company founded in 2008 by Solomon Hykes and Sebastien Pahl. The project that would eventually become Docker was initially developed as an internal tool for automating the deployment of applications on the DotCloud platform.
 
 1. **Linux Namespaces (2002)**
-    - In 2002, the Linux kernel was modified to include 6 new namespaces.
+    - In 2002, the Linux kernel was modified to include **6 new namespaces**.
     - Key for containerization, isolating processes, network stacks, mount points, hostnames, and inter-process communication.
-    - Examples include `PID`, `NET`, `MNT`, `UTS`, `IPC`, and `USER` namespaces.
+	    - The network namespace in Linux is used to p**rovide a complete, isolated networking stack for each namespace**. This means that each namespace can have its own IP addresses, routing tables, firewall rules, and other networking configurations, which are separate from those of other namespaces and the host system.
+    - Examples include `PID`, `NET`, `MNT`, `UTS` (Unix Timesharing System), `IPC`, and `USER` namespaces.
         - `USER`: Isolate the user ID space allowing processes within a namespace to have their own unique set of ids seprarate from the rest of the system.
         - `PID`: allow processes in a namespace to have their own unique set of processes IDs without conflicting with each other.
         - `NET`: Processes within a namespace have their own independent networking stack, allowing communication between processes in the same namespace.
@@ -90,12 +93,14 @@ Docker brought together two key ingredients: Linux Namespaces and control groups
 ### Docker Desktop Architecture
 
 - Provides a friendly UI for Mac, Windows, and Linux.
-- Runs a hidden VM/subsystem for Docker runtime isolation.
+- **Runs a hidden VM/subsystem for Docker runtime isolation.**
 - Supports Docker CLI, Kubernetes integration, and Docker Desktop Extensions (marketplace for bundled applications).
-	- Docker Extensions in Docker Desktop allow developers to bundle Docker-based applications into a single package that can be easily installed and run by end-users. This feature enables developers to create self-contained applications that include all the necessary dependencies, making it easier for users to get started with their apps.
+	- Docker Extensions in Docker Desktop allow **developers to bundle Docker-based applications** into a single package that can be easily installed and run by end-users. This feature enables developers to create self-contained applications that include all the necessary dependencies, making it easier for users to get started with their apps.
 - Key feature: Flexibility to reset the Docker and Kubernetes environment with a click.
 
 ### Using Docker Desktop
+
+One of the primary benefits of using Docker Desktop is that it provides a highly flexible and self-contained environment for running containers. If something goes wrong or you need to start from scratch, you can simply reset the Docker Desktop VM and start again with a clean slate. This makes it ideal for development, testing, and learning environments.
 
 - **Running Containers**:  
     Example: `docker run -it ubuntu bash` to interact with a Ubuntu container.
@@ -121,6 +126,22 @@ A **container image** is a portable, self-contained bundle of software and its d
     - ![[Containers with Dockers Docker Container Layers-1.png]]
     - Images are built as stacks of layers, each representing a step in the build process.
     - Layers are shared between containers, saving storage.
+	    - If you have too many layers, can lead to several drawbacks
+		    - 1. **Increased Build Time**
+			    - Each layer adds an overhead during the build process, making it slower, especially when changes occur in early layers, causing subsequent layers to rebuild.
+			- 2. **Larger Image Size**
+				- More layers mean more metadata and storage overhead, potentially leading to bloated images that consume more disk space and take longer to transfer.
+			- 3. **Slower Caching & Performance Issues**
+				- Docker caches layers to speed up builds, but excessive layers can lead to inefficient caching, as small changes may invalidate many layers, forcing unnecessary rebuilds.
+			- 4. **Complexity in Layer Management**
+				- When too many layers exist, it becomes harder to track changes, optimize images, and troubleshoot issues like unnecessary files or dependencies.
+			- 5. **Storage and Filesystem Limitations**
+				- Some filesystems have limits on the number of layers that can be efficiently handled, causing performance degradation or failures in extreme cases.
+		- **Best Practices to Optimize Layers**
+			- ✅ **Use multi-stage builds** to reduce final image size.  
+			- ✅ **Minimize RUN commands** by chaining them together (`RUN apt-get update && apt-get install -y package`).  
+			- ✅ **Remove unnecessary files** in the same layer they were created (`rm -rf /var/lib/apt/lists/*`).  
+			- ✅ **Start from minimal base images** (e.g., `alpine`, `distroless`).
     - Containers add a writable layer on top for changes during runtime.
 4. **Union File System:**
     - Docker make use of a Union File System.
@@ -129,8 +150,10 @@ A **container image** is a portable, self-contained bundle of software and its d
         - Changes during runtime are stored in the writable layer, leaving underlying layers unchanged. E.g., if we delete a file that is part of a container image, we only make a reference in the writable layer. The file would still exists, but will no longer be visible to us.
         - The advantages is that if we are using multiple containers, we are using space efficiently as the only layer that changes is the thin writable layer.
 5. **Digests and Image IDs:**
-    - A **digest** (SHA-256 hash) uniquely identifies an image version in a registry.
+    - A **digest** (SHA-256 hash) uniquely **identifies an image version in a registry.**
+	    - **A checksum taken from a container registry**, which represents the contents of an image as it exists in the registry, used to verify the integrity of images when they are pulled or pushed between registries.
     - An **image ID** is a local identifier based on the JSON configuration used by Docker.
+	    - An image ID is a **checksum based on the local container image**, which **represents the actual bytes stored on disk**. Image IDs are typically used by Docker and other container runtimes to identify and manage images locally.
     - It is possible to pull the image using the digest
         - ![[Containers with Dockers docker pull with digest.png]]
     - The digest is the checksum taken from a container registry, and is created when an images is pushed to the registry, and it is used to verify the integrity and authenticity of the image.
@@ -146,10 +169,14 @@ A **container image** is a portable, self-contained bundle of software and its d
                     - The image id hash is the checksum of this file.
     - JSON files in saved images contain metadata, and the image ID is derived from their hash.
 
+## Container Registry
+
+A container registry is indeed a service that hosts and distributes container images. Registries provide a centralized location where images can be stored, shared, and accessed by multiple users or systems. They typically offer features such as image storage, versioning, tagging, and access control.
 ## Running Containers
 
 - **Validating Docker Installation**:
     - Check Docker version and configuration using `docker version`.
+	    - `docker version` provides detailed information about the Docker client and server versions, along with their configuration details.
 	- Docker uses a client-server architecture, typically with both components running locally on Docker Desktop.
 		- ![[Containers with Dockers Docker version.png]]
 		- Docker is using containerd
@@ -171,7 +198,7 @@ A **container image** is a portable, self-contained bundle of software and its d
     - Run containers without `--rm` to keep them for later interaction or reuse.
 - **Best Practices**:
 	- ![[Containers with Dockers docker inspect.png]]
-    - Run containers as non-root users for security, as demonstrated in the image layers.
+    - Run containers as non-root users for security.
 		- In this example, the user is john is specified in one of the layer
 			- Running a container as a non-root user reduces the attack surface and prevents malicious code from gaining elevated privileges.
     - Use `--rm` for transient containers to ensure they are cleaned up automatically.
@@ -181,13 +208,14 @@ A **container image** is a portable, self-contained bundle of software and its d
 ## Container Networking Service and Volumes
 
 - **Publishing Ports**:
-    - **`-P` (uppercase)**: Publishes all exposed ports from the container image to random host ports. In this case, the container is exposed in all IP addresses on port `55000`.
+    - **`-P` (uppercase)**: **Publishes all exposed ports** from the container image to random host ports. In this case, the container is exposed in all IP addresses on port `55000`.
       ```bash
       docker run -d --rm -P nginx
       CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS                   NAMES
 e241e9c6325d   nginx     "/docker-entrypoint.…"   39 seconds ago   Up 38 seconds   0.0.0.0:55000->80/tcp   sweet_haibt
       ```
-    - **`-p` (lowercase)**: Maps specific host ports to container ports (e.g., `-p 12345:80` maps host port `12345` to container port `80`).
+    - **`-p` (lowercase)**: **Maps specific host ports** to container ports (e.g., `-p 12345:80` maps host port `12345` on the host to container port `80`).
+    - `-d`: detaches the container from the terminal, allowing it to run in the background.
       ```bash
       docker run -d --rm -p 12345:80 nginx
       ```
