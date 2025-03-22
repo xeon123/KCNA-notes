@@ -16,6 +16,19 @@
 
 ## API Request Processing Flow
 
+```mermaid
+flowchart LR
+    classDef smallText font-size:10px, padding:1px;
+    linkStyle default stroke-width:1px;
+    request["Request Arrival"]:::smallText --> route["Route Matching"]:::smallText
+    route --> authn["Authentication"]:::smallText
+    authn --> authz["Authorization"]:::smallText
+    authz --> admission["Admission Controller"]:::smallText
+    admission --> validation["Validation"]:::smallText
+    validation --> handling["Request Handling"]:::smallText
+    handling --> response["Response Generation & Sending"]:::smallText
+```
+
 1. **Request Arrival**: API receives HTTPS requests (typically on port `6443`).
 2. **Route Matching**: API server determines request type (GET, POST, PUT, DELETE, etc.).
 3. **Authentication**: Verifies identity via API keys or tokens to validate the requests.
