@@ -332,7 +332,7 @@ https://github.com/cncf/toc/tree/main/process#ii-stages---definitions--expectati
  ### **Site Reliability Engineer (SRE)**
 
 - **Focus**: Reliability at scale, emphasizing uptime, availability, resilience, robustness, and the ability to resolve unforeseen problems.
-	- A Site Reliability Engineer (SRE) has a unique role that combines software development and operations expertise.
+	- A Site Reliability Engineer (SRE) combines software development and operations expertise.
 	- They are responsible for ensuring the reliability, scalability, and performance of complex systems, which requires a deep understanding of both development and operations practices.
 	- SREs often have a crossover with **DevOps** teams, as they share similar skillsets, such as scripting, automation, and monitoring.
 - **Key Practices**: Focuses on the creation and implementation of SLAs (Service Level Agreements), SLOs (Service Level Objectives), SLIs (Service Level Indicators), and incident management.
@@ -362,7 +362,7 @@ https://github.com/cncf/toc/tree/main/process#ii-stages---definitions--expectati
 - **Key Practices**: Automating security into CI/CD pipelines (e.g., vulnerability scanning) and promoting security principles throughout the DevOps lifecycle.
 - **Bridge**: Connects IT security with DevOps.
 
-### Full Stack Developer
+### **Full Stack Developer**
 
 - **Focus**: Proficient in both front-end (e.g., React, Angular, HTML) and back-end (e.g., Golang, Python) development.
 - **Key Role**: Builds applications that integrate both user-facing and server-side components, often including databases and APIs.
@@ -433,7 +433,7 @@ https://github.com/cncf/toc/tree/main/process#ii-stages---definitions--expectati
 - Open standards can be openly adopted, implemented, and further refined by any participant. This means that anyone - individuals, organizations, or vendors - can participate in the development and implementation of an open standard, without requiring permission or licensing from a single vendor or organization. This promotes collaboration, innovation, and widespread adoption of the standard.
 - Docker is a good example in understanding Open standards
 	-  The company behind Docker was a key contributor to the development of the OCI specification, which is an open standard for container runtime environments.
-	- Docker's platform is built on top of several other open standards, including Linux kernel namespaces and `cgroups`.
+	- Docker's platform is built on top of several other open standards, including Linux **kernel namespaces and `cgroups`**.
 
 ---
 

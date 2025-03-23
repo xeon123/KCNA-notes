@@ -86,7 +86,7 @@
 	- **Exam Booking**: [Kubernetes Cloud Native Associate (KCNA)](https://training.linuxfoundation.org/certification/kubernetes-cloud-native-associate)  
 		**Discount Code**: DIVEINTO30
 While I recommend keeping an eye out for occasional discounts from the Linux Foundation - sometimes up to 40-45% - this code is a reliable backup if needed.
-- For the KCNA examination, concentrate on the following aspects:
+- For the KCNA examination focus on:
 	- IAC - Understand the meaning of Infrastructure as Code and its connection to Cloud Native principles.
 	- The roles of Speed, Efficiency, and Cost in the context of Cloud Native environments
 - To reduce the cost of the exams wait for sales, attend events like KubeCon/CloudNativeCon, and checking for discount codes on social media.
