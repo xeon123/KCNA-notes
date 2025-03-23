@@ -476,7 +476,7 @@ https://github.com/cncf/toc/tree/main/process#ii-stages---definitions--expectati
     - Examples: Rook (a CNCF project), Portworx (commercial solution).
 4. **Container Runtime Interface (CRI)**:
     - ![[Cloud-Native Architecture Fundamentals CRI.png]]
-    - Plugin interface allowing Kubernetes' Kubelet to work with various container runtime engines.
+    - Plugin interface allowing Kubelet to work with various container runtime engines.
 	    - Examples: containerd, CRI-O, Firecracker.
     - CRI is not exclusive to Kubelet. There are other projects that can make use of container runtime interfaces.
     - Facilitates flexible runtime usage for Kubernetes pod management.
