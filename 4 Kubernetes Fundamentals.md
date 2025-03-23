@@ -402,6 +402,7 @@
     
     `kubectl api-resources`
     
+    - List API resources in the current k8s cluster
     - Namespaced resources (e.g., Pods) exist **within** a namespace.
     - Non-namespaced resources (e.g., Nodes) exist **cluster-wide**.
 

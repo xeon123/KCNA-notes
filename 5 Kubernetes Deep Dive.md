@@ -32,9 +32,9 @@ flowchart LR
 1. **Request Arrival**: API receives HTTPS requests (typically on port `6443`).
 2. **Route Matching**: API server determines request type (GET, POST, PUT, DELETE, etc.).
 3. **Authentication**: Verifies identity via API keys or tokens to validate the requests.
-4. **Authorization**: Checks permissions based on RBAC, Webhooks, etc. Are these permissions allowed (relates to the `--authorization-mode api-server` parameter). If the parameter is not set, it will default to `AlwaysAllow` - allow all requests without any restrictions.
+4. **Authorization**: Checks permissions based on RBAC, Webhooks, etc. Are these permissions allowed (relates to the `--authorization-mode api-server` parameter). If the parameter is not set, it will default to `AlwaysAllow` - **allow all requests without any restrictions**.
 5. **Admission Controller**: Applies policies (e.g., resource limits).
-	1. An Admission Controller in a Kubernetes cluster can be used to enforce policies and validate requests before they are accepted by the API server.
+	1. Enforce policies and validate requests before they are accepted by the API server.
 	2. In this case, enforcing a policy that a certain namespace doesn't exceed a given memory threshold is a potential use case for an Admission Controller. This would involve writing a custom admission controller that checks the total memory usage of all pods in a namespace against a predefined limit.
 6. **Validation**: Ensures request data is well-formed.
 7. **Request Handling**: Executes the operation (e.g., persisting data in `etcd`).
@@ -70,6 +70,7 @@ In this example, the request is being sent to `https://127.0.0.1:6443`. When the
 
 ![[kubectl-proxying request.png]]
 - Running `kubectl proxy` allows local access over **HTTP** (`http://localhost:8001`) without additional authentication.
+- Proxy handles authentication with the API server by using existing authentication configuration (e.g., `kubeconfig` or service account tokens).
 
 ## Using OpenAPI Specification
 
@@ -122,14 +123,15 @@ curl --location 'http://localhost:8001/api/v1/nodes' --header 'Accept: applicati
 
 - RBAC is a method for managing access to Kubernetes resources, ensuring only authorized users and services can perform specific actions. Many resources on RBAC assume unrestricted access from the start, making it challenging for beginners.
 - By defining roles and assigning them to users or groups, RBAC enables fine-grained access control and helps prevent unauthorized access to sensitive resources.
-- The kubeconfig file contains both cluster details, such as the API server URL, certificate authority data, and authentication credentials, as well as user information, including the username, client certificate, and private key. This allows users to authenticate with multiple clusters and switch between them seamlessly.
-- Certificate Authority (CA) is responsible for creating and verifying certificates within the cluster.
+- The `kubeconfig` file contains both **cluster details**, such as the API server URL, **certificate authority data, and authentication credentials, as well as user information**, including the username, client certificate, and private key. This allows users to authenticate with multiple clusters and switch between them seamlessly.
+- **Certificate Authority (CA)** is responsible for **creating and verifying certificates within the cluster**.
 	- The CA issues certificates to components such as pods, services, and nodes, allowing them to securely communicate with each other.
 	- The CA also verifies the identity of these components by checking their certificates.
-- Users and Groups in Kubernetes are typically managed externally through mechanisms such as client certificates signed by a Certificate Authority (CA) or tokens that can be obtained from an external source.
+- **Users and Groups** in Kubernetes are typically **managed externally** through mechanisms such as **client certificates signed by a Certificate Authority (CA) or tokens** that can be obtained from an external source.
 	- These external sources provide the necessary credentials to authenticate users and authorize access to cluster resources.
-- ClusterRole defines a set of permissions that can be applied to resources across the entire cluster, rather than being limited to a specific namespace. This allows for more flexible and powerful role-based access control (RBAC) configurations.
-- Permissions are assigned to users through their membership in a group or by being explicitly mentioned in a RoleBinding or ClusterRoleBinding. A ClusterRoleBinding grants the permissions defined in a ClusterRole to a user or group for all namespaces in the cluster.
+- **ClusterRole** defines a **set of permissions that can be applied to resources across the entire cluster**, rather than being limited to a specific namespace. This allows for more flexible and powerful role-based access control (RBAC) configurations.
+- **Permissions** are **assigned to users through their membership in a group or by being explicitly mentioned in a RoleBinding or ClusterRoleBinding**. 
+	- A **ClusterRoleBinding grants the permissions** defined in a **ClusterRole to a user or group for all namespaces in the cluster**.
 - When a new user, such as "batman", is associated with a group in Kubernetes RBAC, it is done through the "O" field in the certificate subject. The "O" field specifies the organization or group that the user belongs to. This information is used by the Kubernetes API server to determine the user's group membership.
 
 ### **Understanding Kubernetes Access**
@@ -221,8 +223,9 @@ RBAC permissions are defined via **RoleBindings** and **ClusterRoleBindings**, g
 - **User & Key Creation**:
     - Created an RSA private key (`Batman.key`).
         -  `openssl genrsa -out batman.key 4096`
-    - Generated a Certificate Signing Request (`Batman.csr`) with CN=Batman and O=cluster-superheroes.
+    - Generated a Certificate Signing Request (`Batman.csr`) with `CN=Batman` and `O=cluster-superheroes`.
         - `openssl req -new -key batman.key -out batman.csr -subj "/CN=batman/O=cluster-superheroes" -sha256`
+        - `O` specifies the organization or the group the user belongs to.
     - Submitted the CSR to Kubernetes, got it approved, and extracted the signed certificate (`Batman.crt`).
       ```bash
       CSR_DATA=$(base64 batman.csr | tr -d '\n')
@@ -349,6 +352,7 @@ The **kube-scheduler** is responsible for assigning pods to nodes in a Kubernete
         - Randomly selects a node and binds the pod.
 5. **Bypassing the Scheduler**
     - Instead of using a scheduler, a pod can be assigned directly to a node by setting `nodeName` in the pod spec.
+	    - `nodeName` specifies the desired node for scheduling, but it may not reflect the actual node the pod is running.
       ```yaml
       apiVersion: v1
 	  kind: Pod
@@ -368,7 +372,7 @@ The **kube-scheduler** is responsible for assigning pods to nodes in a Kubernete
 	  status: {}
       ```
 6. Using labels
-It is also possible to use a more targeted approach than NodeName through the use of NodeSelectors, the approach is similar but, instead of a direct node we will make use of Kubernetes labels to identify our desired target. For awareness as a comparison. View the available node labels as follows -
+It is also possible to use a more targeted approach than `nodeName` through the use of NodeSelectors, the approach is similar but, instead of a direct node we will make use of Kubernetes labels to identify our desired target. For awareness as a comparison. View the available node labels as follows -
 
 ```bash
 kubectl describe node/worker-1 | more
