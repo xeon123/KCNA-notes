@@ -59,7 +59,6 @@ Using `kubectl`, every request made interacts with the **Kubernetes API**, makin
 
 In this example, the request is being sent to `https://127.0.0.1:6443`. When the request is made, it is perfoming the authentication using the information in `/root/.kube/config`
 
-
 ## Understanding API Requests
 
 - `kubectl` requests are sent to the **API server** (default: `https://127.0.0.1:6443/api/v1/nodes?limit=500`).
@@ -128,7 +127,7 @@ curl --location 'http://localhost:8001/api/v1/nodes' --header 'Accept: applicati
 	- The CA issues certificates to components such as pods, services, and nodes, allowing them to securely communicate with each other.
 	- The CA also verifies the identity of these components by checking their certificates.
 - **Users and Groups** in Kubernetes are typically **managed externally** through mechanisms such as **client certificates signed by a Certificate Authority (CA) or tokens** that can be obtained from an external source.
-	- These external sources provide the necessary credentials to authenticate users and authorize access to cluster resources.
+	- These external sources **provide the credentials to authenticate users and authorize access to cluster resources**.
 - **ClusterRole** defines a **set of permissions that can be applied to resources across the entire cluster**, rather than being limited to a specific namespace. This allows for more flexible and powerful role-based access control (RBAC) configurations.
 - **Permissions** are **assigned to users through their membership in a group or by being explicitly mentioned in a RoleBinding or ClusterRoleBinding**. 
 	- A **ClusterRoleBinding grants the permissions** defined in a **ClusterRole to a user or group for all namespaces in the cluster**.
@@ -305,15 +304,13 @@ kubectl certificate approve batman
       kubectl -n gryffindor create rolebinding gryffindor-admin --role=gryffindor-admin --group=gryffindor-admins
       kubectl -n gryffindor auth can-i '*' '*' --as-group="gryffindor-admins" --as=harry
       ```
-      
 
 # Scheduling process
 
 The **kube-scheduler** is responsible for assigning pods to nodes in a Kubernetes cluster. The scheduling process consists of several key steps:
 
 1. **Pod Creation**
-    
-    - If a pod is created without a specified node, the kube-scheduler determines the best node for it.
+    - If a pod is created without a specified node, the `kube-scheduler` determines the best node for it.
         - It evaluates the pod's resource requirements (CPU, memory) against available nodes.
     - Other factors such as **node affinity, anti-affinity, taints and tolerations** are also considered.
 2. **Pod Placement**
@@ -371,8 +368,11 @@ The **kube-scheduler** is responsible for assigning pods to nodes in a Kubernete
 	    restartPolicy: Always
 	  status: {}
       ```
-6. Using labels
-It is also possible to use a more targeted approach than `nodeName` through the use of NodeSelectors, the approach is similar but, instead of a direct node we will make use of Kubernetes labels to identify our desired target. For awareness as a comparison. View the available node labels as follows -
+1. **Using labels**
+- A more targeted approach than `nodeName` is `NodeSelectors`.
+	- Instead of specifying a direct node, `NodeSelectors` use Kubernetes labels to identify the target node.   
+		- This allows for more flexibility and dynamic scheduling based on node characteristics.
+- To view available node labels, use the following command:
 
 ```bash
 kubectl describe node/worker-1 | more
@@ -388,7 +388,7 @@ Labels:             beta.kubernetes.io/arch=arm64
                     node.kubernetes.io/instance-type=k3s
 ```
 
-And then, you can use the `nodeSelector` option to select specific nodes through the use of labels -
+- You can use the `nodeSelector` option to select specific nodes through the use of labels -
 
 ```yaml
 apiVersion: v1
@@ -425,7 +425,7 @@ https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
         - Holding temporary files for content management.
     - **Storage options**:
         - By default, stored on the node's medium (disk, SSD, or network storage).
-        - If `emptyDir.medium` is set to "Memory", it uses a **tmpfs (RAM-backed filesystem)**, which is very fast but consumes container memory.
+        - If `emptyDir.medium` is set to "Memory", it uses a **tmpfs (RAM-backed filesystem)**, which is a high-performed cache area.
         - A **size limit** can be specified for storage, and it will be limited by the node's ephemeral storage. If no size is specified, memory-backed volumes use the node's allocatable memory.
     - Demonstrates an `emptyDir` volume backed by **memory**, showcasing its speed with a performance test using `dd`.
       
@@ -436,64 +436,65 @@ https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
     - **Persists** even after a pod is removed.
     - Discusses **Storage Classes, Persistent Volumes (PV), and Persistent Volume Claims (PVC)**.
         - When provisioning storage, there are 3 aspects to take into account
-            - Storage classes: defines the type and characteristics of storage provided by the cluster. It allows administrators to describe the "classes" of storage they offer.
-            - Persistent Volumes: represents a piece of storage in the cluster that has been provisioned by the administrator or dynamically using a StorageClass.
-            - Persistent Volume Claims: A request for storage by the user. It specifies the amound and characteristics of storage needed by a pod. Once bound to a PV, the PVC can be used to access the storage.
+            - **Storage classes:** defines the type and characteristics of storage provided by the cluster. It allows administrators to describe the "classes" of storage they offer.
+            - **Persistent Volumes:** represents a piece of storage in the cluster that has been provisioned by the administrator or dynamically using a StorageClass.
+            - **Persistent Volume Claims:** A **request for storage by the user**. It specifies the amount and characteristics of storage needed by a pod.
+	            - Once bound to a PV, the PVC can be used to access the storage.
                 - PVC are namespaced objects.
     - Manual vs. dynamic provisioning:
         - **Manual**: We create a PV and PVC is created explicitly.
         - **Dynamic**: We create a PVC against a StorageClass. This will create a PV automatically.
+	        - Volumes are created automatically when PVC is created.
         - These approaches have unique characteristics in Reclaim Policies.
             - **Delete**: The volume will be deleted on the release from its claim
             - **Retain**: The volume will be left in its current phase. This is the default policy.
             - **Recycle**: The volume will be recycle back to a poof of unbounded PVs on the release from its claim.
     - Ceph is a Kubernetes storage for Openshift
-        - Ceph is a highly scalable and flexible storage solution that provides comprehensive storage capabilities, including block, file, and object storage, in distributed systems. It uses a decentralized architecture to store data across multiple nodes, making it highly fault-tolerant and reliable.
-        -  [https://www.redhat.com/en/technologies/storage/ceph](https://www.redhat.com/en/technologies/storage/ceph)
-        - [https://docs.openshift.com/container-platform/3.11/install_config/storage_examples/ceph_example.html](https://docs.openshift.com/container-platform/3.11/install_config/storage_examples/ceph_example.html)
+        - Ceph is a highly scalable and flexible storage solution that provides comprehensive storage capabilities, including block, file, and object storage, in distributed systems.
+        - It uses a decentralized architecture to store data across multiple nodes, making it highly fault-tolerant and reliable.
+	        -  [ceph](https://www.redhat.com/en/technologies/storage/ceph)
+	        - [ceph example](https://docs.openshift.com/container-platform/3.11/install_config/storage_examples/ceph_example.html)
 
 # Statefulsets
 
 - **StatefulSets** are workload API objects that are used for managing stateful applications, differing from deployments and replica sets, which are typically for stateless workloads.
-- StatefulSets are ideal for applications like databases, caches, or other services requiring state persistence and stable identities across pod restarts and updates.
+- StatefulSets are ideal for applications like **databases, caches, or other services requiring state persistence and stable identities across pod restarts and updates.**
 
 #### Key Points:
 
-- **Deployments and ReplicaSets** are generally stateless. In deployments, all pods share the same persistent volume (if any) and can be replaced during rolling updates (set a new pod, and do the handover), meaning there is no stable identity or storage for each pod.
+- **Deployments and ReplicaSets** are stateless. In deployments, all pods share the same persistent volume (if any) and can be replaced during rolling updates (set a new pod, and do the handover), meaning there is no stable identity or storage for each pod.
 	- Each ReplicaSet has its own id
 	- The pod names are randomised
 	- Deployments can have a PV, but it will be shared by all pods
 - **StatefulSets** maintain **stable, unique identities** for each pod, including consistent network names and persistent storage for each instance (Pod).
 	- Each pod maintains the same identity for each pod in the statefulset
-		- StatefulSets provide a sticky identity for each pod, which means that each pod has a unique and persistent identity that is maintained even if the pod is restarted or rescheduled. This is particularly useful for stateful applications where the identity of the pod is important.
-		- StatefulSets provide stable network IDs for each pod, which means that each pod in a StatefulSet has a predictable DNS name and hostname. This allows for stable communication between pods in the same StatefulSet, even if they are rescheduled or recreated.
+		- StatefulSets provide a **sticky identity for each pod**, which means that each pod has a unique and persistent identity that is maintained even if the pod is restarted or rescheduled. This is particularly useful for stateful applications where the identity of the pod is important.
+		- StatefulSets provide stable **network IDs** for each pod, which means that each pod in a StatefulSet has a **predictable DNS name and hostname**. This allows for stable communication between pods in the same StatefulSet, even if they are rescheduled or recreated.
+		- SatefulSet pods are named **sequentially, starting from zero and prefixed with the StatefulSet name.** E.g., for "my-statefulset", the pod names would be "my-statefulset-0", "my-statefulset-1", etc...
 	- Each pod in a StatefulSet has a **Persistent Volume Claim (PVC)** that corresponds to a unique **Persistent Volume (PV)**, ensuring each pod has its own dedicated storage.
-		- This allows each pod to have its own persistent storage that is decoupled from the pod's lifecycle, ensuring that data is preserved even if the pod is deleted or recreated.
-- **Use cases** for StatefulSets:
-    - Applications requiring stable, unique network identifiers
-    - Applications needing stable, persistent storage
+		- This allows each pod to have its own persistent storage that is decoupled from the pod's lifecycle, ensuring that **data is preserved even if the pod is deleted or recreated**.
+- Use cases for StatefulSets:
+    - Applications requiring **stable, unique network identifiers**
+    - Applications needing **stable, persistent storage**
     - Applications requiring **ordered deployments** and **graceful scaling**
     - Automated rolling updates with stateful guarantees
-- The **serviceName** in a StatefulSet's configuration is used to define a headless service for network identity. A headless service is a special type of service that doesn't have an IP address or port associated with it. Instead, it provides a way to access the pods in the StatefulSet using DNS. By defining a serviceName, you can create a stable network identity for the StatefulSet, which allows other components in your application to communicate with it reliably.
+- The **serviceName** in a StatefulSet's configuration is used to define a headless service for network identity.
+	- A headless service is a special type of service that doesn't have an IP address or port associated with it. Instead, it provides a way to access the pods in the StatefulSet using DNS. By defining a serviceName, you can create a stable network identity for the StatefulSet, which allows other components in your application to communicate with it reliably.
 
 #### Steps to Use StatefulSets:
 
 1. **Creating a StatefulSet**:
-    
     - You can start with a **deployment YAML** and modify it to create a StatefulSet.
     - Ensure a **service name** is added (optional but recommended for stable network IDs).
     - Change the `kind` to `StatefulSet` in the YAML.
 2. **Network Identity**:
-    
     - Each pod in the StatefulSet gets a name based on the StatefulSet name (e.g., `nginx-0`, `nginx-1`, etc.).
     - For stable networking, use a **headless service** (with `clusterIP: None`), which allows pods to have DNS names like `nginx-0.nginx.default.svc.cluster.local`.
 3. **Rolling Updates**:
-    
     - The StatefulSet supports **ordered** updates. Pods are updated one by one in a controlled sequence.
-    - The `partition` field can be set to control which pods are updated during a rolling update. For example, setting `partition: 2` ensures that pods `nginx-0` and `nginx-1` remain unchanged while `nginx-2` is updated.
+    - The `partition` field can be set to **control which pods are updated during a rolling update**. E.g., setting `partition: 2` ensures that pods `nginx-0` and `nginx-1` remain unchanged while `nginx-2` is updated.
         - The partition value indicates the starting point for a rolling update, specifying which pods should be updated first. By setting the partition value to a specific number, you can control which subset of pods are updated initially, allowing for more fine-grained control over the rollout process.
 4. **Persistent Storage**:
-    
     - Each pod in a StatefulSet can have its own persistent storage, with dynamic provisioning.
     - If the StatefulSet is deleted, the **PVCs** and **PVs** remain, allowing the StatefulSet to **reuse the same storage** when it is recreated, preserving data between pod restarts.
 5. **Example**:
@@ -510,11 +511,13 @@ https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
 - **Headless Service**: Needed for stable network identities.
 # Network Policies
 
-- Helps to isolate pods from each other and control their communication.
-- We can limit access to pods, namespaces, and or IP Blocks hey provide through network traffic rules that allow or deny communication between Pods based on labels, ports, and other criteria.
-- An 'Ingress' rule specifies the type of traffic that is allowed to enter (or ingress) into pods from external sources or other pods.
--  NetworkPolicy in Kubernetes becomes effective after it is applied. When a NetworkPolicy is created and applied to a cluster, it defines the rules for traffic flow between pods and services. The policy takes effect immediately after it is successfully applied, allowing or blocking traffic according to its specifications.
-- When a pod is created using kubectl run in Kubernetes, a label with key `run` and `value` is automatically assigned to it, where `value` is the name of the deployment or replica set that manages the pod. This label helps identify the pods that belong to a specific deployment or replica set.
+- Helps to **isolate pods from each other and control their communication.**
+	- We can restrict access to pods, namespaces, and IP blocks using network traffic rules that allow or deny communication based on labels, ports, and other criteria.
+	- An 'Ingress' rule defines the types of traffic permitted to enter pods from external sources or other pods.
+-  NetworkPolicy in Kubernetes becomes **effective after it is applied**. When a NetworkPolicy is created and applied to a cluster, it **defines the rules for traffic flow between pods and services**. The policy takes effect immediately after it is successfully applied, allowing or blocking traffic according to its specifications.
+- When a pod is created using `kubectl run` in Kubernetes, a label with key `run` and `value` is automatically assigned to it
+	-  `key` is `run`
+	- `value` is the name of the deployment or replica set that manages the pod.
 ```bash
 kubectl describe pod/curl | more
 Name:             curl
@@ -526,20 +529,24 @@ Start Time:       Sun, 16 Feb 2025 21:41:02 +0000
 Labels:           run=curl
 ```
 
+## Container Network Interface (CNI)
 
-- A Container Network Interface (CNI) plugin is essential for the enforcement of NetworkPolicies in Kubernetes.
+- CNI plugin is essential for the enforcement of NetworkPolicies in Kubernetes.
 	- CNI plugins are responsible for configuring and managing the network interfaces of containers, which includes enforcing NetworkPolicies.
-	- When a NetworkPolicy is created, the CNI plugin is responsible for implementing the policy by configuring the necessary network rules to allow or deny traffic.
-	- When multiple NetworkPolicies are applied to a set of pods in Kubernetes, their effects are additive and cumulative. This means that each policy builds upon the previous ones, creating a more complex set of rules that govern network traffic to and from the pods. The resulting policy is the combination of all the individual policies.
-- By default, a pod in a Kubernetes cluster without any NetworkPolicies applied to it can send and receive traffic from any source. This means that there are no restrictions on incoming or outgoing traffic, allowing the pod to freely communicate with other pods, services, and external networks.
+	- When a NetworkPolicy is created, the CNI plugin is responsible for **implementing the policy by configuring the necessary network rules to allow or deny traffic**.
+	- When **multiple NetworkPolicies** are applied to a set of pods in Kubernetes, their **effects are additive and cumulative**. This means that each policy builds upon the previous ones, creating a more complex set of rules that govern network traffic to and from the pods. The resulting policy is the combination of all the individual policies.
+- By **default**, a pod in a Kubernetes cluster without any NetworkPolicies applied to it **can send and receive traffic from any source**. This means that there are no restrictions on incoming or outgoing traffic, allowing the pod to freely communicate with other pods, services, and external networks.
 
 # Pod Disruption Budgets
 
-- Replicas ensure that a specified number of replicas (i.e., copies) of a pod are running at any given time, which helps maintain availability under normal operations. On the other hand, PDBs protect against disruptions by specifying the maximum number of pods that can be terminated within a certain time period, ensuring that a minimum number of replicas remain available even during disruptions.
-- Pod Disruption Budgets (PDBs) ensure high availability of applications during **voluntary** disruptions, such as maintenance or node autoscaling. Unlike replicas, which maintain availability under normal conditions, PDBs prevent excessive disruption during planned operations.
-- Voluntary disruptions in Kubernetes refer to intentional actions taken by administrators, such as maintenance or upgrades, that may cause pods to be terminated or become unavailable. These disruptions are planned and executed by humans, hence the term "voluntary".
+- PDB vs Replicas
+	- Replicas **ensure that a specified number of replicas** (i.e., copies) of a pod are **running** at any given time, which helps **maintain availability under normal operations**. 
+	- **PDBs protect against disruptions** by **specifying the maximum number of pods that can be terminated** within a certain time period, ensuring that a **minimum number of replicas remain available even during disruptions**.
+		- PDBs ensure **high availability** of applications during **voluntary disruptions**, such as maintenance or node autoscaling. Unlike replicas, which maintain availability under normal conditions, PDBs prevent excessive disruption during planned operations.
+		- PDB improves application stability during maintenance by **ensuring that a minimum number of pods remain available when nodes undergo voluntary disruptions**, such as upgrades, autoscaling, or planned maintenance, even when nodes are being drained or maintained.
+- **Voluntary disruptions** in Kubernetes refer to **intentional actions taken by administrators**, such as maintenance or upgrades, that may cause pods to be terminated or become unavailable. These disruptions are planned and executed by humans, hence the term "voluntary".
 - When you use the `kubectl drain` command on a node, it removes all running pods from that node and marks it as unschedulable to prevent new pods from being scheduled on it. This is typically done before performing maintenance or upgrades on the node.
-- A **Pod Disruption Budget (PDB)** improves application stability during maintenance by ensuring that a minimum number of pods remain available when nodes undergo voluntary disruptions, such as upgrades, autoscaling, or planned maintenance, even when nodes are being drained or maintained.
+
 
 #### **Demonstration**
 
@@ -549,11 +556,9 @@ Labels:           run=curl
     - Nodes are **cordoned** (marked unschedulable), and pods are deleted.
     - Replicas automatically reschedule on available nodes.
 2. **Impact of Draining Nodes:**
-    
     - Running `kubectl drain` on a node removes pods, potentially leaving the deployment at **zero** replicas.
     - In real applications, this could cause downtime and trigger alerts.
 3. **Using a Pod Disruption Budget (PDB):**
-    
     - A **PDB is created** to enforce a minimum of **two available pods**.
     - When attempting to drain nodes, Kubernetes **prevents eviction** of critical pods.
     - The operation only proceeds when conditions allow at least two pods to remain active.
@@ -561,8 +566,8 @@ Labels:           run=curl
 
 # Security
 
-- **Security Contexts**: Kubernetes settings that define access control and privileges for pods or containers. 
-	- In the example below, we modify a pod to run as a non-root user, preventing escalation to root access, improving security for each pod. They allow you to specify the user ID, group ID, and other security-related settings for a container.
+- **Security Contexts**: Kubernetes settings that **define access control and privileges for pods or containers**. 
+	- We modify a pod to run as a non-root user, preventing escalation to root access, improving security for each pod. They allow you to specify the user ID, group ID, and other security-related settings for a container.
 	- This [image](https://github.com/spurin/rootshell) has a Dockerfile that creates a container image with a custom `rootshell` binary.  In this example, we use `runAsUser` and `runAsGroup` to 
 
 	```bash
@@ -581,18 +586,20 @@ Labels:           run=curl
 	- In the demonstration, the **runAsUser** and **runAsGroup** are set to 1000 (the UID and GID of the user defined in the Docker image). By configuring these fields in the pod's security context, the pod is instructed to run with a specific user and group, rather than as root. This is crucial for restricting access and reducing security risks.
 		- These settings are part of the broader security context configuration, helping administrators enforce **least privilege** access in Kubernetes environments.
 	- Setting `allowPrivilegeEscalation` to false in the container's security context prevents the escalation of privileges within the container. When this field is set to false, the container cannot gain additional privileges and is restricted to its current user ID. This helps prevent privilege escalation attacks where an attacker gains elevated privileges within a container.
-- **Admission Controllers**: Since Kubernetes 1.25, admission controllers replace deprecated pod security policies to enforce security at the cluster level. They act as gatekeepers, preventing actions like root container execution and process escalation, or enforce critical security policies to reduce attack vectors.
+- **Admission Controllers**: Since Kubernetes 1.25, **admission controllers replace deprecated pod security policies to enforce security at the cluster level**. They act as **gatekeepers**, preventing actions like root container execution and process escalation, or enforce critical security policies to reduce attack vectors.
 	- They intercept requests to the API server and can modify or reject them based on custom rules and policies. This allows cluster administrators to enforce specific requirements, such as security checks or resource quotas, before allowing pods to be created or modified.
 	- Tools like **Kyverno** and **OPA Gatekeeper** provide additional policy enforcement.
-		- Pod Admission Controllers in Kubernetes are used to enforce policies on incoming pods, such as validating or mutating their configuration before they are created. Kyverno and Open Policy Agent (OPA) Gatekeeper are two popular options that provide this functionality. They allow administrators to define custom policies using YAML or Rego, respectively, which can then be applied to incoming pods.
+		- Pod Admission Controllers in Kubernetes are used to enforce policies on incoming pods, such as validating or mutating their configuration before they are created. Kyverno and Open Policy Agent (OPA) Gatekeeper are two popular options that allow administrators to define custom policies using YAML or Rego, respectively, which can then be applied to incoming pods.
 	- **Other Tools**:
-		- **Falco**: A runtime security tool that monitors abnormal behavior and security threats.
+		- **Falco**: A runtime security tool that **monitors abnormal behavior and security threats**.
 			- Falco is an open-source runtime security project that integrates with Kubernetes to identify abnormal behavior and potential security threats. It uses a behavioral approach to detect anomalies in system calls, network activity, and other system interactions, providing real-time alerts and notifications for security teams.
-		- **Kubescape**: A security platform that scans for vulnerabilities and misconfigurations. It provides a comprehensive security scan of the cluster, identifying potential vulnerabilities and misconfigurations that could be exploited by attackers.
-		- **[OIDC (OpenID Connect)](https://medium.com/@extio/kubernetes-authentication-with-oidc-simplifying-identity-management-c56ede8f2dec)**: An authentication protocol based on OAuth 2.0, recommended for large-scale Kubernetes clusters. 
-			- OpenID Connect (OIDC) is an identity layer built on top of OAuth 2.0 that provides a standardized way to authenticate users in large-scale Kubernetes deployments. OIDC provides a scalable and secure authentication mechanism that can be easily integrated with Kubernetes, making it a recommended protocol for enhanced authentication.
+		- **Kubescape**: A security platform that **scans for vulnerabilities and misconfigurations**. It provides a comprehensive security scan of the cluster, identifying potential vulnerabilities and misconfigurations that could be exploited by attackers.
+		- **[OIDC (OpenID Connect)](https://medium.com/@extio/kubernetes-authentication-with-oidc-simplifying-identity-management-c56ede8f2dec)**: An authentication protocol based on OAuth 2.0, **recommended for large-scale Kubernetes clusters.** 
+			- OpenID Connect (OIDC) is an i**dentity layer built on top of OAuth 2.0** that provides a **standardized way to authenticate users in large-scale deployments**.
+			- OIDC provides a scalable and secure authentication mechanism that can be easily integrated with Kubernetes, making it a recommended protocol for enhanced authentication.
 - 4C’s of Cloud Native Security, namely Cloud, Cluster, Container, Code.
-	- This sequence represents the layers of abstraction in cloud native environments, starting from the broadest scope (cloud providers) to the narrowest scope (application code). Each layer builds upon the previous one, and securing each layer is crucial for overall security.
+	- This sequence represents the layers of abstraction in cloud native environments, starting from the broadest scope (cloud providers) to the narrowest scope (application code).
+		- Each layer builds upon the previous one, and securing each layer is crucial for overall security.
 	- Each endpoint acts as a layer from the outside-in and is a security best practice in Cloud Native Computing.
 	- Each subsequent layer acts as a reinforcement for the layer within. For example, Code would benefit from the security implementations of Container, Cluster and Cloud respectively.
 
@@ -600,11 +607,11 @@ Labels:           run=curl
 # Helm and Helm charts
 
 - Helm simplifies Kubernetes application management using **Helm Charts** (packages with pre-configured Kubernetes resources) by providing a way to easily install, upgrade, and manage applications on a Kubernetes cluster.
-- They provide a way to package, distribute, and manage applications, making it easier to deploy and manage complex applications in a Kubernetes environment.
-- It uses a templating engine to generate Kubernetes resources from templates, making it easier to manage complex applications.
-	- Think of Helm as the **APT** or **YUM** of Kubernetes, allowing easier deployment, updates, and management of applications.
-	- You can package charts for version control and easy distribution.
-	- Helm enables easier scaling and upgrading of Kubernetes applications in real-world scenarios.
+	- They provide a way to package, distribute, and manage applications, making it easier to deploy and manage complex applications in a Kubernetes environment.
+	- It uses a templating engine to generate Kubernetes resources from templates, making it easier to manage complex applications.
+		- Think of Helm as the **APT** or **YUM** of Kubernetes, allowing easier deployment, updates, and management of applications.
+		- You can package charts for version control and easy distribution.
+		- Helm enables easier scaling and upgrading of Kubernetes applications in real-world scenarios.
 
 1. **Creating a Helm Chart:**
     - Create a basic chart using: `helm create flappy-app`.
@@ -612,7 +619,7 @@ Labels:           run=curl
         - **`Chart.yaml`** → Add name, description, and version (following semantic versioning).
         - **`values.yaml`** → Set the Docker image to `spurin/flappy-doc:latest`. Disable unnecessary service accounts.
 2. **Packaging and Deploying:**
-    - Package the chart with: `helm package .`
+    - Package the chart with: `helm package`.
     - Deploy using: `helm install flappy-app ./flappy-app-0.1.0.tgz`
     - Verify deployment with:
         - `kubectl get deployments`
@@ -629,11 +636,14 @@ Labels:           run=curl
 
 Microservices have revolutionized software development by providing efficiency, scalability, and resilience. They consist of small, independently deployable units, making them ideal for diverse deployment environments, including hybrid and multi-cloud setups. However, as microservices grow, managing service-to-service communication becomes complex.
 
+Service meshes are essential for managing complex microservice architectures in cloud-native environments. They improve security, observability, and reliability. Exploring solutions like **Istio**, **Linkerd**, or experimenting with the **SMI** standard is an excellent next step for deepening your understanding.
+
 #### **Role of Service Meshes**
 
-A **service mesh** simplifies this complexity by ensuring efficient, reliable, and secure communication between microservices, especially as applications scale. A service mesh typically consists of:
+A **service mesh** simplifies this complexity by ensuring efficient, reliable, and secure communication between microservices, especially as applications scale.
 
 ![[Kubernetes Deep Dive Sidecar proxy.png]]
+A service mesh consists of:
 - **Data Plane**: Manages internal network traffic between services using either:
     - **Sidecar proxies** (e.g., Istio, Linkerd) attached to each microservice for fine-grained traffic control, providing additional functionality such as traffic management and security. This pattern enables the injection of additional capabilities into the data path without modifying the application code.
     - **Host node proxies** (e.g., Traffic Mesh) installed at the node level for simpler management.
@@ -641,19 +651,13 @@ A **service mesh** simplifies this complexity by ensuring efficient, reliable, a
 
 #### **Key Benefits of Service Meshes**
 
-- **Security**: Mutual TLS ensures two-way verification for secure communication. It ensures that only authorized services can communicate with each other, reducing the risk of unauthorized access or man-in-the-middle attacks.
+- **Security**: **Mutual TLS ensures two-way verification for secure communication**. It ensures that only authorized services can communicate with each other, reducing the risk of unauthorized access or man-in-the-middle attacks.
 - **Access Control**: Fine-grained policy management.
 - **Observability**: Tracing and monitoring tools provide deep insights.
 - **Reliability**: Features like rate limiting and circuit breaking improve system resilience.
 
 #### **Standardization with SMI (Service Mesh Interface)**
 
-Kubernetes supports the **Service Mesh Interface (SMI)**, which provides a unified API standard for various service mesh solutions. By defining a set of common APIs, SMI enables users to manage and configure their Service Mesh environments in a consistent manner, regardless of the underlying implementation.
-It allows developers to:
-
+Kubernetes supports the **Service Mesh Interface (SMI)**, which **provides a unified API standard for various service mesh solutions**. By defining a set of common APIs, SMI enables users to manage and configure their Service Mesh environments in a consistent manner, regardless of the underlying implementation. It allows developers to:
 - Manage traffic, access control, and metrics across different meshes.
 - Avoid vendor lock-in with consistent functionalities across implementations.
-
-#### **Conclusion**
-
-Service meshes are essential for managing complex microservice architectures in cloud-native environments. They improve security, observability, and reliability. Exploring solutions like **Istio**, **Linkerd**, or experimenting with the **SMI** standard is an excellent next step for deepening your understanding.

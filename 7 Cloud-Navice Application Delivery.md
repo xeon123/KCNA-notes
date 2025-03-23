@@ -1,11 +1,11 @@
-## **Modern Application Deployment with Cloud-Native & GitOps**
+## Modern Application Deployment with Cloud-Native & GitOps
 
 - GitOps refers to application delivery with Git as a single source of truth.
 - Argo CD is a cloud-native tool for application delivery 
 - **GitOps** + **Argo CD** = Automated, self-healing deployments based on declarative infrastructure
 - Ideal for Kubernetes environments to maintain **consistency**, **scalability**, and **reliability**
 - Great hands-on tool for learning modern deployment practices and preparing for certifications like the **CKA**
-### 🌐 **Cloud-Native Application Delivery**
+### 🌐 Cloud-Native Application Delivery
 
 - Designed for **scalable**, **resilient**, and **rapid deployment** in cloud environments.
 - Utilizes:
@@ -15,7 +15,7 @@
 
 ---
 
-### 🔄 **GitOps: Infrastructure as Code**
+### 🔄 GitOps: Infrastructure as Code
 
 - Uses **Git** as the single source of truth for managing Kubernetes clusters and application deployments.
 - Ensures **consistent**, **reliable**, and **scalable** deployment workflows.
@@ -23,7 +23,7 @@
 
 ---
 
-### 📦 **Argo CD: Cloud-Native GitOps Tool**
+### 📦 Argo CD: Cloud-Native GitOps Tool
 
 - A powerful tool for continuous delivery in Kubernetes environments.
 - Features:
@@ -33,7 +33,7 @@
 
 ---
 
-### 🛠️ **Argo CD Setup & Deployment Example**
+### 🛠️ Argo CD Setup & Deployment Example
 
 1. **Installation:**
     - Create a namespace for Argo CD:  
@@ -62,9 +62,9 @@
 4. **GitOps in Action:**
     - Delete the app namespace
     - Argo CD automatically reconciles and redeploys the app based on the Git repository
-##  **Argo CD vs. Flux: GitOps Tools for Kubernetes**
+##  Argo CD vs. Flux: GitOps Tools for Kubernetes
 
-### 📌 **Argo CD Overview**
+### 📌 Argo CD Overview
 
 - A **GitOps continuous delivery tool** for Kubernetes.
 - Supports complex deployment workflows through integration with **Argo Workflows**.
@@ -74,7 +74,7 @@
     - **Advanced Automation:** Combine **CI/CD pipelines** for complex deployments.
     - **Customizable Pipelines:** Add testing stages, approval processes, or external tool integrations.
 
-### 🔍 **Argo CD Workflows**
+### 🔍 Argo CD Workflows
 
 - Enables orchestration of **multi-step deployment processes**.
 - Integrates with Argo Workflows for advanced pipeline management.
@@ -83,7 +83,7 @@
 
 ---
 
-### ⚡ **Flux Overview**
+### ⚡ Flux Overview
 
 - A **GitOps continuous delivery tool** maintained by the CNCF.
 - Uses a **pull-based synchronization** model by default (auto-sync changes from Git).
@@ -91,7 +91,7 @@
 - Strongly integrated with the **GitOps Toolkit** for custom workflows.
 - GitOps Toolkit is a collection of specialized APIs and controllers built specifically to manage and automate the continuous delivery of Kubernetes resources in Flux.
 
-#### 🔧 **GitOps Toolkit Components**
+#### 🔧 GitOps Toolkit Components
 
 - **Source Controller:** Manages repository access.
 - **Kustomize Controller:** Customizes Kubernetes manifests using Kustomize.
@@ -100,7 +100,7 @@
 
 ---
 
-### 🔥 **Argo CD vs. Flux: Key Differences**
+### 🔥 Argo CD vs. Flux: Key Differences
 
 | Feature                   | **Argo CD**                              | **Flux**                                  |
 | ------------------------- | ---------------------------------------- | ----------------------------------------- |
@@ -112,7 +112,7 @@
 
 ---
 
-### ✅ **Which Should You Use?**
+### ✅ Which Should You Use?
 
 - **Choose Argo CD** if you need:
     - Complex workflows

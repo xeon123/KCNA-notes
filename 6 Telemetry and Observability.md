@@ -1,7 +1,9 @@
-**Observability** refers to the ability to determine a system's internal state by examining its outputs, primarily gathered through **telemetry**. This telemetry includes logs, metrics, traces, and sometimes alerts.
+**Observability** refers to the ability to determine a system's internal state by examining its outputs, primarily gathered through **telemetry**. This telemetry includes **logs, metrics, traces, and alerts**.
 - **Observability** ensures accurate monitoring and efficient issue detection in cloud-native environments.
 - The **three pillars**—**logs**, **metrics**, and **traces**—each offer distinct insights into system performance and health.
-	- Logs provide a record of events that have occurred within an application or system, Metrics offer quantitative measurements of performance and behavior, and Traces allow for the visualization of complex interactions between microservices.
+	- Logs provide a record of events that have occurred within an application or system
+	- Metrics offer quantitative measurements of performance and behavior
+	- Traces allow for the visualization of complex interactions between microservices.
 - **Alerts** complement these pillars by providing early warnings of potential failures, ensuring high availability and quick problem resolution.
 - By analyzing these outputs, developers and operators can gain insights into how their system is behaving, identify issues, and make data-driven decisions.
 - OpenTracing and OpenTelemetry primarily operate in the application layer of a software system. They provide APIs and tools for instrumenting applications to collect tracing and telemetry data, allowing developers to understand how their code behaves in production environments.
@@ -34,16 +36,16 @@
 
 # Prometheus and Grafana
 
-## **Enhancing Kubernetes Observability with Prometheus and Grafana**
+## Enhancing Kubernetes Observability with Prometheus and Grafana
 
 While Kubernetes provides basic insights through its CLI, true observability requires more advanced tools like **Prometheus** and **Grafana**.
 
 Prometheus and Grafana together offer a powerful observability stack for Kubernetes, enabling better monitoring, visualization, alerting, and proactive system management. These tools are essential for roles like DevOps and SREs to meet uptime, performance, and reliability goals.
 
 
-#### 🔍 **Prometheus: Monitoring & Alerting Toolkit**
+#### 🔍 Prometheus: Monitoring & Alerting Toolkit
 
-- **Open-source CNCF project** (second to graduate after Kubernetes), initially created by **SoundCloud**.
+- **Open-source CNCF project** (second to graduate after Kubernetes), initially **created by SoundCloud**.
 - Designed for monitoring and alerting in both cloud-native and traditional systems.
 - **Key Features:**
     - **Multi-dimensional data model:** Uses time-series data, identified by metric names and key-value pairs.
@@ -52,7 +54,7 @@ Prometheus and Grafana together offer a powerful observability stack for Kuberne
     - **Push-pull data collection:** Efficient data scraping and ingestion methods.
     - **Built-in alerting:** Enables proactive issue detection.
 
-#### 📊 **Grafana: Visualization & Analytics Platform**
+#### 📊 Grafana: Visualization & Analytics Platform
 
 - An open-source platform that integrates with multiple data sources like **Prometheus**, **InfluxDB**, and **Elasticsearch**.
 - **Core Features:**
@@ -61,7 +63,7 @@ Prometheus and Grafana together offer a powerful observability stack for Kuberne
     - **Alerting:** Sends notifications via email, Slack, PagerDuty, and more.
     - **Customizability:** Highly flexible dashboards and plugin support for additional functionality.
 
-#### 🔧 **Use Cases for Site Reliability Engineers (SREs):**
+#### 🔧 Use Cases for Site Reliability Engineers (SREs):
 
 - **SLAs (Service Level Agreements):** E.g., Maintain 99.99% uptime.
 - **SLOs (Service Level Objectives):** E.g., Response time under 200 ms.
@@ -70,9 +72,9 @@ Prometheus and Grafana together offer a powerful observability stack for Kuberne
 In the provided example, if uptime is 97% and response time exceeds 300 ms, neither SLAs nor SLOs are being met.
 
 
-### **Setting Up Kubernetes Observability with Helm, Prometheus, and Grafana**
+### Setting Up Kubernetes Observability with Helm, Prometheus, and Grafana
 
-#### ⚙️ **Quick Setup Using Helm & Kube-Prometheus-Stack**
+#### ⚙️ Quick Setup Using Helm & Kube-Prometheus-Stack
 
 - The kube-prometheus operator project simplifies the deployment and configuration of Prometheus and Grafana for monitoring Kubernetes clusters. It provides a streamlined way to set up comprehensive monitoring solutions by automating many of the complex tasks involved in configuring these tools.
 
@@ -202,9 +204,9 @@ In the provided example, if uptime is 97% and response time exceeds 300 ms, neit
     `kubectl delete pod nginx-pod-<id>`
     
 
-## **Cost Management in Cloud-Native Solutions**
+## Cost Management in Cloud-Native Solutions
 
-### 🌐 **Key Principles of Cloud-Native Cost Management**
+### 🌐 Key Principles of Cloud-Native Cost Management
 
 - **Flexibility in Resource Utilization:**  
     Cloud-native applications allow you to dynamically allocate resources across public, hybrid, or private clouds based on cost, performance, or regulatory requirements.
@@ -217,7 +219,7 @@ In the provided example, if uptime is 97% and response time exceeds 300 ms, neit
 
 ---
 
-### ⚡ **Cost-Saving Strategies Across Cloud Providers**
+### ⚡ Cost-Saving Strategies Across Cloud Providers
 1. **On-Demand Instances:**
     - Quickly provision resources as needed.
     - **Pros:** Flexibility and speed.
@@ -230,7 +232,7 @@ In the provided example, if uptime is 97% and response time exceeds 300 ms, neit
     - Bid for unused resources at a lower price.
     - **Pros:** Cost-effective for flexible, fault-tolerant applications.
     - **Cons:** No guarantee of availability; can be terminated unexpectedly.
-### 📏 **Right-Sizing and Scaling**
+### 📏 Right-Sizing and Scaling
 
 - **Avoid Lift-and-Shift Mistakes:**  
     Reevaluate resource needs instead of replicating on-prem configurations.
@@ -239,10 +241,10 @@ In the provided example, if uptime is 97% and response time exceeds 300 ms, neit
 - **Leverage Spot & On-Demand Instances:**  
     Combine these instances with autoscaling to minimize idle resource costs.
 
-### 🔍 **Advanced Cost Management Tools & Techniques**
+### 🔍 Advanced Cost Management Tools & Techniques
 
 - **Cloud Anomaly Detection:**  
     Identifies unusual resource usage patterns, potentially uncovering security issues or unexpected costs.
-	-  Detecting cloud anomalies can help identify unexpected charges or unusual usage patterns that may indicate cost overruns or inefficiencies. By detecting these anomalies, organizations can take corrective action to optimize their cloud resources and keep costs under control.
+-  Detecting cloud anomalies can help identify unexpected charges or unusual usage patterns that may indicate cost overruns or inefficiencies. By detecting these anomalies, organizations can take corrective action to optimize their cloud resources and keep costs under control.
 - **KubeCost:**  
     A Kubernetes-specific tool for monitoring and managing costs. Available in both open-source and commercial versions.
