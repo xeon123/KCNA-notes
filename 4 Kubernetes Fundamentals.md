@@ -130,7 +130,7 @@
 
 ---
 
-## **High Availability (HA) Kubernetes Cluster**
+## High Availability (HA) Kubernetes Cluster
 
 - Uses **multiple control plane nodes** for fault tolerance.
 - **etcd runs as a cluster** with **Raft consensus** for data consistency.
@@ -139,7 +139,7 @@
 
 ---
 
-## **Kubernetes Cluster Workflow**
+## Kubernetes Cluster Workflow
 
 1. **User (`kubectl`) → API Server**
     - Sends a request (e.g., create an `nginx` pod).
@@ -154,7 +154,7 @@
 
 ---
 
-## **Key Takeaways**
+## Key Takeaways
 
 - **Control Plane**: Manages the cluster (`API Server`, `etcd`, `Scheduler`, `Controller Manager`).
 - **Nodes**: Run workloads (`Kubelet`, `kube-proxy`, `container runtime`).
@@ -163,7 +163,7 @@
 - Static pods (API Server, etcd, scheduler)
 
 
-# **Pod Basics**
+# Pod Basics
 
 - A **Pod** is the smallest deployable unit in Kubernetes.
 - It consists of **one or more containers** sharing networking and storage.
@@ -173,7 +173,7 @@
 	- This association is key to determining the permissions and resources that the processes inside the Pod will have access to.
 	- If you don’t specify a Service Account for a Pod, it defaults to using the 'default' Service Account in the same namespace and the Pod will have limited access to the Kubernetes API from within the Pod.
 
-## **Creating and Managing a Pod**
+## Creating and Managing a Pod
 
 - Run an **nginx pod**:
     `kubectl run nginx --image=nginx`
@@ -183,14 +183,14 @@
     `kubectl logs nginx`
 - Get detailed pod information (including IP and node details):
     `kubectl get pods -o yaml`
-## **Accessing a Pod**
+## Accessing a Pod
 
 - Pods are accessible within the cluster via their **IP addresses**.
 - External access requires **port forwarding**:
     `kubectl port-forward nginx 8080:80`
 	- Access nginx via `localhost:8080`.
 
-## **Inter-Pod Communication**
+## Inter-Pod Communication
 
 - **Using a temporary curl pod** to test communication:
     ```bash
@@ -204,18 +204,18 @@
         `kubectl exec -it ubuntu -- bash`
     - Install `curl` and test access to nginx.
 
-## **Cleanup**
+## Cleanup
 
 - Delete the created pods:
     `kubectl delete pod nginx ubuntu --now`
 
-## **Alternative Pod Creation**
+## Alternative Pod Creation
 
 - Instead of the CLI, **YAML manifests** can be used to define pods declaratively.
 
-## **Using YAML to Create Kubernetes Pods**
+## Using YAML to Create Kubernetes Pods
 
-### **Introduction to YAML**
+### Introduction to YAML
 
 - YAML is a simple data serialization language commonly used for configuration files.
 - Kubernetes resources (pods, deployments, etc.) can be defined using YAML.

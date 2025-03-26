@@ -8,10 +8,9 @@
 ### 🌐 Cloud-Native Application Delivery
 
 - Designed for **scalable**, **resilient**, and **rapid deployment** in cloud environments.
-- Utilizes:
-    - **Containerization** (e.g., Docker)
-    - **Microservices**
-    - **Dynamic orchestration** (e.g., Kubernetes)
+	- **Containerization** (e.g., Docker)
+	- **Microservices**
+	- **Dynamic orchestration** (e.g., Kubernetes)
 
 ---
 
@@ -26,7 +25,6 @@
 ### 📦 Argo CD: Cloud-Native GitOps Tool
 
 - A powerful tool for continuous delivery in Kubernetes environments.
-- Features:
     - Declarative application setup
     - Automatic synchronization between Git state and live cluster
     - Supports self-healing and auto-pruning of applications
@@ -91,7 +89,7 @@
 - Strongly integrated with the **GitOps Toolkit** for custom workflows.
 - GitOps Toolkit is a collection of specialized APIs and controllers built specifically to manage and automate the continuous delivery of Kubernetes resources in Flux.
 
-#### 🔧 GitOps Toolkit Components
+### 🔧 GitOps Toolkit Components
 
 - **Source Controller:** Manages repository access.
 - **Kustomize Controller:** Customizes Kubernetes manifests using Kustomize.

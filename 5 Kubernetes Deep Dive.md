@@ -448,7 +448,7 @@ https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
         - These approaches have unique characteristics in Reclaim Policies.
             - **Delete**: The volume will be deleted on the release from its claim
             - **Retain**: The volume will be left in its current phase. This is the default policy.
-            - **Recycle**: The volume will be recycle back to a poof of unbounded PVs on the release from its claim.
+            - **Recycle**: The files are deleted and the persistent volume is reused. Deprecated since Kubernetes 1.9 in favor of external storage solutions that handle cleanup process.
     - Ceph is a Kubernetes storage for Openshift
         - Ceph is a highly scalable and flexible storage solution that provides comprehensive storage capabilities, including block, file, and object storage, in distributed systems.
         - It uses a decentralized architecture to store data across multiple nodes, making it highly fault-tolerant and reliable.
