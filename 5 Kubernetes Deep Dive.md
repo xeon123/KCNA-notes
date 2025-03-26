@@ -69,7 +69,7 @@ In this example, the request is being sent to `https://127.0.0.1:6443`. When the
 
 ![[kubectl-proxying request.png]]
 - Running `kubectl proxy` allows local access over **HTTP** (`http://localhost:8001`) without additional authentication.
-- Proxy handles authentication with the API server by using existing authentication configuration (e.g., `kubeconfig` or service account tokens).
+- **Proxy handles authentication with the API server** by using existing authentication configuration (e.g., `kubeconfig` or service account tokens).
 
 ## Using OpenAPI Specification
 

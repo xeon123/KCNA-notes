@@ -988,3 +988,7 @@ Many Kubernetes components use labels to select the resources they should operat
 By implementing a **well-structured labeling strategy**, you can improve resource management, automation, and scaling within your Kubernetes cluster. This includes better resource management, easier rollouts and rollbacks, and more targeted monitoring and logging.
 
  Effective use of Kubernetes labels can contribute to better cloud cost management by allowing administrators to identify and delete unused or idle resources. Labels provide a way to categorize and filter resources, making it easier to detect waste and optimize resource utilization. By deleting unnecessary resources, organizations can avoid paying for idle capacity.
+
+> #flashcards
+> 
+> 
