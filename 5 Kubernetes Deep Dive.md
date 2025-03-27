@@ -163,7 +163,7 @@ curl --location 'http://localhost:8001/api/v1/nodes' --header 'Accept: applicati
 					- We can see that the public key was issued by kubernetes CA
 						- `O = system:masters` is the group where the username is assigned.
 						- `CN=system:admin`  references to the username.
-- In kubernetes, we don't create users or groups. we have certificates that relates users to the groups, and then we permission those users and groups with RBAC.
+- In kubernetes, we don't create users or groups. We have certificates that relates users to the groups, and then we permission those users and groups with RBAC.
 	- ![[Kubernetes Deep Dive rbac certificates.png]]
 
 - In this query we show an RBAC viewpoint from the perspective of cluster role bindings.

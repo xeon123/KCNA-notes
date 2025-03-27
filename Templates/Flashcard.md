@@ -1,0 +1,2 @@
+- **Q:** What is {{concept}}?
+- **A:** {{definition}}. #flashcard

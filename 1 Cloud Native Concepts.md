@@ -91,3 +91,7 @@ While I recommend keeping an eye out for occasional discounts from the Linux Fou
 	- The roles of Speed, Efficiency, and Cost in the context of Cloud Native environments
 - To reduce the cost of the exams wait for sales, attend events like KubeCon/CloudNativeCon, and checking for discount codes on social media.
 - The GitHub repository under cncf/curriculum is the official source for the KCNA exam curriculum. It is regularly updated by the CNCF, making it the best place to find the latest information on exam topics, objectives, and changes.
+
+
+#flashcards 
+#kubernetes
