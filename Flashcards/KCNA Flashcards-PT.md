@@ -56,10 +56,11 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
   #flashcard
 <!--SR:!2025-03-28,1,230-->
 
-- **Que flexibilidade a camada de dados ganha na Nuvem Nativa?**  
+- **Que flexibilidade a camada de dados ganha na Nuvem Nativa?**
 ?
-  Microsserviços podem interagir independentemente com bancos de dados ou usar replicação, fragmentação ou armazenamentos distribuídos (ex.: etcd).  
+  Microsserviços podem interagir independentemente com bancos de dados ou usar replicação, fragmentação ou armazenamentos distribuídos (ex.: etcd).
   #flashcard
+<!--SR:!2025-03-30,3,250-->
 
 ---
 
@@ -93,10 +94,11 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
   #flashcard
 <!--SR:!2025-03-27,1,230-->
 
-- **O que é operabilidade em apps Nativos da Nuvem?**  
+- **O que é operabilidade em apps Nativos da Nuvem?**
 ?
-  Foco em implantação e gerenciamento fáceis com automação e IaC (ex.: Terraform).  
+  Foco em implantação e gerenciamento fáceis com automação e IaC (ex.: Terraform).
   #flashcard
+<!--SR:!2025-03-31,4,270-->
 
 - **O que é observabilidade na Nuvem Nativa?**  
 ?
@@ -150,10 +152,11 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
   Microsserviços, Conteinerização, DevOps, Entrega Contínua.  
   #flashcard
 
-- **Como a Conteinerização beneficia a Nuvem Nativa?**  
+- **Como a Conteinerização beneficia a Nuvem Nativa?**
 ?
-  Encapsula apps e dependências para consistência, isolamento e implantação fácil.  
+  Encapsula apps e dependências para consistência, isolamento e implantação fácil.
   #flashcard
+<!--SR:!2025-03-28,1,230-->
 
 - **O que é DevOps na Nuvem Nativa?**  
 ?
@@ -251,18 +254,20 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
   Avalia a maturidade dos projetos com base em adoção, engajamento e qualidade.  
   #flashcard
 
-- **Qual é o papel dos SIGs e TAGs no CNCF?**  
+- **Qual é o papel dos SIGs e TAGs no CNCF?**
 ?
-  SIGs focam em áreas de projetos (ex.: segurança do Kubernetes); TAGs fornecem orientação de domínio (ex.: armazenamento).  
+  SIGs focam em áreas de projetos (ex.: segurança do Kubernetes); TAGs fornecem orientação de domínio (ex.: armazenamento).
   #flashcard
+<!--SR:!2025-03-30,3,250-->
 
 ---
 
 # Cloud-Native Personas
-- **No que um Engenheiro DevOps se concentra?**  
+- **No que um Engenheiro DevOps se concentra?**
 ?
-  Faz a ponte entre Dev e Ops com automação, scripts e práticas nativas da nuvem.  
+  Faz a ponte entre Dev e Ops com automação, scripts e práticas nativas da nuvem.
   #flashcard
+<!--SR:!2025-03-30,3,250-->
 
 - **Qual é o papel de um Engenheiro de Confiabilidade de Site (SRE)?**
 ?
@@ -293,10 +298,11 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
   Estabelecida em 2015, define especificações de imagens e runtime de contêineres (ex.: runc).  
   #flashcard
 
-- **O que faz a Interface de Rede de Contêineres (CNI)?**  
+- **O que faz a Interface de Rede de Contêineres (CNI)?**
 ?
-  Simplifica a configuração de redes para Kubernetes com compatibilidade de plugins.  
+  Simplifica a configuração de redes para Kubernetes com compatibilidade de plugins.
   #flashcard
+<!--SR:!2025-03-30,3,250-->
 
 - **Qual é o propósito da Interface de Armazenamento de Contêineres (CSI)?**  
 ?
@@ -423,10 +429,11 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 ---
 
 # Why Choose KCNA?
-- **Por que o KCNA é uma boa escolha?**  
+- **Por que o KCNA é uma boa escolha?**
 ?
-  Currículo diversificado, prepara para certificações avançadas, prático para papéis nativos da nuvem e acessível remotamente.  
+  Currículo diversificado, prepara para certificações avançadas, prático para papéis nativos da nuvem e acessível remotamente.
   #flashcard
+<!--SR:!2025-03-31,4,270-->
 
 - **Onde você pode verificar atualizações do currículo do KCNA?**
 ?
@@ -451,6 +458,7 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 ?
   Espere por promoções (até 40-45% de desconto), participe do KubeCon/CloudNativeCon ou verifique códigos nas redes sociais.
   #flashcard
+<!--SR:!2025-03-30,3,250-->
 
 - **No que você deve focar para o exame KCNA?**  
 ?
@@ -519,10 +527,11 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
   Combinou namespaces e cgroups em uma plataforma amigável, simplificando a conteinerização escalável.  
   #flashcard
 
-- **Por que os contêineres são preferidos às VMs?**  
+- **Por que os contêineres são preferidos às VMs?**
 ?
-  Leves, compartilham o kernel do SO host, reduzindo sobrecarga e maximizando o uso de recursos.  
+  Leves, compartilham o kernel do SO host, reduzindo sobrecarga e maximizando o uso de recursos.
   #flashcard
+<!--SR:!2025-03-31,4,270-->
 
 ---
 
@@ -594,10 +603,11 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
   #flashcard
 <!--SR:!2025-03-27,1,230-->
 
-- **Como você salva uma imagem de contêiner?**  
+- **Como você salva uma imagem de contêiner?**
 ?
-  `docker save` exporta localmente, incluindo camadas e metadados JSON.  
+  `docker save` exporta localmente, incluindo camadas e metadados JSON.
   #flashcard
+<!--SR:!2025-03-28,1,230-->
 
 ---
 
@@ -737,7 +747,7 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 - **O que o Controller Manager gerencia?**  
 ?
-  Executa loops de controle (ex.: controladores de Nó e Deployment) para impor o estado desejado.  
+  Executa loops de controle (ex.: controladores de Nó e Deployment) para impor o estado desejado no cluster. Garante que o estado desejado é igual ao estado actual.
   #flashcard
 
 - **O que é o Cloud Controller Manager (CCM)?**
@@ -859,10 +869,11 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
   `kubectl set image deployment/nginx nginx=nginx:stable`.  
   #flashcard
 
-- **Como você reverte um deployment?**  
+- **Como você reverte um deployment?**
 ?
-  `kubectl rollout undo deployment/nginx`.  
+  `kubectl rollout undo deployment/nginx`.
   #flashcard
+<!--SR:!2025-03-31,4,270-->
 
 - **O que gerencia o ciclo de vida dos pods em um deployment?**  
 ?
@@ -952,10 +963,11 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
   Adicione `envFrom: - configMapRef: name: color-configmap` no YAML.  
   #flashcard
 
-- **O que é um ConfigMap imutável?**  
+- **O que é um ConfigMap imutável?**
 ?
-  Não pode ser modificado após a criação (immutable: true, Kubernetes 1.21+).  
+  Não pode ser modificado após a criação (immutable: true, Kubernetes 1.21+).
   #flashcard
+<!--SR:!2025-03-30,3,250-->
 
 ---
 
@@ -1110,7 +1122,7 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 - **O que é um volume emptyDir?**  
 ?
-  Criado vazio quando um pod inicia; os dados persistem em falhas de contêineres, mas não na exclusão do pod.  
+Volume **efémero** que é criado quando o Pod começa e é apagado quando o Pod é removido do nó.
   #flashcard
 
 - **O que é armazenamento persistente no Kubernetes?**  
@@ -1148,10 +1160,11 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
   #flashcard
 <!--SR:!2025-03-27,1,230-->
 
-- **Como os pods de um StatefulSet são nomeados?**  
+- **Como os pods de um StatefulSet são nomeados?**
 ?
-  Sequencialmente com o prefixo do nome do StatefulSet (ex.: nginx-0, nginx-1).  
+  Sequencialmente com o prefixo do nome do StatefulSet (ex.: nginx-0, nginx-1).
   #flashcard
+<!--SR:!2025-03-28,1,230-->
 
 - **O que acontece com os PVCs quando um StatefulSet é deletado?**  
 ?
@@ -1240,10 +1253,11 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
   Simplifica o gerenciamento de apps com Helm Charts (pacotes de recursos pré-configurados).  
   #flashcard
 
-- **Como você cria um Helm Chart?**  
+- **Como você cria um Helm Chart?**
 ?
-  `helm create flappy-app`, personalize Chart.yaml e values.yaml.  
+  `helm create flappy-app`, personalize Chart.yaml e values.yaml.
   #flashcard
+<!--SR:!2025-03-31,4,270-->
 
 - **Como você implanta um Helm Chart?**  
 ?
