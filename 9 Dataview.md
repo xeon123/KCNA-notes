@@ -2,6 +2,14 @@
 
 ## Cloud Native Concepts
 
+### Simple test
+
+```dataview
+list
+from "../../KCNA-notes"
+where file.name = "1 Cloud Native Concepts"
+```
+
 ### Query 1: List All Cloud Native Philosophies
 
 ```dataview
@@ -13,7 +21,7 @@ where contains(file.name, "Cloud Native Concepts") and contains(section, "Philos
 ### Query 2: Benefits of Cloud Native
 
 ```dataview
-list text as "Benefit"
+list
 from "KCNA-notes"
 where contains(file.name, "Cloud Native Concepts") and contains(section, "Benefits of Cloud Native")
 ```
@@ -21,7 +29,7 @@ where contains(file.name, "Cloud Native Concepts") and contains(section, "Benefi
 ### Query 3: Misconceptions About Cloud Native
 
 ```dataview
-list text as "Misconception"
+list
 from "KCNA-notes"
 where contains(file.name, "Cloud Native Concepts") and contains(section, "Misconceptions About Cloud Native")
 ```
@@ -37,7 +45,7 @@ where contains(file.name, "Cloud Native Concepts") and contains(section, "Key Pr
 ### Query 5: Challenges Addressed by Cloud Native
 
 ```dataview
-list text as "Challenge"
+list
 from "KCNA-notes"
 where contains(file.name, "Cloud Native Concepts") and contains(section, "Challenges Addressed by Cloud Native")
 ```
@@ -61,7 +69,7 @@ where contains(file.name, "Cloud Native Concepts") and contains(section, "KCNA E
 ### Query 8: Pro Tips for KCNA Exam
 
 ```dataview
-list text as "Pro Tip"
+list
 from "KCNA-notes"
 where contains(file.name, "Cloud Native Concepts") and contains(section, "Pro Tip")
 ```
@@ -69,7 +77,7 @@ where contains(file.name, "Cloud Native Concepts") and contains(section, "Pro Ti
 ### Query 9: Tags Used in the Note
 
 ```dataview
-list file.tags as "Tags"
+list
 from "KCNA-notes"
 where file.name = "1 Cloud Native Concepts"
 ```
@@ -77,7 +85,7 @@ where file.name = "1 Cloud Native Concepts"
 ### Query 10: Links to External Resources
 
 ```dataview
-list text as "Resource"
+list
 from "KCNA-notes"
 where contains(file.name, "Cloud Native Concepts") and contains(text, "http")
 ```
