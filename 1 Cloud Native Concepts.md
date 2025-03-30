@@ -1,16 +1,20 @@
+---
+tags: cloud-native
+---
+
 # Cloud Native Concepts
 
 ## What is Cloud Native?
 
 ### **Definition**
 
-    - Combines "cloud" (inclusive of public, private, and hybrid cloud environments) and "native" (designed for or built into a given system to enable scalability, resilience, and manageability). #cloud-native
-    - Represents a collection of philosophies rather than a binary state.
+- Combines "cloud" (inclusive of public, private, and hybrid cloud environments) and "native" (designed for or built into a given system to enable scalability, resilience, and manageability). #cloud-native
+- Represents a collection of philosophies rather than a binary state.
 
 ### **Philosophies**
 
-    - **Cloud Native Architecture**: Applications are built with best practices to run across diverse cloud environments. #architecture #cloud-native
-    - **Cloud Native Culture**: Promotes organizational changes and optimal practices for design and implementation. #devops #culture
+- **Cloud Native Architecture**: Applications are built with best practices to run across diverse cloud environments. #architecture #cloud-native
+- **Cloud Native Culture**: Promotes organizational changes and optimal practices for design and implementation. #devops #culture
 
 ### Benefits of Cloud Native
 

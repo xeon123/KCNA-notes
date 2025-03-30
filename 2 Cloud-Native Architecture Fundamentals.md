@@ -1,3 +1,7 @@
+---
+tags: cloud-native
+---
+
 # Cloud-Native Architecture Fundamentals
 
 ## Evolution of Cloud-Native Architecture
