@@ -46,8 +46,8 @@
 ```mermaid
 flowchart TD
     subgraph Runtime
-        A[Low-level container runtime] -->|Uses| B(runc / crun / Kata / gVisor)
-        C[High-level container runtime] -->|Uses| B
+        A[Low-level container runtime] -->|Uses| B(runc/crun/Kata/gVisor)
+        C[High-level container runtime] -->|Uses| A
         C -->|Manages| D(containerd)
     end
 
@@ -107,7 +107,7 @@ flowchart TD
 - Reads pod specs from:
     - API calls.
     - YAML files in `/etc/kubernetes/manifests` (for **static pods**).
-- Passes requests to `containerd`, which uses `runC` to create pods.
+- Passes requests to `containerd`.
 
 ---
 
@@ -521,30 +521,39 @@ A **Kubernetes Deployment** is a resource object that enables **declarative upda
     - This creates an **Nginx deployment** using a YAML definition.
 2. **Checking Deployment and ReplicaSets**
     
-    `kubectl get deployments kubectl get replicasets kubectl get pods -o wide`
+    ```bash
+	kubectl get deployments
+	kubectl get replicasets
+	kubectl get pods -o wide
+	```
     
 3. **Viewing Deployment History**
     
     ```bash
-    kubectl rollout history deployment/nginx kubectl annotate deployment/nginx kubernetes.io/change-cause="Initial deployment"
+    kubectl rollout history deployment/nginx
+    kubectl annotate deployment/nginx kubernetes.io/change-cause="Initial deployment"
     ```
     
 4. **Scaling Deployments**
     
-    `kubectl scale deployment/nginx --replicas=10 watch kubectl get pods`
-    
+    ```bash
+   kubectl scale deployment/nginx --replicas=10
+   watch kubectl get pods
+	```
     - This scales the deployment from **1 to 10 replicas**.
 5. **Updating Deployments**
     
     ```bash
-    kubectl set image deployment/nginx nginx=nginx:stable kubectl rollout status deployment/nginx
+    kubectl set image deployment/nginx nginx=nginx:stable
+    kubectl rollout status deployment/nginx
     ```
     
     - This updates the **Nginx image** to a new version with **rolling updates**.
 6. **Handling Rollbacks**
     
     ```bash
-    kubectl set image deployment/nginx nginx=nginx:bananas kubectl rollout undo deployment/nginx
+    kubectl set image deployment/nginx nginx=nginx:bananas
+    kubectl rollout undo deployment/nginx
     ```
     
     - If an update fails, rolling back restores a stable version.
@@ -628,7 +637,7 @@ There are **four primary service types**, plus one additional variant:
     - Example: `kubectl expose deployment/nginx --type=LoadBalancer --port=8080 --target-port=80`
     - Balances traffic across pods automatically.
     - Access `http://<ExternalLoadBalancerIP>:80` (assigned by the cloud provider).
-1. **ExternalName** – Maps a service to an external DNS name.
+5. **ExternalName** – Maps a service to an external DNS name.
    ```yaml
    apiVersion: v1
   kind: Service
@@ -643,7 +652,7 @@ There are **four primary service types**, plus one additional variant:
     - Access:
 	    -  Inside cluster: `http://external-db.default.svc.cluster.local`
 		- Resolves to `my.database.example.com`.
-1. **Headless Service (Variation of ClusterIP)** – Removes the cluster IP and provides direct DNS resolution to pod IPs.
+6. **Headless Service (Variation of ClusterIP)** – Removes the cluster IP and provides direct DNS resolution to pod IPs.
    ```yaml
    apiVersion: v1
   kind: Service
@@ -748,8 +757,6 @@ spec:
 ```
 
 - Runs **every minute** (`* * * * *`).
-- **Only 3 jobs are retained** due to `successfulJobsHistoryLimit: 3`.
-- By default, the `successfulJobsHistoryLimit` field in a CronJob specification is set to 3, meaning that up to three successfully completed jobs are kept for historical tracking purposes. Similarly, the failedJobsHistoryLimit defaults to 1, keeping one failed job for analysis.
 
 #### Retention Settings
 
@@ -762,18 +769,19 @@ spec:
   schedule: "*/1 * * * *"
   jobTemplate:
     spec:
+	  ttlSecondsAfterFinished: 600 # Delete job 10 minutes after completion
       template:
         spec:
           containers:
           - name: my-container
             image: my-image
       backoffLimit: 4
-  successfulJobsHistoryLimit: 3 # Keeps 3 completed jobs
-  failedJobsHistoryLimit: 1 # Keeps 1 failed job
+  successfulJobsHistoryLimit: 5 # Keeps 5 completed jobs
+  failedJobsHistoryLimit: 2 # Keeps 2 failed job
 ```
 
-- Kubernetes will keep **5 successful Jobs** even if they are completed long ago.
-- If there are **more than 2 failed Jobs**, it will remove the oldest ones.
+- Kubernetes will keep **5 successful Jobs** (`successfulJobsHistoryLimit`) (default: 3) even if they are completed long ago.
+- If there are **more than 2 failed Jobs** (`failedJobsHistoryLimit`) (default: 1) it will remove the oldest ones. By default, 1 job is kept for job analysis.
 
 ---
 
@@ -781,12 +789,18 @@ spec:
     
     -  The **CronJob resource itself is deleted**, which means it will no longer schedule future jobs.
     - However, **existing jobs triggered by the CronJob are not automatically deleted** by default, and they will continue to run or complete.
+	```bash
+	kubectl get jobs --field-selector status.failed>0
+	kubectl get pods --selector=job-name=<job-name>
+	kubectl get pods --field-selector=status.phase=Failed
+	kubectl logs -p <pod-name>
+	```
+	
 2. **Deletion of Associated Jobs and Pods**:
     
-    - **Existing Jobs** that were created by the CronJob but have not yet completed **remain in the system** unless they are manually deleted.
-    - The CronJob's deletion does **not terminate the running Job or its associated pods**.
+    - **Existing Jobs and pods** that were created by the CronJob but have not yet completed **remain in the system** unless they are manually deleted.
+	    - If there are **pods running under those Jobs**, they will continue until their associated Jobs finish. The pods are not killed just because the CronJob was deleted.
     - These **Jobs are not automatically cleaned up** unless explicitly configured to be cleaned based on their successful or failed status or manually deleted.
-    - If there are **pods running under those Jobs**, they will continue until their associated Jobs finish. The pods are not killed just because the CronJob was deleted.
 3. **Retention of Jobs**:
     
     - The jobs that have already been created will remain in the cluster unless their **`successfulJobsHistoryLimit`** or **`failedJobsHistoryLimit`** is reached. Once this limit is hit, older jobs are cleaned up based on the specified retention policy.
@@ -824,7 +838,7 @@ kubectl delete jobs --selector=job-name=<cronjob-name> kubectl delete pods --sel
 
 - **ConfigMaps** allow you to store configuration data, environment variables, and other information that can be used by your application. They provide a flexible solution for managing configuration across different scenarios.
 
-#### Creating ConfigMaps
+### Creating ConfigMaps
 
 1. **CLI Approach**:
     
@@ -837,14 +851,14 @@ kubectl delete jobs --selector=job-name=<cronjob-name> kubectl delete pods --sel
     - You can also view it using `kubectl describe configmap color-configmap`.
 2. **File-based Approach**:
     
-    - You can create ConfigMaps from files or environment files.
+    - You can create ConfigMap from files or environment files.
     - Example:
         ```bash
         kubectl create configmap color-configmap --from-env-file=filename
         ```
         
 
-#### Using ConfigMaps in Pods
+### Using ConfigMaps in Pods
 
 1. **Using Environment Variables**:
     
@@ -865,7 +879,7 @@ kubectl delete jobs --selector=job-name=<cronjob-name> kubectl delete pods --sel
     - If you edit a ConfigMap, such as changing values, the associated pods can automatically pick up those changes (if they are re-started).
     - Example: If you change the `color` value in the ConfigMap from `green` to `red`, your pods referencing that ConfigMap will show the updated value upon restart.
 
-#### Immutability of ConfigMaps
+### Immutability of ConfigMaps
 
 - **Immutable ConfigMaps**: Since Kubernetes 1.21, ConfigMaps can be made immutable using the `immutable: true` field. Once a ConfigMap is set to immutable, it cannot be modified. Any changes require deleting and recreating the ConfigMap.
 
@@ -873,7 +887,7 @@ kubectl delete jobs --selector=job-name=<cronjob-name> kubectl delete pods --sel
 
 - Editing a ConfigMap that is marked as immutable will result in an error, and the only way to modify the ConfigMap is **by deleting it and creating a new one**.
 
-#### Clean-up
+### Clean-up
 
 - After using the ConfigMap, you can clean up by deleting the pod and ConfigMap:
     `kubectl delete pod ubuntu configmap color-configmap --now`
@@ -885,14 +899,8 @@ A **Secret** in Kubernetes is an object used to store **sensitive information**,
 
 In Kubernetes, secrets are stored in `etcd`, which is a distributed key-value store. While secrets are encoded in base64 format, if someone gains access to etcd or retrieves the secret as YAML, they can easily decode the value and obtain sensitive information such as passwords, API keys, or certificates.
 
-### **Secrets vs. ConfigMaps**
 
-- **Use Secrets** for confidential data (e.g., API keys, passwords, certificates), such as passwords, API keys, or certificates.
-- **Use ConfigMaps** for non-sensitive configuration (e.g., environment variables, application settings).
-	- ConfigMaps are used to store non-secret configuration data such as environment variables, port numbers, or other application settings. The main difference between the two is that Secrets are encrypted at rest and in transit, whereas ConfigMaps are not.
-- Both objects have a **similar usage pattern**, but Secrets provide additional security measures.
-
-### **Creating a Secret**
+### Creating a Secret
 
 - You can create a Secret using the Kubernetes CLI:
 ```bash
@@ -920,7 +928,7 @@ metadata:
 
 ```
 
-#### **Secrets Are Base64 Encoded, Not Encrypted**
+#### Secrets Are Base64 Encoded, Not Encrypted
 
 - Secrets **appear encrypted** in the YAML output, but they are only **Base64 encoded**.
 - Example: Encoding and decoding a string manually:
@@ -928,7 +936,7 @@ metadata:
     
 - **Important Security Note:** Kubernetes **stores Secrets in etcd**, which should be properly secured and encrypted at rest.
 
-#### **Using a Secret in a Pod**
+#### Using a Secret in a Pod
 
 - Let's create a pod yaml file
 ```bash
@@ -948,26 +956,32 @@ kubectl run --image=ubuntu --dry-run=client --restart=Never -o yaml ubuntu --com
 
 - This will load the Secret as environment variables in the container.
 
-#### **Cleaning Up**
+#### Cleaning Up
 
 - To delete the Secret and related resources:
     `kubectl delete pod ubuntu secret color-secret --now`
 
-### **Key Takeaways**
+### Key Takeaways
 
 - Secrets help manage sensitive data securely.
 - They are **Base64-encoded**, not encrypted by default.
 - Kubernetes stores them in etcd, so **restrict etcd access** and enable **encryption at rest** for better security.
 - If you're familiar with ConfigMaps, using Secrets is straightforward since the usage is almost identical.
 
-## **Labels in Kubernetes**
+### Secrets vs. ConfigMaps
+
+- **Use Secrets** for confidential data (e.g., API keys, passwords, certificates), such as passwords, API keys, or certificates.
+- **Use ConfigMaps** for non-sensitive configuration (e.g., environment variables, application settings).
+	- ConfigMaps are used to store non-secret configuration data such as environment variables, port numbers, or other application settings. The main difference between the two is that Secrets are encrypted at rest and in transit, whereas ConfigMaps are not.
+- Both objects have a **similar usage pattern**, but Secrets provide additional security measures.
+## Labels in Kubernetes
 
 **Labels** in Kubernetes are key-value pairs used to tag and organize resources. They help categorize and manage Kubernetes objects efficiently by allowing **grouping, selection, and filtering** of resources.
 
 Many Kubernetes components use labels to select the resources they should operate on. This includes but is not limited to **ReplicaSets** selecting Pods for scaling, **Services** routing traffic to Pods based on their labels, and **Deployments** managing rollouts of new versions by labeling Pods with specific version numbers. Labels provide a powerful mechanism for decoupling component logic from specific resource identities.
 
 
-#### **Why Use Labels?**
+#### Why Use Labels?
 
 - **Resource Organization**: Group related resources (e.g., by application, team, or environment).
 - **Automation**: CI/CD pipelines can use labels to determine deployment targets. E.g., CI/CD can use labels to identify an application to be deployed.
@@ -975,7 +989,7 @@ Many Kubernetes components use labels to select the resources they should operat
 - **Network Policies**: Define rules for communication between pods using label selectors. E.g., to tell how pods should communicate with each other.
 - **Environment Segmentation**: Labels can separate resources into **dev, test, and production** environments.
 
-#### **Creating and Using Labels**
+#### Creating and Using Labels
 
 1. **Creating a Pod with Labels**
     `kubectl run nginx --image=nginx --port=80 --labels="app=web,env=prod"`
@@ -991,7 +1005,7 @@ Many Kubernetes components use labels to select the resources they should operat
     ```
     
 
-#### **Example: Labeling Multiple Pods**
+#### Example: Labeling Multiple Pods
 
 4. Create a **YAML file** for labeled pods:
 ```yaml
@@ -1027,7 +1041,7 @@ Many Kubernetes components use labels to select the resources they should operat
     `kubectl get pods --selector color=green`
     
 
-#### **Key Takeaways**
+#### Key Takeaways
 
 - Labels help **categorize and organize** Kubernetes resources.
 	- Designating that resources belongs to groups such as `development`, `testing`, or `production`
@@ -1042,5 +1056,3 @@ By implementing a **well-structured labeling strategy**, you can improve resourc
  Effective use of Kubernetes labels can contribute to better cloud cost management by allowing administrators to identify and delete unused or idle resources. Labels provide a way to categorize and filter resources, making it easier to detect waste and optimize resource utilization. By deleting unnecessary resources, organizations can avoid paying for idle capacity.
 
 > #flashcards
-> 
-> 

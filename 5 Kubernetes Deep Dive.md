@@ -104,8 +104,6 @@ curl --location 'http://localhost:8001/api/v1/nodes' --header 'Accept: applicati
 - **Creating a Pod**: Use `POST /api/v1/namespaces/default/pods` with a valid JSON body.
 - **Deleting a Pod**: Use `DELETE /api/v1/namespaces/default/pods/{pod_name}`.
 
-
-
 ## Key Takeaways
 
 - **kubectl is a wrapper** for the Kubernetes API.
@@ -120,20 +118,26 @@ curl --location 'http://localhost:8001/api/v1/nodes' --header 'Accept: applicati
 
 # Role-Based Access Control (RBAC) in Kubernetes
 
-- RBAC is a method for managing access to Kubernetes resources, ensuring only authorized users and services can perform specific actions. Many resources on RBAC assume unrestricted access from the start, making it challenging for beginners.
+- RBAC is a method for managing access to Kubernetes resources, ensuring only authorized users and services can perform specific actions. 
 - By defining roles and assigning them to users or groups, RBAC enables fine-grained access control and helps prevent unauthorized access to sensitive resources.
-- The `kubeconfig` file contains both **cluster details**, such as the API server URL, **certificate authority data, and authentication credentials, as well as user information**, including the username, client certificate, and private key. This allows users to authenticate with multiple clusters and switch between them seamlessly.
+
+## Kubeconfig and CA
+
+- The `kubeconfig` file contains both **cluster details**, such as the API server URL, **certificate authority data, authentication credentials, and user information**, including the username, client certificate, and private key.
+	- This allows users to authenticate with multiple clusters and switch between them seamlessly.
 - **Certificate Authority (CA)** is responsible for **creating and verifying certificates within the cluster**.
-	- The CA issues certificates to components such as pods, services, and nodes, allowing them to securely communicate with each other.
+	- The CA issues certificates to components (pods, services, and nodes), allowing them to securely communicate with each other.
 	- The CA also verifies the identity of these components by checking their certificates.
 - **Users and Groups** in Kubernetes are typically **managed externally** through mechanisms such as **client certificates signed by a Certificate Authority (CA) or tokens** that can be obtained from an external source.
 	- These external sources **provide the credentials to authenticate users and authorize access to cluster resources**.
+## ClusterRole and ClusterRolebinding
+	
 - **ClusterRole** defines a **set of permissions that can be applied to resources across the entire cluster**, rather than being limited to a specific namespace. This allows for more flexible and powerful role-based access control (RBAC) configurations.
 - **Permissions** are **assigned to users through their membership in a group or by being explicitly mentioned in a RoleBinding or ClusterRoleBinding**. 
-	- A **ClusterRoleBinding grants the permissions** defined in a **ClusterRole to a user or group for all namespaces in the cluster**.
+- A **ClusterRoleBinding grants the permissions** defined in a **ClusterRole to a user or group for all namespaces in the cluster**.
 - When a new user, such as "batman", is associated with a group in Kubernetes RBAC, it is done through the "O" field in the certificate subject. The "O" field specifies the organization or group that the user belongs to. This information is used by the Kubernetes API server to determine the user's group membership.
 
-### **Understanding Kubernetes Access**
+## Understanding Kubernetes Access
 
 ![[Kubernetes Deep Dive config view.png]]
 - Access to a Kubernetes cluster is typically managed via a **kubeconfig** file, which specifies authentication details.
@@ -144,7 +148,7 @@ curl --location 'http://localhost:8001/api/v1/nodes' --header 'Accept: applicati
 - A **Certificate Authority (CA)** ensures secure communication with the API server, preventing man-in-the-middle attacks.
 - kubeconfig file reference the public key of the CA.
 
-### **User Authentication and RBAC**
+### User Authentication and RBAC
 
 ![[Kubernetes Deep Dive CA authentication.png]]
 - Kubernetes does not manage users directly but relies on certificates issued by a CA to prevent man-in-the-middle attacks.
@@ -160,36 +164,31 @@ curl --location 'http://localhost:8001/api/v1/nodes' --header 'Accept: applicati
 			- The client-certificate-data show certificates data.
 				- ![[Kubernetes Deep Dive client certificates data.png]]
 				- ![[Kubernetes Deep Dive client certificates data decoded.png]]
-					- We can see that the public key was issued by kubernetes CA
-						- `O = system:masters` is the group where the username is assigned.
-						- `CN=system:admin`  references to the username.
+				- We can see that the public key was issued by kubernetes CA
+					- `O = system:masters` is the group where the username is assigned.
+					- `CN=system:admin`  references to the username.
 - In kubernetes, we don't create users or groups. We have certificates that relates users to the groups, and then we permission those users and groups with RBAC.
 	- ![[Kubernetes Deep Dive rbac certificates.png]]
 
-- In this query we show an RBAC viewpoint from the perspective of cluster role bindings.
 
-#### Authentication vs Kubeconfig
+### Authentication vs Kubeconfig
 
-Even when Kubernetes authenticates users via external certificates, the **kubeconfig** file is still essential because it serves as a configuration file that stores authentication and cluster access details. Here's why it's still needed:
+Even when Kubernetes authenticates users via external certificates, the **kubeconfig** file is still essential because it serves as a configuration file that stores authentication and cluster access details. 
 
 1. **Client Configuration**: The `kubeconfig` file contains the information needed for `kubectl` or any Kubernetes client to connect to the cluster, including:
-    
     - The API server endpoint (`server`).
     - The authentication method (`certificate-authority`, `client-certificate`, `client-key`, `token`, or an external authentication provider).
     - The cluster name and context.
-        
-2. **Certificate Storage and Reference**: Even if Kubernetes is using an external Certificate Authority (CA) to authenticate users, the `kubeconfig` file typically references these certificates (or other credentials like bearer tokens) to authenticate requests.
-    
+2. **Certificate Storage and Reference**: Even if Kubernetes is using an external Certificate Authority (CA) to authenticate users, the `kubeconfig` file typically the certificates (or other credentials like bearer tokens) to authenticate requests.
 3. **Multi-Cluster and Multi-User Management**: A `kubeconfig` file can store multiple clusters and user credentials, allowing users to switch between different environments (e.g., development, testing, production) easily.
-    
 4. **Delegating Authentication to External Providers**: If Kubernetes uses an **OIDC provider, LDAP, or another external system**, the `kubeconfig` may contain a token or instructions for retrieving credentials dynamically.
-    
 5. **Context Switching**: The `kubeconfig` file allows users to manage multiple Kubernetes environments efficiently by defining different contexts.
-### **RBAC Components**
+## RBAC Components
 
 - **Users**: External identities interacting with Kubernetes. Users are not managed by Kubernetes.
 - **Groups**: Collections of users with shared permissions. They are manage outside the Kubernetes. When permissions are given to a group, all users that are part of that group receives those permissions.
-- **ServiceAccounts**: Managed by Kubernetes, used by applications inside the cluster. They are tied to a namespace and permissions are scoped to the namespaces. ServiceAccouns are used to give permissions to the pod to interact with Kube API.
+- **ServiceAccounts**: Managed by Kubernetes, used by applications inside the cluster. They are tied to a namespace and permissions are scoped to the namespaces. 
+	- ServiceAccounts are used to give permissions to the pod to interact with Kube API.
 
 RBAC permissions are defined via **RoleBindings** and **ClusterRoleBindings**, granting users, groups, or service accounts access to specific resources.
 
@@ -207,6 +206,7 @@ RBAC permissions are defined via **RoleBindings** and **ClusterRoleBindings**, g
     
     - Run `kubectl api-resources --sort-by=name -o wide | more` to list resources and available verbs.
         - Example: `nodes` is a non-namespaced resource with specific verbs assigned.
+		
 - **ClusterRole vs. ClusterRoleBinding**
     ![[Kubernetes Deep Dive clusterrole clusterrolebinding connection.png]]
     - A **ClusterRole** is **non-namespaced** and applies to all resources across all namespaces.
@@ -240,8 +240,10 @@ RBAC permissions are defined via **RoleBindings** and **ClusterRoleBindings**, g
     - Created an RSA private key (`Batman.key`).
         -  `openssl genrsa -out batman.key 4096`
     - Generated a Certificate Signing Request (`Batman.csr`) with `CN=Batman` and `O=cluster-superheroes`.
-        - `openssl req -new -key batman.key -out batman.csr -subj "/CN=batman/O=cluster-superheroes" -sha256`
-        - `O` specifies the organization or the group the user belongs to.
+		```bash
+		openssl req -new -key batman.key -out batman.csr -subj "/CN=batman/O=cluster-superheroes" -sha256
+		```
+		- `O` specifies the organization or the group the user belongs to.
     - Submitted the CSR to Kubernetes, got it approved, and extracted the signed certificate (`Batman.crt`).
       ```bash
       CSR_DATA=$(base64 batman.csr | tr -d '\n')
@@ -274,14 +276,10 @@ kubectl certificate approve batman
 	- `openssl x509 -in batman.crt -text -noout`
 	- ![[Kubernetes Deep Dive decoded certificate.png]]
 
-
-
-
-
 - **Kubeconfig Setup**:
     
     - Created a new kubeconfig file (`Batman-Cluster-Superheroes.config`).
-        - `cp /root/.kube/config batman-cluster-superheroes.config`
+        `cp /root/.kube/config batman-cluster-superheroes.config`
     - Removed unnecessary configurations.
       ```bash
       KUBECONFIG=batman-cluster-superheroes.config
@@ -339,7 +337,6 @@ The **kube-scheduler** is responsible for assigning pods to nodes in a Kubernete
     - **Scoring:** The remaining nodes are scored based on various functions to determine the best fit. The nodes with the highest score is chosen.
     - **Binding:** The pod is assigned to the chosen node, and the kubelet starts the pod. The name of the node is stored in the node name field of the pod.
 4. **Custom Scheduler**
-    
     - Kubernetes allows running a custom scheduler by specifying the `schedulerName` field in the pod spec.
       ```yaml
       apiVersion: v1
@@ -406,7 +403,6 @@ Labels:             beta.kubernetes.io/arch=arm64
 ```
 
 - You can use the `nodeSelector` option to select specific nodes through the use of labels -
-
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -435,7 +431,7 @@ https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
     - **Does not persist** across restarts.
         - Example: `emptyDir`, used for temporary storage or fast caching.
         - **emptyDir** is a volume created when a Pod is assigned to a node. It's initially empty, and all containers in the Pod can access and modify the files in it, even if mounted at different paths.
-        - **Data loss**: When the Pod is removed, the data in the emptyDir is deleted. However, **container crashes do not affect the data**.
+	        - **Data loss**: When the Pod is removed, the data in the emptyDir is deleted. However, **container crashes do not affect the data**.
     - **Use cases**:
         - Scratch space (e.g., disk-based merge sort).
         - Checkpointing for crash recovery.
@@ -510,12 +506,11 @@ https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
 3. **Rolling Updates**:
     - The StatefulSet supports **ordered** updates. Pods are updated one by one in a controlled sequence.
     - The `partition` field can be set to **control which pods are updated during a rolling update**. E.g., setting `partition: 2` ensures that pods `nginx-0` and `nginx-1` remain unchanged while `nginx-2` is updated.
-        - The partition value indicates the starting point for a rolling update, specifying which pods should be updated first. By setting the partition value to a specific number, you can control which subset of pods are updated initially, allowing for more fine-grained control over the rollout process.
+        - The `partition` value indicates the starting point for a rolling update, specifying which pods should be updated first. By setting the partition value to a specific number, you can control which subset of pods are updated initially, allowing for more fine-grained control over the rollout process.
 4. **Persistent Storage**:
     - Each pod in a StatefulSet can have its own persistent storage, with dynamic provisioning.
-    - If the StatefulSet is deleted, the **PVCs** and **PVs** remain, allowing the StatefulSet to **reuse the same storage** when it is recreated, preserving data between pod restarts.
+    - If the StatefulSet is deleted, the **PVC** and **PV** remain, allowing the StatefulSet to **reuse the same storage** when it is recreated, preserving data between pod restarts.
 5. **Example**:
-    
     - Create a StatefulSet YAML from a deployment template, adding a service name and changing `kind` to `StatefulSet`.
     - After deploying the StatefulSet, you can see that each pod is named `nginx-0`, `nginx-1`, etc., and each has its own persistent volume claim.
     - Even after pod deletion and recreation, the data persists in the associated volume.
@@ -549,7 +544,7 @@ Labels:           run=curl
 ## Container Network Interface (CNI)
 
 - CNI plugin is essential for the enforcement of NetworkPolicies in Kubernetes.
-	- CNI plugins are responsible for configuring and managing the network interfaces of containers, which includes enforcing NetworkPolicies.
+	- CNI plugins are responsible for **configuring and managing the network interfaces of containers**, which includes enforcing NetworkPolicies.
 	- When a NetworkPolicy is created, the CNI plugin is responsible for **implementing the policy by configuring the necessary network rules to allow or deny traffic**.
 	- When **multiple NetworkPolicies** are applied to a set of pods in Kubernetes, their **effects are additive and cumulative**. This means that each policy builds upon the previous ones, creating a more complex set of rules that govern network traffic to and from the pods. The resulting policy is the combination of all the individual policies.
 - By **default**, a pod in a Kubernetes cluster without any NetworkPolicies applied to it **can send and receive traffic from any source**. This means that there are no restrictions on incoming or outgoing traffic, allowing the pod to freely communicate with other pods, services, and external networks.
@@ -563,12 +558,9 @@ Labels:           run=curl
 		- PDB improves application stability during maintenance by **ensuring that a minimum number of pods remain available when nodes undergo voluntary disruptions**, such as upgrades, autoscaling, or planned maintenance, even when nodes are being drained or maintained.
 - **Voluntary disruptions** in Kubernetes refer to **intentional actions taken by administrators**, such as maintenance or upgrades, that may cause pods to be terminated or become unavailable. These disruptions are planned and executed by humans, hence the term "voluntary".
 - When you use the `kubectl drain` command on a node, it removes all running pods from that node and marks it as unschedulable to prevent new pods from being scheduled on it. This is typically done before performing maintenance or upgrades on the node.
-
-
-#### **Demonstration**
+#### Demonstration
 
 1. **Deployment Setup:**
-    
     - A deployment with **five replicas** is created, distributing pods across multiple nodes.
     - Nodes are **cordoned** (marked unschedulable), and pods are deleted.
     - Replicas automatically reschedule on available nodes.
@@ -580,8 +572,9 @@ Labels:           run=curl
     - When attempting to drain nodes, Kubernetes **prevents eviction** of critical pods.
     - The operation only proceeds when conditions allow at least two pods to remain active.
 
-
 # Security
+
+## Security Context
 
 - **Security Contexts**: Kubernetes settings that **define access control and privileges for pods or containers**. 
 	- We modify a pod to run as a non-root user, preventing escalation to root access, improving security for each pod. They allow you to specify the user ID, group ID, and other security-related settings for a container.
@@ -603,6 +596,9 @@ Labels:           run=curl
 	- In the demonstration, the **runAsUser** and **runAsGroup** are set to 1000 (the UID and GID of the user defined in the Docker image). By configuring these fields in the pod's security context, the pod is instructed to run with a specific user and group, rather than as root. This is crucial for restricting access and reducing security risks.
 		- These settings are part of the broader security context configuration, helping administrators enforce **least privilege** access in Kubernetes environments.
 	- Setting `allowPrivilegeEscalation` to false in the container's security context prevents the escalation of privileges within the container. When this field is set to false, the container cannot gain additional privileges and is restricted to its current user ID. This helps prevent privilege escalation attacks where an attacker gains elevated privileges within a container.
+
+## Admission Controller
+
 - **Admission Controllers**: Since Kubernetes 1.25, **admission controllers replace deprecated pod security policies to enforce security at the cluster level**. They act as **gatekeepers**, preventing actions like root container execution and process escalation, or enforce critical security policies to reduce attack vectors.
 	- They intercept requests to the API server and can modify or reject them based on custom rules and policies. This allows cluster administrators to enforce specific requirements, such as security checks or resource quotas, before allowing pods to be created or modified.
 	- Tools like **Kyverno** and **OPA Gatekeeper** provide additional policy enforcement.
@@ -614,6 +610,9 @@ Labels:           run=curl
 		- **[OIDC (OpenID Connect)](https://medium.com/@extio/kubernetes-authentication-with-oidc-simplifying-identity-management-c56ede8f2dec)**: An authentication protocol based on OAuth 2.0, **recommended for large-scale Kubernetes clusters.** 
 			- OpenID Connect (OIDC) is an i**dentity layer built on top of OAuth 2.0** that provides a **standardized way to authenticate users in large-scale deployments**.
 			- OIDC provides a scalable and secure authentication mechanism that can be easily integrated with Kubernetes, making it a recommended protocol for enhanced authentication.
+
+## 4Cs
+
 - 4C’s of Cloud Native Security, namely Cloud, Cluster, Container, Code.
 	- This sequence represents the layers of abstraction in cloud native environments, starting from the broadest scope (cloud providers) to the narrowest scope (application code).
 		- Each layer builds upon the previous one, and securing each layer is crucial for overall security.
@@ -653,9 +652,9 @@ Labels:           run=curl
 
 Microservices have revolutionized software development by providing efficiency, scalability, and resilience. They consist of small, independently deployable units, making them ideal for diverse deployment environments, including hybrid and multi-cloud setups. However, as microservices grow, managing service-to-service communication becomes complex.
 
-Service meshes are essential for managing complex microservice architectures in cloud-native environments. They improve security, observability, and reliability. Exploring solutions like **Istio**, **Linkerd**, or experimenting with the **SMI** standard is an excellent next step for deepening your understanding.
+Service meshes are for managing complex microservice architectures in cloud-native environments. They improve security, observability, and reliability. Exploring solutions like **Istio**, **Linkerd**, or experimenting with the **SMI** standard is an excellent next step for deepening your understanding.
 
-#### **Role of Service Meshes**
+## Role of Service Meshes
 
 A **service mesh** simplifies this complexity by ensuring efficient, reliable, and secure communication between microservices, especially as applications scale.
 
@@ -663,18 +662,96 @@ A **service mesh** simplifies this complexity by ensuring efficient, reliable, a
 A service mesh consists of:
 - **Data Plane**: Manages internal network traffic between services using either:
     - **Sidecar proxies** (e.g., Istio, Linkerd) attached to each microservice for fine-grained traffic control, providing additional functionality such as traffic management and security. This pattern enables the injection of additional capabilities into the data path without modifying the application code.
-    - **Host node proxies** (e.g., Traffic Mesh) installed at the node level for simpler management.
+    - **Host node proxies** (e.g., Traffic Mesh) installed at the node level for simpler management. They route network traffic between external client, nodes, and pods.
 - **Control Plane**: Acts as the management layer, configuring and directing proxies across the system. It dictates the policies for traffic routing, security, and monitoring and provides the instructions that the proxies follow when handling requests between services.
 
-#### **Key Benefits of Service Meshes**
+## Key Benefits of Service Meshes
 
 - **Security**: **Mutual TLS ensures two-way verification for secure communication**. It ensures that only authorized services can communicate with each other, reducing the risk of unauthorized access or man-in-the-middle attacks.
 - **Access Control**: Fine-grained policy management.
 - **Observability**: Tracing and monitoring tools provide deep insights.
 - **Reliability**: Features like rate limiting and circuit breaking improve system resilience.
 
-#### **Standardization with SMI (Service Mesh Interface)**
+## Standardization with SMI (Service Mesh Interface)
 
 Kubernetes supports the **Service Mesh Interface (SMI)**, which **provides a unified API standard for various service mesh solutions**. By defining a set of common APIs, SMI enables users to manage and configure their Service Mesh environments in a consistent manner, regardless of the underlying implementation. It allows developers to:
 - Manage traffic, access control, and metrics across different meshes.
 - Avoid vendor lock-in with consistent functionalities across implementations.
+
+
+# Data Plane and Control Plane in a service mesh vs normal kubernetes
+
+## 1️⃣ In a Service Mesh
+
+A **service mesh** introduces a dedicated **control plane** and **data plane** to manage communication between microservices efficiently.
+
+### 🛠 Control Plane (Management Layer)
+
+- **Manages and configures the data plane proxies** across the mesh.
+- Enforces **security policies, routing, observability, and traffic shaping**.
+- Examples:
+    - **Istio** → **Istiod** (control plane) manages Envoy sidecars.
+    - **Linkerd** → **Control plane** manages Linkerd proxies.
+
+### 🚀 Data Plane (Traffic Handling Layer)
+
+- **Intercepts and processes network traffic** between services.
+- Enforces **routing, retries, load balancing, mTLS (mutual TLS), and telemetry**.
+- Typically implemented as **sidecar proxies** (e.g., **Envoy**, **Linkerd Proxy**).
+
+🖼 **Example in Istio:**
+
+```yaml
+# Istiod (Control Plane) 
+# Envoy (Data Plane - injected as a sidecar in every Pod)
+```
+
+- **Istiod** manages service discovery, security policies, and configuration.
+- **Envoy proxies** inside Pods handle all network traffic.
+
+---
+
+## 2️⃣ In a Normal Kubernetes Pod
+
+In a regular **Kubernetes cluster (without a service mesh)**, the **data plane and control plane** have different meanings.
+
+### **🛠 Control Plane (Kubernetes Cluster Management)**
+
+- **Manages the cluster** (Pods, scheduling, API, etc.).
+- Components:
+    - **kube-apiserver** → Entry point for all API requests.
+    - **kube-controller-manager** → Handles controller loops.
+    - **kube-scheduler** → Assigns Pods to nodes.
+    - **etcd** → Stores cluster state.
+
+### 🚀 Data Plane (Workloads Running on Nodes)
+
+- The **data plane consists of worker nodes** running application workloads.
+- Components:
+    - **kubelet** → Ensures Pods are running.
+    - **Container runtime (e.g., CRI-O, containerd, Docker)** → Runs containers.
+    - **kube-proxy** → Manages network rules.
+
+🖼 **Example in Kubernetes:**
+
+```yaml
+# Control Plane:
+# - kube-apiserver 
+# - etcd 
+# - kube-controller-manager 
+# - kube-scheduler  
+# Data Plane: 
+# - Worker nodes 
+# - kubelet 
+# - Pods (running apps) 
+# - kube-proxy (handles networking)
+```
+
+## 🔍 Key Differences
+
+| Feature           | **Service Mesh**                               | **Normal Kubernetes Pod**                                      |
+| ----------------- | ---------------------------------------------- | -------------------------------------------------------------- |
+| **Control Plane** | Manages proxies, policies, security            | Manages cluster, scheduling, API                               |
+| **Data Plane**    | Proxies network traffic between services       | Runs actual application workloads                              |
+| **Example**       | Istio (**Istiod** = control, **Envoy** = data) | Kubernetes (**API server** = control, **Worker nodes** = data) |
+| **Purpose**       | Service-to-service communication               | Running containerized applications                             |
