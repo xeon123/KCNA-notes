@@ -1137,7 +1137,7 @@ Volume **efémero** que é criado quando o Pod começa e é apagado quando o Pod
 
 - **O que é provisionamento dinâmico?**  
 ?
-  PVC contra uma Classe de Armazenamento cria automaticamente um PV (vs. criação manual de PV/PVC).  
+Permite que persistent storage é criado automaticamento quando necessário, em vez de se criar manualmente PVs.
   #flashcard
 
 ---

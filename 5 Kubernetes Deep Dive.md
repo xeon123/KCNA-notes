@@ -9,7 +9,7 @@
     - **Kube-scheduler**: Uses the API to schedule Pods on Nodes.
     - **Kubelet**: Reports Node and Pod statuses and receives instructions.
     - **Controller Manager**: Maintains the cluster’s desired state.
-    - **Admission Controller**: Kube API can use admision controller to enforces policies (e.g., quotas, validation) and modify resources.
+    - **Admission Controller**: Kube API can use admission controller to enforces policies (e.g., quotas, validation) and modify resources.
 	    - set quotas, set defaults, validate configurations, and perform other tasks.
 	    - useful to set namespace to not exceed a given threshold of memory
 	    - can accept or reject requests accordingly.
@@ -168,6 +168,23 @@ curl --location 'http://localhost:8001/api/v1/nodes' --header 'Accept: applicati
 
 - In this query we show an RBAC viewpoint from the perspective of cluster role bindings.
 
+#### Authentication vs Kubeconfig
+
+Even when Kubernetes authenticates users via external certificates, the **kubeconfig** file is still essential because it serves as a configuration file that stores authentication and cluster access details. Here's why it's still needed:
+
+1. **Client Configuration**: The `kubeconfig` file contains the information needed for `kubectl` or any Kubernetes client to connect to the cluster, including:
+    
+    - The API server endpoint (`server`).
+    - The authentication method (`certificate-authority`, `client-certificate`, `client-key`, `token`, or an external authentication provider).
+    - The cluster name and context.
+        
+2. **Certificate Storage and Reference**: Even if Kubernetes is using an external Certificate Authority (CA) to authenticate users, the `kubeconfig` file typically references these certificates (or other credentials like bearer tokens) to authenticate requests.
+    
+3. **Multi-Cluster and Multi-User Management**: A `kubeconfig` file can store multiple clusters and user credentials, allowing users to switch between different environments (e.g., development, testing, production) easily.
+    
+4. **Delegating Authentication to External Providers**: If Kubernetes uses an **OIDC provider, LDAP, or another external system**, the `kubeconfig` may contain a token or instructions for retrieving credentials dynamically.
+    
+5. **Context Switching**: The `kubeconfig` file allows users to manage multiple Kubernetes environments efficiently by defining different contexts.
 ### **RBAC Components**
 
 - **Users**: External identities interacting with Kubernetes. Users are not managed by Kubernetes.
@@ -589,7 +606,7 @@ Labels:           run=curl
 - **Admission Controllers**: Since Kubernetes 1.25, **admission controllers replace deprecated pod security policies to enforce security at the cluster level**. They act as **gatekeepers**, preventing actions like root container execution and process escalation, or enforce critical security policies to reduce attack vectors.
 	- They intercept requests to the API server and can modify or reject them based on custom rules and policies. This allows cluster administrators to enforce specific requirements, such as security checks or resource quotas, before allowing pods to be created or modified.
 	- Tools like **Kyverno** and **OPA Gatekeeper** provide additional policy enforcement.
-		- Pod Admission Controllers in Kubernetes are used to enforce policies on incoming pods, such as validating or mutating their configuration before they are created. Kyverno and Open Policy Agent (OPA) Gatekeeper are two popular options that allow administrators to define custom policies using YAML or Rego, respectively, which can then be applied to incoming pods.
+		- Pod Admission Controllers in Kubernetes are used to enforce policies on incoming pods, such as validating or mutating their configuration before they are created. Kyverno and Open Policy Agent (OPA) Gatekeeper are two popular options that **allow administrators to define custom policies using YAML or Rego**, respectively, which can then be applied to incoming pods.
 	- **Other Tools**:
 		- **Falco**: A runtime security tool that **monitors abnormal behavior and security threats**.
 			- Falco is an open-source runtime security project that integrates with Kubernetes to identify abnormal behavior and potential security threats. It uses a behavioral approach to detect anomalies in system calls, network activity, and other system interactions, providing real-time alerts and notifications for security teams.

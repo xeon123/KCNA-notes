@@ -19,7 +19,10 @@
 5. **Storage Management**: Supports shared and persistent storage for workloads.
 6. **Auto-Scaling**: Adjusts resources based on demand.
 7. **Extended Functionality**: Custom Resource Definitions (CRDs) in Kubernetes allow expanding beyond core functionalities (e.g., a MySQL CRD for managing MySQL instances).
-- The primary benefit of Container Orchestration in the deployment of complex applications is that it standardizes the deployment process and integrates with various components like networking, storage, security, and autoscaling.
+
+### Advantages of container orchestration
+
+- Standardizes the deployment process and integrates with various components like networking, storage, security, and autoscaling.
 	- This enables developers to focus on writing code, rather than worrying about the underlying infrastructure.
 - Orchestrators available are: Nomad, Openshift, Docker, and Kubernetes.
 	- Openshift provide additional functionality and a support model to Kubernetes.
@@ -31,7 +34,7 @@
 # Kubernetes Architecture
 
 ![[Kubernetes API Architecture3.png]]
-## **High-Level Overview**
+## High-Level Overview
 
 - Kubernetes architecture is divided into **two main areas**:
     - **Control Plane**: Manages the cluster.
@@ -40,9 +43,54 @@
 
 ---
 
-### **1. Container Runtime**
+```mermaid
+flowchart TD
+    subgraph Runtime
+        A[Low-level container runtime] -->|Uses| B(runc / crun / Kata / gVisor)
+        C[High-level container runtime] -->|Uses| B
+        C -->|Manages| D(containerd)
+    end
 
-- **Low-level container runtime**: Directly interacts with Linux namespaces and cgroups.
+    subgraph Kubelet
+        E[Kubelet] -->|Requests pod specs| H(Kube API Server)
+        H -->|Fetches specs from| G[etcd]
+        E -->|Passes requests| D
+        E -->|Monitors and reports node status| H
+    end
+    
+    subgraph etcd
+        G[etcd] -->|Stores cluster state| H
+    end
+    
+    subgraph API_Server
+        H -->|Interacts with| E
+        H -->|Exposes| I[RESTful API]
+    end
+    
+    subgraph Scheduler
+        J[Kube Scheduler] -->|Decides node for pod| K[Nodes]
+    end
+    
+    subgraph Kube Proxy
+        L[Kube Proxy] -->|Manages network rules| M[TCP/UDP/SCTP]
+    end
+    
+    subgraph CoreDNS
+        N[CoreDNS] -->|Provides| O[Cluster DNS Resolution]
+    end
+    
+    subgraph Controller Manager
+        P[Controller Manager] -->|Manages controllers| Q(Node/Deployment Controller)
+    end
+    
+    subgraph Cloud Controller Manager
+        R[Cloud Controller Manager] -->|Handles| S(Cloud Load Balancers, Routes)
+        R -->|Registers cloud nodes| H
+    end
+```
+### 1. Container Runtime
+
+- **Low-level container runtime**: Directly interacts with Linux namespaces and `cgroups`.
     - Example: `runc` (OCI-compatible, originally from Docker).
         - `runc` was donated by Docker and is an OCI Compatible Container Runtime
     - Alternatives: `crun`, `Kata Containers`, `gVisor`.
@@ -52,7 +100,7 @@
 
 ---
 
-### **2. Kubelet**
+### 2. Kubelet
 
 - Runs on both **control plane and worker nodes** (not just nodes).
 - **Role**: Ensures pods are running and healthy.
@@ -63,7 +111,7 @@
 
 ---
 
-### **3. etcd (Key-Value Store)**
+### 3. etcd (Key-Value Store)
 
 - **Stores all cluster data** and maintains the cluster state.
 - A **distributed, strongly consistent** store.
@@ -74,17 +122,18 @@
 
 ---
 
-### **4. Kube API Server**
+### 4. Kube API Server
 
 - **Main access point** to the Kubernetes cluster.
 - Exposes a **RESTful API**.
 - Stores all data in **etcd**.
 - **Interacts with Kubelet** for pod creation.
 - Runs as a **static pod**
+    
 
 ---
 
-### **5. Kube Scheduler**
+### 5. Kube Scheduler
 
 - Determines **which node** a pod should run on.
 - Considers:
@@ -94,7 +143,7 @@
 
 ---
 
-### **6. Kube Proxy**
+### 6. Kube Proxy
 
 - **Handles network connectivity** in Kubernetes.
 - Runs as a **DaemonSet** (on **every node**).
@@ -103,7 +152,7 @@
 
 ---
 
-### **7. CoreDNS**
+### 7. CoreDNS
 
 - **Provides cluster DNS resolution**.
 - Runs as a **Deployment** (unlike static pods).
@@ -111,7 +160,7 @@
 
 ---
 
-### **8. Controller Manager**
+### 8. Controller Manager
 
 - Manages **controllers** (control loops that enforce the desired state).
 - Examples:
@@ -120,7 +169,7 @@
 
 ---
 
-### **9. Cloud Controller Manager (CCM)**
+### 9. Cloud Controller Manager (CCM)
 
 - **Bridges Kubernetes with cloud providers**.
 - Automates:
@@ -199,7 +248,10 @@
     
 - **Using an Ubuntu pod** for interactive testing:
     
-    `kubectl run ubuntu --image=ubuntu --command -- sleep infinity`
+	```bash
+	kubectl run ubuntu --image=ubuntu --command -- sleep infinity
+	```
+
     - Exec into the Ubuntu pod:
         `kubectl exec -it ubuntu -- bash`
     - Install `curl` and test access to nginx.
@@ -221,13 +273,13 @@
 - Kubernetes resources (pods, deployments, etc.) can be defined using YAML.
 - **kubectl** can generate YAML for existing resources.
 
-### **Generating YAML for a Pod**
+### Generating YAML for a Pod
 
 - Create an **nginx pod** and output its YAML:
     `kubectl run nginx --image=nginx --dry-run=client -o yaml | tee nginx.yaml`
 - This displays the YAML and saves it to `nginx.yaml`.
 
-### **Understanding YAML Fields**
+### Understanding YAML Fields
 
 - The **restartPolicy** field defines how Kubernetes handles pod failures:
     - `Always` (default) → Pod restarts automatically.
@@ -236,7 +288,7 @@
 - To get details about any YAML field, use:
     `kubectl explain pod.spec.restartPolicy`    
 
-### **Applying YAML Files**
+### Applying YAML Files
 
 - **Imperative vs. Declarative Approach**:
     - `kubectl create -f file.yaml` → Creates a resource but fails if it already exists.
@@ -244,7 +296,7 @@
 - Example:
     `kubectl create -f nginx.yaml kubectl apply -f nginx.yaml`
 
-### **Generating and Applying Multiple YAML Files**
+### Generating and Applying Multiple YAML Files
 
 - Generate a **YAML file for an Ubuntu pod**:
     `kubectl run ubuntu --image=ubuntu --dry-run=client -o yaml | tee ubuntu.yaml`
@@ -257,7 +309,7 @@
 - Delete the created pods:
     `kubectl delete pod nginx ubuntu --now`
 
-### **Combining Multiple YAML Declarations**
+### Combining Multiple YAML Declarations
 
 - Kubernetes allows multiple resources in a single YAML file, separated by `---`.
 - Merge `nginx.yaml` and `ubuntu.yaml` into one file:
@@ -269,16 +321,16 @@
 - Apply both resources with one command:
     `kubectl apply -f combined.yaml`
 
-## **Running a Kubernetes Pod with Multiple Containers**
+## Running a Kubernetes Pod with Multiple Containers
 
-### **From Single-Container to Multi-Container Pods**
+### From Single-Container to Multi-Container Pods
 
 - Previously, each pod contained a single container.
 	- Now, we create **one pod with two containers**.
 - The second container acts as a **sidecar**, a common pattern in Kubernetes.
 - A sidecar is a container to execute a specific pod in a container. 
 
-### **Editing the YAML File**
+### Editing the YAML File
 
 - In YAML, `-` represents a **list** (e.g., list of containers in a pod).
 - Combine both containers into a **single pod**:
@@ -291,7 +343,7 @@
         - `nginx` → **web-server**
         - `ubuntu` → **sidecar**
 
-### **Adding Functionality to the Sidecar**
+### Adding Functionality to the Sidecar
 
 ![[Kubernetes Fundamentals sidecar pod.png]]
 - Modify the **Ubuntu sidecar container**:
@@ -299,7 +351,7 @@
     - **Echo "Hello from the sidecar" every 5 seconds**.
     - Stop execution if a file `/tmp/crash` exists.
 
-### **Deploying and Verifying the Pod**
+### Deploying and Verifying the Pod
 
 - Apply the YAML:
     
@@ -312,7 +364,7 @@
     - **Ready column** shows `2/2`, meaning **two containers are running in one pod**.
     - Pod has **one IP address**, shared between containers.
 
-### **Inspecting the Pod**
+### Inspecting the Pod
 
 - Check pod details:
     
@@ -326,7 +378,7 @@
     `kubectl logs my-pod -c sidecar`
     
 
-### **Simulating a Container Crash**
+### Simulating a Container Crash
 
 - Trigger a crash by creating `/tmp/crash` inside the **sidecar** container:
     
@@ -341,14 +393,14 @@
     
     `kubectl logs my-pod -c sidecar -p`
     
-### **Cleanup**
+### Cleanup
 
 - Remove the pod and YAML files:
     
     `kubectl delete pod my-pod rm my-pod.yaml`
     
 
-### **Key Takeaways**
+### Key Takeaways
 
 - **Sidecars** enhance pod functionality by running alongside the main container.
 - **Multi-container pods** share the same network and storage.
@@ -357,7 +409,7 @@
 
 ## Namespaces
 
-### **Understanding Namespaces**
+### Understanding Namespaces
 
 - Kubernetes namespaces **divide cluster resources** between users, applications, or projects.
 - **Analogy**: A Kubernetes cluster is like a **town**, where:
@@ -366,7 +418,7 @@
     - **Furniture in rooms** = Resources within pods
 - This setup enables **isolation** while being part of the same cluster.
 
-### **Why Use Namespaces?**
+### Why Use Namespaces?
 
 1. **Multi-Tenancy** – Enables multiple teams to share infrastructure securely.
 2. **Resource Quotas** – Set limits on memory and CPU usage within a namespace.
@@ -376,9 +428,9 @@
 
 ---
 
-### **Exploring Kubernetes Namespaces in Practice**
+### Exploring Kubernetes Namespaces in Practice
 
-#### **Viewing Existing Namespaces**
+#### Viewing Existing Namespaces
 
 - List all resources across **all namespaces**:
     `kubectl get all -A`
@@ -392,7 +444,7 @@
     - `kube-public` – Readable by all users, even unauthenticated ones.
     - `kube-node-lease` – Holds node heartbeat information.
 
-#### **Working with Namespaces**
+#### Working with Namespaces
 
 - **Short commands**: `kubectl get namespaces` can be shortened to:
     
@@ -406,7 +458,7 @@
     - Namespaced resources (e.g., Pods) exist **within** a namespace.
     - Non-namespaced resources (e.g., Nodes) exist **cluster-wide**.
 
-#### **Creating and Using Namespaces**
+#### Creating and Using Namespaces
 
 1. **Create a namespace**:
     
@@ -429,7 +481,7 @@
     `kubectl config set-context --current --namespace=default`
     
 
-#### **Deleting a Namespace**
+#### Deleting a Namespace
 
 - **Remove namespace and all resources within it**:
     
@@ -438,7 +490,7 @@
 
 ---
 
-### **Key Takeaways**
+### Key Takeaways
 
 - **Namespaces provide isolation** within a Kubernetes cluster.
 - **RBAC, resource quotas, and limit ranges** enhance security and efficiency.
@@ -449,7 +501,7 @@
 
 A **Kubernetes Deployment** is a resource object that enables **declarative updates** for applications. It defines how applications should run, including **image versions**, **replica counts**, and **update strategies**. Deployments ensure availability during updates and provide rollback mechanisms in case of failures.
 
-#### **Key Features of Deployments**
+#### Key Features of Deployments
 
 1. **Pod Replication** – Ensures a specified number of pod instances are running at all times.
 2. **Updates** – Allows gradual, rolling updates to prevent downtime.
@@ -458,7 +510,7 @@ A **Kubernetes Deployment** is a resource object that enables **declarative upda
 
 ---
 
-### **Practical Usage**
+### Practical Usage
 
 1. **Creating a Deployment**
     
@@ -507,7 +559,7 @@ A **Kubernetes Deployment** is a resource object that enables **declarative upda
 
 ---
 
-### **Key Takeaways**
+### Key Takeaways
 
 - Kubernetes **Deployments** provide a structured approach to application management.
 - They enable **scalability, controlled updates, and rollback mechanisms**.
@@ -517,7 +569,7 @@ A **Kubernetes Deployment** is a resource object that enables **declarative upda
 
 ## Services
 
-### **Kubernetes Service Types Explained**
+### Kubernetes Service Types Explained
 
 Kubernetes services expose applications running on pods to the network. 
 There are **four primary service types**, plus one additional variant:
@@ -609,14 +661,14 @@ There are **four primary service types**, plus one additional variant:
     - Example: Setting `clusterIP: None` in the YAML.
     - Enables direct pod communication without a proxy.
 
-### **Key Takeaways:**
+### Key Takeaways:
 
 - Kubernetes services enable **service discovery** and **traffic routing**.
 - **ClusterIP** is the default, while **NodePort** and **LoadBalancer** allow external access.
 - **ExternalName** maps to external resources, and **Headless Services** allow direct pod access.
 - **Services dynamically update endpoints** when pods scale up/down.
 
-### **Summary Table**
+### Summary Table
 
 | Service Type     | Internal Only | External Access    | Use Case                              |
 | ---------------- | ------------- | ------------------ | ------------------------------------- |
@@ -626,7 +678,7 @@ There are **four primary service types**, plus one additional variant:
 | **ExternalName** | ❌ No          | ✅ Yes (DNS Alias)  | External service aliasing             |
 | **Headless**     | ✅ Yes         | ❌ No (Direct Pods) | Stateful apps & service discovery     |
 
-## **Kubernetes Jobs**
+## Kubernetes Jobs
 
 - A **Job** manages **batch tasks** by creating **pods that run to completion**.
 - Handles execution, **tracking progress**, and **retries on failure**.
@@ -635,7 +687,7 @@ There are **four primary service types**, plus one additional variant:
     - System backups
     - Sending emails
 
-#### **Example: Calculating Pi**
+### Example: Calculating Pi
 
 ```yaml
 apiVersion: batch/v1
@@ -653,10 +705,10 @@ spec:
 
 ```
 - Runs a **Perl container** to calculate **π (Pi) to 2000 decimal places**.
-	- `kubectl create job calculatepi` is used to create a new Kubernetes job named "calculatepi". This command will create a new resource of type Job with the name specified, and allow you to define the specific details of the job such as the container image, commands, and other properties.
+	- `kubectl create job calculatepi` is used to create a new Kubernetes job named "calculatepi". 
 - The job **completes and exits**.
 
-#### **Parallelism & Completions**
+### Parallelism & Completions
 
 - `completions: 20` → **20 pods** run in total.
 - `parallelism: 5` → **Only 5 pods run concurrently**.
@@ -669,13 +721,13 @@ spec:
 
 ---
 
-### **Kubernetes CronJobs**
+### Kubernetes CronJobs
 
 - **CronJobs** schedule jobs **at regular intervals**, like Unix **cron**.
 - Each scheduled run creates a **Job**, which in turn creates a **pod**.
 	- Each time a CronJob runs (e.g., every hour), it generates a new Job object that then triggers the creation of Pods to perform the actual work defined within the Job.
 
-#### **Example: Run Pi Calculation Every Minute**
+#### Example: Run Pi Calculation Every Minute
 
 ```yaml
 apiVersion: batch/v1
@@ -699,7 +751,7 @@ spec:
 - **Only 3 jobs are retained** due to `successfulJobsHistoryLimit: 3`.
 - By default, the `successfulJobsHistoryLimit` field in a CronJob specification is set to 3, meaning that up to three successfully completed jobs are kept for historical tracking purposes. Similarly, the failedJobsHistoryLimit defaults to 1, keeping one failed job for analysis.
 
-#### **Retention Settings**
+#### Retention Settings
 
 ```yaml
 apiVersion: batch/v1
@@ -758,7 +810,7 @@ kubectl delete jobs --selector=job-name=<cronjob-name> kubectl delete pods --sel
 ```
 
 --- 
-### **Key Takeaways**
+### Key Takeaways
 
 |Feature|Job|CronJob|
 |---|---|---|
