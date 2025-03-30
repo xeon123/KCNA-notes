@@ -1,5 +1,8 @@
+# Flashcards (PT version)
+
 ---
 A solicitação não está autorizada porque as credenciais estão ausentes ou são inválidas.# Evolução da Arquitetura Nativa da Nuvem
+
 - **Quais são as origens da Arquitetura Nativa da Nuvem?**  
 ?
   Evoluiu a partir dos desafios com aplicações monolíticas legadas.  
@@ -17,7 +20,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Monolithic Applications: Issues and Challenges
+## Monolithic Applications: Issues and Challenges
+
 - **Qual é um problema chave com componentes fortemente acoplados em apps monolíticos?**
 ?
   Mudanças em uma área podem afetar todo o app, e atualizações de bibliotecas podem quebrar a compatibilidade.
@@ -36,7 +40,7 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Cloud-Native Approach: Advantages
+## Cloud-Native Approach: Advantages
 
 - **O que é a Arquitetura de Microsserviços na Nuvem Nativa?**
 ?
@@ -64,7 +68,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Key Benefits of Cloud-Native Design
+## Key Benefits of Cloud-Native Design
+
 - **O que envolve a Arquitetura Nativa da Nuvem?**  
 ?
   Projetar apps com microsserviços, conteinerização e CI/CD para escalabilidade, resiliência e flexibilidade em ambientes de nuvem.  
@@ -82,7 +87,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Characteristics of Cloud-Native Applications
+## Characteristics of Cloud-Native Applications
+
 - **Como funciona a resiliência em apps Nativos da Nuvem?**  
 ?
   Projetados para suportar falhas com redundância, failover e autorreparação (ex.: Kubernetes substitui pods com falha).  
@@ -112,7 +118,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Key Cloud-Native Practices
+## Key Cloud-Native Practices
+
 - **Como a resiliência se manifesta na Nuvem Nativa?**  
 ?
   Apps antecipam falhas com autorreparação (ex.: Kubernetes reinicia pods com falha em um conjunto de réplicas).  
@@ -146,7 +153,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Key Pillars of Cloud-Native Architecture
+## Key Pillars of Cloud-Native Architecture
+
 - **Quais são os quatro pilares da Arquitetura Nativa da Nuvem?**  
 ?
   Microsserviços, Conteinerização, DevOps, Entrega Contínua.  
@@ -171,7 +179,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Autoscaling
+## Autoscaling
+
 - **O que é Escalabilidade Automática?**
 ?
   Ajusta recursos automaticamente com base na demanda de carga para desempenho e eficiência de custo.
@@ -202,7 +211,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Serverless Computing
+## Serverless Computing
+
 - **O que é Computação Serverless?**
 ?
   Provedores gerenciam servidores; usuários implantam código que roda em resposta a eventos, escalando automaticamente.
@@ -237,7 +247,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Community and Governance
+## Community and Governance
+
 - **O que é o CNCF?**
 ?
   Uma organização neutra sob a Linux Foundation, hospedando projetos nativos da nuvem como o Kubernetes.
@@ -262,7 +273,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Cloud-Native Personas
+## Cloud-Native Personas
+
 - **No que um Engenheiro DevOps se concentra?**
 ?
   Faz a ponte entre Dev e Ops com automação, scripts e práticas nativas da nuvem.
@@ -287,7 +299,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Open Standards
+## Open Standards
+
 - **O que são Padrões Abertos?**  
 ?
   Frameworks livremente adotáveis que promovem colaboração e interoperabilidade, evitando dependência de fornecedores.  
@@ -311,7 +324,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# What is Cloud Native?
+## What is Cloud Native?
+
 - **O que significa "Nativo da Nuvem"?**  
 ?
   Combina "nuvem" (ambientes públicos, privados, híbridos) e "nativo" (projetado para escalabilidade, resiliência, gerenciabilidade). É um conjunto de filosofias, não um estado binário.  
@@ -324,7 +338,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Benefits of Cloud Native
+## Benefits of Cloud Native
+
 - **Quais são os principais benefícios das práticas Nativas da Nuvem?**  
 ?
   Uso eficaz da infraestrutura de nuvem, resiliência, escalabilidade, automação, segurança e progressão além da hospedagem básica na nuvem.  
@@ -337,7 +352,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Misconceptions About Cloud Native
+## Misconceptions About Cloud Native
+
 - **Executar um app na nuvem o torna Nativo da Nuvem?**  
 ?
   Não, requer melhores práticas, não apenas hospedagem na nuvem.  
@@ -351,7 +367,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Key Practices in Cloud Native Development
+## Key Practices in Cloud Native Development
+
 - **Quais são as quatro práticas chave no desenvolvimento Nativo da Nuvem?**  
 ?
   1. Automação (configuração/entrega). 2. Resiliência (lidar com falhas). 3. Escalabilidade (adaptar à demanda). 4. Segurança por Padrão (medidas robustas).  
@@ -359,7 +376,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Challenges Addressed by Cloud Native
+## Challenges Addressed by Cloud Native
+
 - **Quais desafios o Nativo da Nuvem resolve?**  
 ?
   Erros em sistemas únicos, limitações de recursos do host e "vizinhos barulhentos" em ambientes compartilhados.  
@@ -367,7 +385,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Ecosystem and Governance
+## Ecosystem and Governance
+
 - **Qual é o papel da Linux Foundation no Nativo da Nuvem?**
 ?
   Fundada em 2000, padroniza o Linux, patrocina projetos como Kubernetes e impulsiona o movimento de nuvem aberta.
@@ -386,7 +405,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# KCNA Exam Overview
+## KCNA Exam Overview
+
 - **O que é a certificação KCNA?**  
 ?
   Uma certificação de nível básico para ecossistemas Kubernetes e nativos da nuvem, um portal para CKA e CKAD.  
@@ -399,7 +419,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Highlights of KCNA
+## Highlights of KCNA
+
 - **Quais tópicos o KCNA cobre?**  
 ?
   Kubernetes, segurança (leva ao CKS), telemetria/observabilidade (Prometheus) e mais.  
@@ -413,7 +434,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# KCNA Exam Details
+## KCNA Exam Details
+
 - **Qual é o formato do exame KCNA?**
 ?
   Múltipla escolha, nível básico, teórico.
@@ -428,7 +450,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Why Choose KCNA?
+## Why Choose KCNA?
+
 - **Por que o KCNA é uma boa escolha?**
 ?
   Currículo diversificado, prepara para certificações avançadas, prático para papéis nativos da nuvem e acessível remotamente.
@@ -437,13 +460,14 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 - **Onde você pode verificar atualizações do currículo do KCNA?**
 ?
-  https://github.com/cncf/curriculum (inclui GitOps, Prometheus).
+  <https://github.com/cncf/curriculum> (inclui GitOps, Prometheus).
   #flashcard
 <!--SR:!2025-03-29,3,250-->
 
 ---
 
-# Pro Tips for KCNA
+## Pro Tips for KCNA
+
 - **Como você pode se manter atualizado sobre notícias do exame KCNA?**  
 ?
   Siga a Linux Foundation e o CNCF nas redes sociais para promoções, eventos e atualizações.  
@@ -472,7 +496,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Introduction to Containers
+## Introduction to Containers
+
 - **Como os contêineres transformaram a tecnologia?**
 ?
   Revolucionaram a infraestrutura, design de apps, desenvolvimento e operações, permitindo o gerenciamento eficiente de milhares de contêineres com ferramentas como Kubernetes.
@@ -535,7 +560,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Docker Installation
+## Docker Installation
+
 - **Qual é a arquitetura tradicional do Docker?**  
 ?
   Hardware → SO → Runtime do Docker (containerd e runc); requer kernel Linux 3.1+.  
@@ -564,7 +590,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Container Images
+## Container Images
+
 - **O que é uma imagem de contêiner?**
 ?
   Um pacote portátil, compatível com OCI, de software e dependências para execução consistente entre ambientes.
@@ -611,7 +638,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Container Registry
+## Container Registry
+
 - **O que é um registro de contêineres?**  
 ?
   Um serviço que hospeda e distribui imagens de contêineres com armazenamento, versionamento e controle de acesso.  
@@ -619,7 +647,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Running Containers
+## Running Containers
+
 - **Como você valida uma instalação do Docker?**
 ?
   `docker version` mostra detalhes do cliente/servidor; usa containerd e runc.
@@ -648,7 +677,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Container Networking Service and Volumes
+## Container Networking Service and Volumes
+
 - **Qual é a diferença entre `-P` e `-p` no comando Docker run?**  
 ?
   `-P` publica todas as portas expostas para portas aleatórias do host; `-p` mapeia portas específicas do host para o contêiner (ex.: `-p 12345:80`).  
@@ -673,7 +703,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Container Orchestration
+## Container Orchestration
+
 - **O que é orquestração de contêineres?**  
 ?
   Automatiza tarefas como escalabilidade, alocação de recursos, atualizações, monitoramento e garantia de alta disponibilidade para contêineres.  
@@ -702,7 +733,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Kubernetes Architecture
+## Kubernetes Architecture
+
 - **Quais são as duas áreas principais da arquitetura do Kubernetes?**  
 ?
   Plano de Controle (gerencia o cluster) e Nós (executam cargas de trabalho).  
@@ -763,7 +795,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Pod Basics
+## Pod Basics
+
 - **O que é um Pod no Kubernetes?**  
 ?
   Menor unidade implantável, contém um ou mais contêineres compartilhando rede/armazenamento.  
@@ -794,7 +827,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Using YAML to Create Pods
+## Using YAML to Create Pods
+
 - **Qual é a diferença entre `kubectl create` e `apply`?**
 ?
   `create` falha se o recurso existir; `apply` atualiza recursos existentes.
@@ -825,7 +859,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Namespaces
+## Namespaces
+
 - **O que são namespaces no Kubernetes?**  
 ?
   Dividem recursos do cluster para isolamento (ex.: usuários, apps, projetos).  
@@ -853,7 +888,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Deployments and ReplicaSets
+## Deployments and ReplicaSets
+
 - **O que é um Deployment no Kubernetes?**  
 ?
   Gerencia atualizações de apps declarativamente com replicação, atualizações contínuas e reversões.  
@@ -882,7 +918,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Services
+## Services
+
 - **Quais são os quatro tipos principais de serviços no Kubernetes?**  
 ?
   ClusterIP (padrão), NodePort, LoadBalancer, ExternalName.  
@@ -910,7 +947,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Kubernetes Jobs
+## Kubernetes Jobs
+
 - **O que é um Job no Kubernetes?**  
 ?
   Gerencia tarefas em lote, executa pods até a conclusão, tenta novamente em caso de falha.  
@@ -929,7 +967,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Kubernetes CronJobs
+## Kubernetes CronJobs
+
 - **O que é um CronJob no Kubernetes?**  
 ?
   Agenda Jobs em intervalos (ex.: `* * * * *` para cada minuto).  
@@ -947,7 +986,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# ConfigMaps
+## ConfigMaps
+
 - **O que são ConfigMaps?**  
 ?
   Armazenam dados de configuração não sensíveis (ex.: variáveis de ambiente) para pods.  
@@ -971,7 +1011,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Secrets in Kubernetes
+## Secrets in Kubernetes
+
 - **O que são Segredos no Kubernetes?**
 ?
   Armazenam dados sensíveis (ex.: senhas, chaves) codificados em Base64.
@@ -995,7 +1036,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Labels in Kubernetes
+## Labels in Kubernetes
+
 - **O que são Rótulos no Kubernetes?**  
 ?
   Pares chave-valor para marcar e organizar recursos para agrupamento/filtragem.  
@@ -1018,7 +1060,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Kubernetes API
+## Kubernetes API
+
 - **O que interage com a API do Kubernetes?**
 ?
   Usuários/ferramentas (kubectl, Helm), ferramentas de monitoramento, componentes internos (scheduler, kubelet, controller manager).
@@ -1052,7 +1095,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Role-Based Access Control (RBAC)
+## Role-Based Access Control (RBAC)
+
 - **O que é RBAC no Kubernetes?**
 ?
   Gerencia acesso a recursos usando papéis atribuídos a usuários/grupos para controle refinado.
@@ -1085,7 +1129,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Scheduling Process
+## Scheduling Process
+
 - **O que faz o kube-scheduler?**  
 ?
   Atribui pods a nós com base em recursos, afinidade, manchas e tolerâncias.  
@@ -1113,7 +1158,8 @@ A solicitação não está autorizada porque as credenciais estão ausentes ou s
 
 ---
 
-# Storage
+## Storage
+
 - **O que é armazenamento efêmero no Kubernetes?**
 ?
   Armazenamento temporário (ex.: emptyDir) que não persiste após reinícios de pods.
@@ -1142,7 +1188,8 @@ Permite que persistent storage é criado automaticamento quando necessário, em 
 
 ---
 
-# StatefulSets
+## StatefulSets
+
 - **Para que servem os StatefulSets?**
 ?
   Gerenciam apps com estado (ex.: bancos de dados) com identidades estáveis e armazenamento persistente.
@@ -1173,7 +1220,8 @@ Permite que persistent storage é criado automaticamento quando necessário, em 
 
 ---
 
-# Network Policies
+## Network Policies
+
 - **O que fazem as Políticas de Rede?**  
 ?
   Controlam a comunicação de pods permitindo/negando tráfego com base em rótulos, portas, etc.  
@@ -1187,7 +1235,6 @@ Permite que persistent storage é criado automaticamento quando necessário, em 
 - **O que acontece sem Políticas de Rede?**  
 ?
   Pods podem enviar/receber tráfego de qualquer fonte por padrão.  
-  # bothcard
 
 - **Como múltiplas Políticas de Rede se combinam?**
 ?
@@ -1197,7 +1244,8 @@ Permite que persistent storage é criado automaticamento quando necessário, em 
 
 ---
 
-# Pod Disruption Budgets (PDB)
+## Pod Disruption Budgets (PDB)
+
 - **Qual é a diferença entre PDB e Replicas?**  
 ?
   Réplicas garantem pods em execução; PDBs limitam disrupções para manter disponibilidade.  
@@ -1216,7 +1264,8 @@ Permite que persistent storage é criado automaticamento quando necessário, em 
 
 ---
 
-# Security
+## Security
+
 - **O que são Contextos de Segurança no Kubernetes?**  
 ?
   Definem controle de acesso/privilégios para pods/contêineres (ex.: runAsUser, runAsGroup).  
@@ -1247,7 +1296,8 @@ Permite que persistent storage é criado automaticamento quando necessário, em 
 
 ---
 
-# Helm and Helm Charts
+## Helm and Helm Charts
+
 - **O que é Helm no Kubernetes?**  
 ?
   Simplifica o gerenciamento de apps com Helm Charts (pacotes de recursos pré-configurados).  
@@ -1272,7 +1322,8 @@ Permite que persistent storage é criado automaticamento quando necessário, em 
 
 ---
 
-# Service Meshes
+## Service Meshes
+
 - **Qual é o papel de uma malha de serviço?**  
 ?
   Gerencia comunicação segura e confiável entre microsserviços em arquiteturas complexas.  
@@ -1301,7 +1352,8 @@ Permite que persistent storage é criado automaticamento quando necessário, em 
 
 ---
 
-# Observability
+## Observability
+
 - **O que é observabilidade em sistemas nativos da nuvem?**
 ?
   Capacidade de determinar o estado do sistema via telemetria (logs, métricas, rastreamentos, alertas).
@@ -1340,7 +1392,9 @@ Permite que persistent storage é criado automaticamento quando necessário, em 
 <!--SR:!2025-03-27,1,230-->
 
 ---
-# Prometheus and Grafana
+
+## Prometheus and Grafana
+
 **Q: O que é Prometheus?**  
 ?
 Uma ferramenta de código aberto do CNCF para monitoramento/alerta com um modelo de dados multidimensional.
@@ -1391,7 +1445,8 @@ Use IDs (ex.: 15759 para Métricas de Nó) e selecione Prometheus como fonte de 
 
 ---
 
-# Cost Management in Cloud-Native Solutions
+## Cost Management in Cloud-Native Solutions
+
 **Q: Qual é um princípio chave do gerenciamento de custos nativo da nuvem?**  
 ?
 Flexibilidade para alocar recursos em nuvens públicas/híbridas/privadas.
@@ -1441,6 +1496,6 @@ Identifica padrões de uso incomuns para evitar excessos de custo.
 
 ---
 
-# Tags
+## Tags
+
  #flashcards #nuvemnativa #monolitico #microsservicos #conteinerizacao #devops #entregacontinua #escalabilidadeautomatica #serverless #cncf #kubernetes #observabilidade #prometheus #grafana #gerenciamentodecustos #docker #seguranca #helm #malhadeservico #kcna #rede #armazenamento #rbac #agendamento #pods #deployments #servicos #jobs #cronjobs #configmaps #segredos #rotulos #api #orquestracao #namespaces #pdb #statefulsets #padroesabertos #personas:w
- 

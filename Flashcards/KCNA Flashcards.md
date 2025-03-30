@@ -1,4 +1,7 @@
-# Evolution of Cloud-Native Architecture
+# Flashcards
+
+## Evolution of Cloud-Native Architecture
+
 - **What are the origins of Cloud-Native Architecture?**  
 ?
   Evolved from challenges with legacy monolithic applications.  
@@ -16,7 +19,8 @@
 
 ---
 
-# Monolithic Applications: Issues and Challenges
+## Monolithic Applications: Issues and Challenges
+
 - **What is a key issue with tightly coupled components in monolithic apps?**  
 ?
   Changes in one area can affect the entire app, and library updates can break compatibility.  
@@ -34,7 +38,7 @@
 
 ---
 
-# Cloud-Native Approach: Advantages
+## Cloud-Native Approach: Advantages
 
 - **What is the Microservices Architecture in Cloud-Native?**  
 ?
@@ -58,7 +62,8 @@
 
 ---
 
-# Key Benefits of Cloud-Native Design
+## Key Benefits of Cloud-Native Design
+
 - **What does Cloud-Native Architecture involve?**  
 ?
   Designing apps with microservices, containerization, and CI/CD for scalability, resilience, and flexibility across cloud environments.  
@@ -76,7 +81,8 @@
 
 ---
 
-# Characteristics of Cloud-Native Applications
+## Characteristics of Cloud-Native Applications
+
 - **How does resiliency work in Cloud-Native apps?**  
 ?
   Designed to withstand failures with redundancy, failover, and self-healing (e.g., Kubernetes replaces failed pods).  
@@ -104,7 +110,8 @@
 
 ---
 
-# Key Cloud-Native Practices
+## Key Cloud-Native Practices
+
 - **How does resilience manifest in Cloud-Native?**  
 ?
   Apps anticipate failures with self-healing (e.g., Kubernetes restarts failed pods in a replica set).  
@@ -137,7 +144,8 @@
 
 ---
 
-# Key Pillars of Cloud-Native Architecture
+## Key Pillars of Cloud-Native Architecture
+
 - **What are the four pillars of Cloud-Native Architecture?**  
 ?
   Microservices, Containerisation, DevOps, Continuous Delivery.  
@@ -160,7 +168,8 @@
 
 ---
 
-# Autoscaling
+## Autoscaling
+
 - **What is Auto Scaling?**  
 ?
   Automatically adjusts resources based on workload demand for performance and cost efficiency.  
@@ -189,7 +198,8 @@
 
 ---
 
-# Serverless Computing
+## Serverless Computing
+
 - **What is Serverless Computing?**
 ?
   Providers manage servers; users deploy code that runs in response to events, scaling automatically.
@@ -223,7 +233,8 @@
 
 ---
 
-# Community and Governance
+## Community and Governance
+
 - **What is the CNCF?**  
 ?
   A vendor-neutral org under Linux Foundation, hosting cloud-native projects like Kubernetes.  
@@ -246,7 +257,8 @@
 
 ---
 
-# Cloud-Native Personas
+## Cloud-Native Personas
+
 - **What does a DevOps Engineer focus on?**  
 ?
   Bridges Dev and Ops with automation, scripting, and cloud-native practices.  
@@ -269,7 +281,8 @@
 
 ---
 
-# Open Standards
+## Open Standards
+
 - **What are Open Standards?**  
 ?
   Freely adoptable frameworks fostering collaboration and interoperability, avoiding vendor lock-in.  
@@ -292,7 +305,8 @@
 
 ---
 
-# What is Cloud Native?
+## What is Cloud Native?
+
 - **What does "Cloud Native" mean?**  
 ?
   Combines "cloud" (public, private, hybrid environments) and "native" (designed for scalability, resilience, manageability). It’s a set of philosophies, not a binary state.  
@@ -305,7 +319,8 @@
 
 ---
 
-# Benefits of Cloud Native
+## Benefits of Cloud Native
+
 - **What are the key benefits of Cloud Native practices?**  
 ?
   Effective use of cloud infrastructure, resilience, scalability, automation, security, and progression beyond basic cloud hosting.  
@@ -318,7 +333,8 @@
 
 ---
 
-# Misconceptions About Cloud Native
+## Misconceptions About Cloud Native
+
 - **Does running an app in the cloud make it Cloud Native?**  
 ?
   No, it requires best practices, not just cloud hosting.  
@@ -331,7 +347,8 @@
 
 ---
 
-# Key Practices in Cloud Native Development
+## Key Practices in Cloud Native Development
+
 - **What are the four key practices in Cloud Native development?**  
 ?
   1. Automation (setup/delivery). 2. Resilience (handle failures). 3. Scalability (adapt to demand). 4. Security by Default (robust measures).  
@@ -339,7 +356,8 @@
 
 ---
 
-# Challenges Addressed by Cloud Native
+## Challenges Addressed by Cloud Native
+
 - **What challenges does Cloud Native solve?**  
 ?
   Single system errors, host resource limitations, and "noisy neighbors" in shared environments.  
@@ -347,7 +365,8 @@
 
 ---
 
-# Ecosystem and Governance
+## Ecosystem and Governance
+
 - **What is the Linux Foundation’s role in Cloud Native?**  
 ?
   Founded in 2000, it standardizes Linux, sponsors projects like Kubernetes, and drives the open cloud movement.  
@@ -365,7 +384,8 @@
 
 ---
 
-# KCNA Exam Overview
+## KCNA Exam Overview
+
 - **What is the KCNA certification?**  
 ?
   An entry-level cert for Kubernetes and cloud-native ecosystems, a gateway to CKA and CKAD.  
@@ -378,7 +398,8 @@
 
 ---
 
-# Highlights of KCNA
+## Highlights of KCNA
+
 - **What topics does KCNA cover?**  
 ?
   Kubernetes, security (leads to CKS), telemetry/observability (Prometheus), and more.  
@@ -391,7 +412,8 @@
 
 ---
 
-# KCNA Exam Details
+## KCNA Exam Details
+
 - **What is the KCNA exam format?**  
 ?
   Multiple-choice, entry-level, theoretical.  
@@ -404,7 +426,8 @@
 
 ---
 
-# Why Choose KCNA?
+## Why Choose KCNA?
+
 - **Why is KCNA a good choice?**  
 ?
   Diverse curriculum, prepares for advanced certs, practical for cloud-native roles, and remote-friendly.  
@@ -412,12 +435,13 @@
 
 - **Where can you check KCNA curriculum updates?**  
 ?
-  https://github.com/cncf/curriculum (includes GitOps, Prometheus).  
+  <https://github.com/cncf/curriculum> (includes GitOps, Prometheus
   #flashcard
 
 ---
 
-# Pro Tips for KCNA
+## Pro Tips for KCNA
+
 - **How can you stay updated on KCNA exam news?**  
 ?
   Follow Linux Foundation and CNCF on social media for sales, events, and updates.  
@@ -446,7 +470,8 @@
 
 ---
 
-# Introduction to Containers
+## Introduction to Containers
+
 - **How did containers transform technology?**  
 ?
   Revolutionized infrastructure, app design, development, and operations, enabling efficient management of thousands of containers with tools like Kubernetes.  
@@ -504,7 +529,8 @@
 
 ---
 
-# Docker Installation
+## Docker Installation
+
 - **What’s the traditional Docker architecture?**  
 ?
   Hardware → OS → Docker runtime (containerd and runc); requires Linux kernel 3.1+.  
@@ -532,7 +558,8 @@
 
 ---
 
-# Container Images
+## Container Images
+
 - **What is a container image?**
 ?
   A portable, OCI-compliant bundle of software and dependencies for consistent execution across environments.
@@ -576,7 +603,8 @@
 
 ---
 
-# Container Registry
+## Container Registry
+
 - **What is a container registry?**  
 ?
   A service hosting and distributing container images with storage, versioning, and access control.  
@@ -584,7 +612,8 @@
 
 ---
 
-# Running Containers
+## Running Containers
+
 - **How do you validate a Docker installation?**
 ?
   `docker version` shows client/server details; uses containerd and runc.
@@ -613,7 +642,8 @@
 
 ---
 
-# Container Networking Service and Volumes
+## Container Networking Service and Volumes
+
 - **What’s the difference between `-P` and `-p` in Docker run?**  
 ?
   `-P` publishes all exposed ports to random host ports; `-p` maps specific host-to-container ports (e.g., `-p 12345:80`).  
@@ -637,7 +667,8 @@
 
 ---
 
-# Container Orchestration
+## Container Orchestration
+
 - **What is container orchestration?**  
 ?
   Automates tasks like scaling, resource allocation, updates, monitoring, and ensuring high availability for containers.  
@@ -665,7 +696,8 @@
 
 ---
 
-# Kubernetes Architecture
+## Kubernetes Architecture
+
 - **What are the two main areas of Kubernetes architecture?**  
 ?
   Control Plane (manages cluster) and Nodes (run workloads).  
@@ -724,7 +756,8 @@
 
 ---
 
-# Pod Basics
+## Pod Basics
+
 - **What is a Pod in Kubernetes?**  
 ?
   Smallest deployable unit, contains one or more containers sharing network/storage.  
@@ -752,7 +785,8 @@
 
 ---
 
-# Using YAML to Create Pods
+## Using YAML to Create Pods
+
 - **What’s the difference between `kubectl create` and `apply`?**  
 ?
   `create` fails if resource exists; `apply` updates existing resources.  
@@ -780,7 +814,8 @@
 
 ---
 
-# Namespaces
+## Namespaces
+
 - **What are Kubernetes namespaces?**  
 ?
   Divide cluster resources for isolation (e.g., users, apps, projects).  
@@ -808,7 +843,8 @@
 
 ---
 
-# Deployments and ReplicaSets
+## Deployments and ReplicaSets
+
 - **What is a Kubernetes Deployment?**  
 ?
   Manages app updates declaratively with replication, rolling updates, and rollbacks.  
@@ -836,7 +872,8 @@
 
 ---
 
-# Services
+## Services
+
 - **What are the four main Kubernetes service types?**  
 ?
   ClusterIP (default), NodePort, LoadBalancer, ExternalName.  
@@ -864,7 +901,8 @@
 
 ---
 
-# Kubernetes Jobs
+## Kubernetes Jobs
+
 - **What is a Kubernetes Job?**  
 ?
   Manages batch tasks, runs pods to completion, retries on failure.  
@@ -882,7 +920,8 @@
 
 ---
 
-# Kubernetes CronJobs
+## Kubernetes CronJobs
+
 - **What is a Kubernetes CronJob?**  
 ?
   Schedules Jobs at intervals (e.g., `* * * * *` for every minute).  
@@ -900,7 +939,8 @@
 
 ---
 
-# ConfigMaps
+## ConfigMaps
+
 - **What are ConfigMaps?**  
 ?
   Store non-sensitive configuration data (e.g., env vars) for pods.  
@@ -923,7 +963,8 @@
 
 ---
 
-# Secrets in Kubernetes
+## Secrets in Kubernetes
+
 - **What are Kubernetes Secrets?**  
 ?
   Store sensitive data (e.g., passwords, keys) encoded in Base64.  
@@ -948,7 +989,8 @@
 
 ---
 
-# Labels in Kubernetes
+## Labels in Kubernetes
+
 - **What are Kubernetes Labels?**  
 ?
   Key-value pairs to tag and organize resources for grouping/filtering.  
@@ -971,7 +1013,8 @@
 
 ---
 
-# Kubernetes API
+## Kubernetes API
+
 - **What interacts with the Kubernetes API?**  
 ?
   Users/tools (kubectl, Helm), monitoring tools, internal components (scheduler, kubelet, controller manager).  
@@ -1004,7 +1047,8 @@
 
 ---
 
-# Role-Based Access Control (RBAC)
+## Role-Based Access Control (RBAC)
+
 - **What is RBAC in Kubernetes?**
 ?
   Manages access to resources using roles assigned to users/groups for fine-grained control.
@@ -1038,7 +1082,8 @@
 
 ---
 
-# Scheduling Process
+## Scheduling Process
+
 - **What does the kube-scheduler do?**  
 ?
   Assigns pods to nodes based on resources, affinity, taints, and tolerations.  
@@ -1066,7 +1111,8 @@
 
 ---
 
-# Storage
+## Storage
+
 - **What is ephemeral storage in Kubernetes?**  
 ?
   Temporary storage (e.g., emptyDir) that doesn’t persist across pod restarts.  
@@ -1094,7 +1140,8 @@
 
 ---
 
-# StatefulSets
+## StatefulSets
+
 - **What are StatefulSets used for?**  
 ?
   Manage stateful apps (e.g., databases) with stable identities and persistent storage.  
@@ -1122,7 +1169,8 @@
 
 ---
 
-# Network Policies
+## Network Policies
+
 - **What do Network Policies do?**  
 ?
   Control pod communication by allowing/denying traffic based on labels, ports, etc.  
@@ -1145,7 +1193,8 @@
 
 ---
 
-# Pod Disruption Budgets (PDB)
+## Pod Disruption Budgets (PDB)
+
 - **What’s the difference between PDB and Replicas?**  
 ?
   Replicas ensure running pods; PDBs limit disruptions to maintain availability.  
@@ -1163,7 +1212,8 @@
 
 ---
 
-# Security
+## Security
+
 - **What are Security Contexts in Kubernetes?**  
 ?
   Define access control/privileges for pods/containers (e.g., runAsUser, runAsGroup).  
@@ -1193,7 +1243,8 @@
 
 ---
 
-# Helm and Helm Charts
+## Helm and Helm Charts
+
 - **What is Helm in Kubernetes?**  
 ?
   Simplifies app management with Helm Charts (pre-configured resource packages).  
@@ -1216,7 +1267,8 @@
 
 ---
 
-# Service Meshes
+## Service Meshes
+
 - **What’s the role of a service mesh?**  
 ?
   Manages secure, reliable microservice communication in complex architectures.  
@@ -1244,7 +1296,8 @@
 
 ---
 
-# Observability
+## Observability
+
 - **What is observability in cloud-native systems?**  
 ?
   Ability to determine system state via telemetry (logs, metrics, traces, alerts).  
@@ -1281,7 +1334,9 @@
   #flashcard
 
 ---
-# Prometheus and Grafana
+
+## Prometheus and Grafana
+
 **Q: What is Prometheus?**  
 ?
 A: Open-source CNCF tool for monitoring/alerting with a multi-dimensional data model.
@@ -1329,7 +1384,8 @@ A: Use IDs (e.g., 15759 for Node Metrics) and select Prometheus as the data sour
 
 ---
 
-# Cost Management in Cloud-Native Solutions
+## Cost Management in Cloud-Native Solutions
+
 **Q: What’s a key principle of cloud-native cost management?**  
 ?
 A: Flexibility to allocate resources across public/hybrid/private clouds.
@@ -1377,5 +1433,6 @@ A: Identifies unusual usage patterns to prevent cost overruns.
 
 ---
 
-# Tags
+## Tags
+
  #flashcards #cloudnative #monolithic #microservices #containerization #devops #continuousdelivery #autoscaling #serverless #cncf #kubernetes #observability #prometheus #grafana #costmanagement #docker #security #helm #servicemesh #kcna #networking #storage #rbac #scheduling #pods #deployments #services #jobs #cronjobs #configmaps #secrets #labels #api #orchestration #namespaces #pdb #statefulsets #openstandards #personas

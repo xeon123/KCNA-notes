@@ -1,14 +1,15 @@
-**Observability** refers to the ability to determine a system's internal state by examining its outputs, primarily gathered through **telemetry**. This telemetry includes **logs, metrics, traces, and alerts**.
+# Telemetry and observability
+
 - **Observability** ensures accurate monitoring and efficient issue detection in cloud-native environments.
 - The **three pillars**—**logs**, **metrics**, and **traces**—each offer distinct insights into system performance and health.
-	- Logs provide a record of events that have occurred within an application or system
-	- Metrics offer quantitative measurements of performance and behavior
-	- Traces allow for the visualization of complex interactions between microservices.
+  - **Logs** provide a record of events that have occurred within an application or system
+  - **Metrics** offer quantitative measurements of performance and behavior
+  - **Traces** allow for the visualization of complex interactions between microservices.
 - **Alerts** complement these pillars by providing early warnings of potential failures, ensuring high availability and quick problem resolution.
 - By analyzing these outputs, developers and operators can gain insights into how their system is behaving, identify issues, and make data-driven decisions.
 - OpenTracing and OpenTelemetry primarily operate in the application layer of a software system. They provide APIs and tools for instrumenting applications to collect tracing and telemetry data, allowing developers to understand how their code behaves in production environments.
 
-# 🔍 **Types of Telemetry:**
+## Types of Telemetry
 
 1. **Logs**
     - Logs are primarily used to output messages from programs, applications, and processes. These messages can include errors, warnings, debug information, or other events that occur during execution. Logs provide valuable insights into system behavior, helping developers and operators troubleshoot issues, identify trends, and optimize performance.
@@ -34,43 +35,41 @@
         - They allow developers and operators to quickly identify and respond to problems, reducing downtime and improving overall system reliability.
     - Triggered by deviations in logs, metrics, or traces to enable proactive troubleshooting.
 
-# Prometheus and Grafana
+## Prometheus and Grafana
 
-## Enhancing Kubernetes Observability with Prometheus and Grafana
+### Enhancing Kubernetes Observability with Prometheus and Grafana
 
 While Kubernetes provides basic insights through its CLI, true observability requires more advanced tools like **Prometheus** and **Grafana**.
 
 Prometheus and Grafana together offer a powerful observability stack for Kubernetes, enabling better monitoring, visualization, alerting, and proactive system management. These tools are essential for roles like DevOps and SREs to meet uptime, performance, and reliability goals.
 
-
-#### 🔍 Prometheus: Monitoring & Alerting Toolkit
+### 🔍 Prometheus: Monitoring & Alerting Toolkit
 
 - **Open-source CNCF project** (second to graduate after Kubernetes), initially **created by SoundCloud**.
 - Designed for monitoring and alerting in both cloud-native and traditional systems.
 - **Key Features:**
-    - **Multi-dimensional data model:** Uses time-series data, identified by metric names and key-value pairs.
-    - **PromQL:** A flexible query language for querying time-series data.
-    - **Autonomous nodes:** No need for distributed storage; each node functions independently.
-    - **Push-pull data collection:** Efficient data scraping and ingestion methods.
-    - **Built-in alerting:** Enables proactive issue detection.
+  - **Multi-dimensional data model:** Uses time-series data, identified by metric names and key-value pairs.
+  - **PromQL:** A flexible query language for querying time-series data.
+  - **Autonomous nodes:** No need for distributed storage; each node functions independently.
+  - **Push-pull data collection:** Efficient data scraping and ingestion methods.
+  - **Built-in alerting:** Enables proactive issue detection.
 
 #### 📊 Grafana: Visualization & Analytics Platform
 
 - An open-source platform that integrates with multiple data sources like **Prometheus**, **InfluxDB**, and **Elasticsearch**.
 - **Core Features:**
-    - **Visualization:** Customizable dashboards with graphs, charts, and alerts for easy data interpretation.
-    - **Monitoring:** Tracks system performance (CPU, memory, network I/O) in real time.
-    - **Alerting:** Sends notifications via email, Slack, PagerDuty, and more.
-    - **Customizability:** Highly flexible dashboards and plugin support for additional functionality.
+  - **Visualization:** Customizable dashboards with graphs, charts, and alerts for easy data interpretation.
+  - **Monitoring:** Tracks system performance (CPU, memory, network I/O) in real time.
+  - **Alerting:** Sends notifications via email, Slack, PagerDuty, and more.
+  - **Customizability:** Highly flexible dashboards and plugin support for additional functionality.
 
-#### 🔧 Use Cases for Site Reliability Engineers (SREs):
+#### 🔧 Use Cases for Site Reliability Engineers (SREs)
 
 - **SLAs (Service Level Agreements):** E.g., Maintain 99.99% uptime.
 - **SLOs (Service Level Objectives):** E.g., Response time under 200 ms.
 - **SLIs (Service Level Indicators):** E.g., Achieving 97% uptime with a 300 ms response time.
 
 In the provided example, if uptime is 97% and response time exceeds 300 ms, neither SLAs nor SLOs are being met.
-
 
 ### Setting Up Kubernetes Observability with Helm, Prometheus, and Grafana
 
@@ -79,29 +78,33 @@ In the provided example, if uptime is 97% and response time exceeds 300 ms, neit
 - The kube-prometheus operator project simplifies the deployment and configuration of Prometheus and Grafana for monitoring Kubernetes clusters. It provides a streamlined way to set up comprehensive monitoring solutions by automating many of the complex tasks involved in configuring these tools.
 
 - **Install Helm:**
-    - Update system packages and install **Git** (`apt update && apt install git`).
-    - Download and install **Helm** using a curl command piped to bash.
+  - Update system packages and install **Git** (`apt update && apt install git`).
+  - Download and install **Helm** using a curl command piped to bash.
 - **Add Prometheus Helm Repo:**
-    - Add the Prometheus Community repository with:
-	```bash
-	helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-	```
-        
-    - Search for available chart versions using:
-	```bash
-	helm search repo kube-prometheus-stack -l
-	```
-        
+  - Add the Prometheus Community repository with:
+
+ ```bash
+ helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+ ```
+
+- Search for available chart versions using:
+
+ ```bash
+ helm search repo kube-prometheus-stack -l
+ ```
+
 - **Install Prometheus Stack:**
-    - Install a specific version (e.g., `55.5.0`) using:
-	```bash
-	helm install my-observability prometheus-community/kube-prometheus-stack --version 55.5.0
-	```  
-    - Allow 10 minutes for the setup to collect meaningful metrics.
+  - Install a specific version (e.g., `55.5.0`) using:
+
+```bash
+helm install my-observability prometheus-community/kube-prometheus-stack --version 55.5.0
+```
+
+- Allow 10 minutes for the setup to collect meaningful metrics.
 
 ---
 
-#### 🔍 **Core Components Installed:**
+#### 🔍 Core Components Installed
 
 - **Prometheus Operator (`kube-prom-operator`):** Sets up Prometheus, with a UI accessible on port `9090`.
 - **Alertmanager:** Manages and handles alerts (runs as a StatefulSet).
@@ -112,59 +115,69 @@ In the provided example, if uptime is 97% and response time exceeds 300 ms, neit
 
 ---
 
-#### 📊 **Accessing Prometheus & Grafana:**
+#### 📊 Accessing Prometheus & Grafana
 
 1. Run:
-    ```bash
-    kubectl get services
-    ```
-2. Identify the Cluster IP for `my-observability-kube-prometheus-stack`.
-	1. ![[Telemetry and Observability Get Service.png]]
-3. Access Prometheus at:
-    ```bash
-    http://<Cluster-IP>:9090
-    ```
-4. Use **kubectl port-forward** if accessing from a different environment.
-	1.  `kubectl port-forward service/my-observability-kube-prom-prometheus 9090:9090`
+
+```bash
+kubectl get services
+```
+
+1. Identify the Cluster IP for `my-observability-kube-prometheus-stack`.
+
+![[Telemetry and Observability Get Service.png]]
+
+1. Access Prometheus at:
+
+```bash
+http://<Cluster-IP>:9090
+```
+
+1. Use **kubectl port-forward** if accessing from a different environment.
+
+`kubectl port-forward service/my-observability-kube-prom-prometheus 9090:9090`
 
 ---
 
-#### 📈 **Exploring Metrics Using Prometheus UI:**
+#### 📈 Exploring Metrics Using Prometheus UI
 
 - Navigate to the **Metrics Explorer**.
 - Example Queries:
-    - **Pod IPs:**
-	![[Telemetry and Observability Pod IPs.png]]
-    - **Pods per Namespace:**
+  - **Pod IPs:**
+ ![[Telemetry and Observability Pod IPs.png]]
+  - **Pods per Namespace:**
         `sum by (namespace) (kube_pod_ips)`
 
 - Visualizations:
-    - Graph views display data over time, with different lines representing different pods or namespaces.
+  - Graph views display data over time, with different lines representing different pods or namespaces.
 
 ---
 
-#### 🚀 **Running Pods & Real-Time Monitoring:**
+#### 🚀 Running Pods & Real-Time Monitoring
 
 - Launch multiple pods using a simple **for loop** with `kubectl run`:
+
     ```bash
     for i in {1..10}; do kubectl run nginx-pod-$i --image=nginx; sleep 30; done
     ```
+
 - Adjust the graph’s time window in Prometheus UI to **5 minutes** for real-time monitoring.
 
 ---
 
-#### 🔗 **Advanced Monitoring with PromQL:**
+#### 🔗 Advanced Monitoring with PromQL
 
 - Explore queries like:
+
     ```bash
     api_server_request_total
     ```
+
 - Provides insights into API request metrics, including scope, version, and type of requests (verbs).
 
+### Setting Up and Managing Grafana with Prometheus for Kubernetes Monitoring
 
-### **Setting Up and Managing Grafana with Prometheus for Kubernetes Monitoring**
-
-#### 🚪 **Accessing Grafana**
+#### 🚪 Accessing Grafana
 
 1. **Get Grafana's Cluster IP:**
     - Look for the service running on **port 80**.
@@ -176,33 +189,32 @@ In the provided example, if uptime is 97% and response time exceeds 300 ms, neit
 
 ---
 
-#### 📈 **Importing Prebuilt Dashboards for Quick Monitoring**
+#### 📈 Importing Prebuilt Dashboards for Quick Monitoring
 
 - Speed up the setup by importing community dashboards:
-    
+
     1. In Grafana, click **+ → Import Dashboard**.
     2. Enter one of these IDs:
         - **15759**: Node Metrics Dashboard
         - **15757**: Cluster Overview Dashboard
     3. Select **Prometheus** as the data source → Click **Import**.
 - **Inspecting PromQL Queries:**
-    
-    - Open any chart → **Inspect → Data → Query → Refresh**
-    - Copy and reuse the PromQL queries directly in Prometheus if needed.
+
+  - Open any chart → **Inspect → Data → Query → Refresh**
+  - Copy and reuse the PromQL queries directly in Prometheus if needed.
 
 ---
 
-#### 🧹 **Cleanup Process**
+#### 🧹 Cleanup Process
 
 1. **Uninstall Helm Deployment:**
     `helm list helm uninstall my-observability`
-    
+
 2. **Remove Remaining Services:**
     `kubectl get all -A kubectl delete service <service-name>`
-    
+
 3. **Delete NGINX Pods:**
     `kubectl delete pod nginx-pod-<id>`
-    
 
 ## Cost Management in Cloud-Native Solutions
 
@@ -210,16 +222,17 @@ In the provided example, if uptime is 97% and response time exceeds 300 ms, neit
 
 - **Flexibility in Resource Utilization:**  
     Cloud-native applications allow you to dynamically allocate resources across public, hybrid, or private clouds based on cost, performance, or regulatory requirements.
-    
+
 - **Optimize Resource Usage:**
-    - Regularly review resource consumption.
-    - Remove or scale down unused or underutilized resources.
-    - Design applications for autoscaling and flexibility to optimize resource usage.
-    - Use anomaly detection and monitoring tools like KubeCost to maintain cost efficiency and security.
+  - Regularly review resource consumption.
+  - Remove or scale down unused or underutilized resources.
+  - Design applications for autoscaling and flexibility to optimize resource usage.
+  - Use anomaly detection and monitoring tools like KubeCost to maintain cost efficiency and security.
 
 ---
 
 ### ⚡ Cost-Saving Strategies Across Cloud Providers
+
 1. **On-Demand Instances:**
     - Quickly provision resources as needed.
     - **Pros:** Flexibility and speed.
@@ -232,6 +245,7 @@ In the provided example, if uptime is 97% and response time exceeds 300 ms, neit
     - Bid for unused resources at a lower price.
     - **Pros:** Cost-effective for flexible, fault-tolerant applications.
     - **Cons:** No guarantee of availability; can be terminated unexpectedly.
+
 ### 📏 Right-Sizing and Scaling
 
 - **Avoid Lift-and-Shift Mistakes:**  
@@ -244,7 +258,8 @@ In the provided example, if uptime is 97% and response time exceeds 300 ms, neit
 ### 🔍 Advanced Cost Management Tools & Techniques
 
 - **Cloud Anomaly Detection:**  
-    Identifies unusual resource usage patterns, potentially uncovering security issues or unexpected costs.
--  Detecting cloud anomalies can help identify unexpected charges or unusual usage patterns that may indicate cost overruns or inefficiencies. By detecting these anomalies, organizations can take corrective action to optimize their cloud resources and keep costs under control.
+
+- Identifies unusual resource usage patterns, potentially uncovering security issues or unexpected costs.
+- Detecting cloud anomalies can help identify unexpected charges or unusual usage patterns that may indicate cost overruns or inefficiencies. By detecting these anomalies, organizations can take corrective action to optimize their cloud resources and keep costs under control.
 - **KubeCost:**  
     A Kubernetes-specific tool for monitoring and managing costs. Available in both open-source and commercial versions.
