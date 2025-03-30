@@ -5,7 +5,15 @@
 ### Simple test
 
 
+```dataview
+LIST
+FROM "1 Cloud Native Concepts"
+```
 
+```dataview
+TABLE
+FROM "1 Cloud Native Concepts/Cloud Native Concepts/Benefits of Cloud Native"
+```
 
 ```dataview
 list
