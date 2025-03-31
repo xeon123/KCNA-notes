@@ -1,3 +1,24 @@
+---
+tags: cloud-native, GitOps, Kubernetes, Argo CD, Flux, CI/CD, automation
+title: Cloud-Native Application Delivery
+category: KCNA Notes
+topics:
+  - GitOps
+  - Argo CD
+  - Flux
+  - CI/CD
+  - Automation
+  - Kubernetes
+  - Cloud-Native Deployment
+  - Infrastructure as Code
+created: 2025-03-31
+updated: 2025-03-31
+author: reissada
+status: draft
+summary: >
+  This note explores modern cloud-native application delivery practices, focusing on GitOps, Argo CD, and Flux. It covers declarative infrastructure, CI/CD pipelines, automation, and best practices for Kubernetes deployments.
+---
+
 # Cloud-Native Application Delivery
 
 ## Modern Application Deployment with Cloud-Native & GitOps

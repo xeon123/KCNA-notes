@@ -1,3 +1,26 @@
+---
+tags: Kubernetes, container-orchestration, KCNA, certification
+title: Kubernetes Fundamentals
+category: KCNA Notes
+topics:
+  - Kubernetes
+  - Container Orchestration
+  - CRDs
+  - Kubernetes Architecture
+  - Pods
+  - Deployments
+  - Services
+  - ConfigMaps
+  - Secrets
+  - Labels
+created: 2025-03-31
+updated: 2025-03-31
+author: reissada
+status: draft
+summary: >
+  This note covers Kubernetes fundamentals, including container orchestration, key features, architecture, pods, deployments, services, ConfigMaps, Secrets, and labels. It also explores Kubernetes' role as the gold standard for container orchestration.
+---
+
 # Container Orchestration
 
 **Container orchestration automates the operational tasks required to run containers.**

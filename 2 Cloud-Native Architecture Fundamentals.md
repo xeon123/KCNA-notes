@@ -1,5 +1,20 @@
 ---
-tags: cloud-native
+tags: cloud-native, architecture, Kubernetes
+title: Cloud-Native Architecture Fundamentals
+category: KCNA Notes
+topics:
+  - Cloud-Native Architecture
+  - Microservices
+  - Kubernetes
+  - Autoscaling
+  - Serverless Computing
+  - CNCF Governance
+created: 2025-03-31
+updated: 2025-03-31
+author: reissada
+status: draft
+summary: >
+  This note covers the fundamentals of cloud-native architecture, including its evolution, key practices, benefits, and challenges. It also explores CNCF governance, serverless computing, and open standards.
 ---
 
 # Cloud-Native Architecture Fundamentals

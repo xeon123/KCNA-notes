@@ -1,3 +1,26 @@
+---
+tags: Kubernetes, API, RBAC, CRDs, Helm, StatefulSets, Service Mesh
+title: Kubernetes Deep Dive
+category: KCNA Notes
+topics:
+  - Kubernetes API
+  - RBAC
+  - CRDs
+  - Helm
+  - StatefulSets
+  - Service Mesh
+  - Network Policies
+  - Pod Disruption Budgets
+  - Security
+  - Storage
+created: 2025-03-31
+updated: 2025-03-31
+author: reissada
+status: draft
+summary: >
+  This note provides an in-depth exploration of Kubernetes, covering the API, RBAC, CRDs, Helm, StatefulSets, Service Meshes, Network Policies, Pod Disruption Budgets, Security, and Storage. It also includes practical examples and best practices for managing Kubernetes clusters.
+---
+
 # Kubernetes API
 
 ![[Kubernetes API Architecture3.png]]

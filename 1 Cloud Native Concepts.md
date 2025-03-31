@@ -1,5 +1,17 @@
 ---
-tags: cloud-native
+tags: cloud-native, Kubernetes, KCNA, certification
+title: Cloud Native Concepts
+category: KCNA Notes
+topics:
+  - Cloud Native
+  - Kubernetes
+  - CNCF
+  - Linux Foundation
+  - KCNA Exam
+created: 2025-03-31
+updated: 2025-03-31
+author: reissada
+status: draft
 ---
 
 # Cloud Native Concepts
@@ -23,6 +35,7 @@ tags: cloud-native
   - Achieve resilience, scalability, automation, and security. #resilience #scalability #automation #security
   - Progress beyond basic cloud hosting.
   - Built using **Infrastructure-as-Code** tools like Terraform for vendor-agnostic management. #IaC #Terraform
+  - Benefits:: Scalability, Resilience, Automation, Security, Infrastructure-as-Code (Terraform)
 
 ### Misconceptions About Cloud Native
 

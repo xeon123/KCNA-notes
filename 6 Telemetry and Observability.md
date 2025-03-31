@@ -1,3 +1,25 @@
+---
+tags: telemetry, observability, Kubernetes, Prometheus, Grafana, monitoring
+title: Telemetry and Observability
+category: KCNA Notes
+topics:
+  - Observability
+  - Telemetry
+  - Logs
+  - Metrics
+  - Traces
+  - Alerts
+  - Prometheus
+  - Grafana
+  - Cost Management
+created: 2025-03-31
+updated: 2025-03-31
+author: reissada
+status: draft
+summary: >
+  This note explores telemetry and observability in cloud-native environments, focusing on logs, metrics, traces, and alerts. It also covers tools like Prometheus and Grafana, their setup, and cost management strategies for cloud-native solutions.
+---
+
 # Telemetry and observability
 
 - **Observability** ensures accurate monitoring and efficient issue detection in cloud-native environments.
