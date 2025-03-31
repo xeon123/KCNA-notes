@@ -1,3 +1,26 @@
+---
+tags: tools, Kubernetes, monitoring, CI/CD, GitOps, security, storage, serverless
+title: Tools
+category: KCNA Notes
+topics:
+  - Observability and Monitoring
+  - Service Mesh
+  - Container Runtime
+  - Kubernetes Management
+  - CI/CD
+  - GitOps
+  - Security and Compliance
+  - Storage Solutions
+  - Serverless Architectures
+  - Package Management
+created: 2025-03-31
+updated: 2025-03-31
+author: reissada
+status: draft
+summary: >
+  This note provides an overview of essential tools for cloud-native environments, including observability and monitoring, service meshes, container runtimes, Kubernetes management, CI/CD, GitOps, security, storage, serverless architectures, and package management.
+---
+
 # Tools
 
 ## Observability and Monitoring

@@ -1,3 +1,23 @@
+---
+tags: containers, Docker, Kubernetes, virtualization
+title: Containers with Docker
+category: KCNA Notes
+topics:
+  - Containers
+  - Docker
+  - Virtualization
+  - Linux Namespaces
+  - cgroups
+  - Container Images
+  - Container Networking
+created: 2025-03-31
+updated: 2025-03-31
+author: reissada
+status: draft
+summary: >
+  This note explores the evolution of containers, Docker's role in containerization, key technologies like Linux namespaces and cgroups, container images, networking, and best practices for managing containers.
+---
+
 # Containers with Docker
 
 ## Introduction to containers
