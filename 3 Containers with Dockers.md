@@ -1,5 +1,9 @@
 ---
-tags: containers, Docker, Kubernetes, virtualization
+tags:
+  - containers
+  - Docker
+  - Kubernetes
+  - virtualization
 title: Containers with Docker
 category: KCNA Notes
 topics:
@@ -14,8 +18,7 @@ created: 2025-03-31
 updated: 2025-03-31
 author: reissada
 status: draft
-summary: >
-  This note explores the evolution of containers, Docker's role in containerization, key technologies like Linux namespaces and cgroups, container images, networking, and best practices for managing containers.
+summary: This note explores the evolution of containers, Docker's role in containerization, key technologies like Linux namespaces and cgroups, container images, networking, and best practices for managing containers.
 ---
 
 # Containers with Docker
@@ -25,6 +28,9 @@ summary: >
 ### **Transformative Impact of Containers**
 
 - Containers revolutionized infrastructure, application design, development, and operations.
+	- **Isolation**: Containers encapsulate dependencies, eliminating conflicts.
+	- **Portability**: Applications run the same way on any system.
+	- **Quick Setup**: Developers can start working with a single command (`docker run`).
 - Changed how operating systems are used and applications are managed at scale, particularly with tools like Kubernetes.
 - Enabled efficient management of thousands of containers, fostering scalability and interoperability.
 
@@ -216,34 +222,81 @@ A **container image** is a portable, self-contained bundle of software and its d
 - ✅ **Start from minimal base images** (e.g., `alpine`, `distroless`).
 - ✅ Containers add a writable layer on top for changes during runtime.
 
+## Container Orchestration
+
+- Kubernetes is supported on all major public cloud providers: GCP, Azure, and AWS.
+- Kubernetes is one of the top-ranked projects on GitHub.
+- Container orchestration provides several advantages:
+    - **High availability**: Applications remain up even during hardware failures because they run on multiple instances across different nodes.
+    - **Load balancing**: User traffic is distributed across various containers.
+    - **Seamless scaling**: When demand increases, additional application instances can be deployed quickly and at the service level.
+    - **Dynamic resource scaling**: The number of nodes can be adjusted up or down without affecting the application's availability.
+    - All of these operations can be managed easily using declarative configuration files.
+* **Container orchestration automates the operational tasks required to run containers.**
+	  - Scaling containerized applications up or down
+	  - Managing resource allocation (e.g., CPU, memory)
+	  - Handling rolling updates and deployments
+	  - Monitoring application health and performance
+	  - Providing high availability and fault tolerance.
+	  - Orchestration tools help ensure that containers are running smoothly, efficiently, and in a way that aligns with the needs of the application.
+
+### Key features of container orchestration
+
+1. **Provisioning and Deployment**: Simplifies the setup and deployment of containers.
+2. **Self-Healing and Scheduling**: Ensures container availability and optimal use of compute resources.
+3. **Service Exposure**: Makes containers network-accessible.
+4. **Authorization and Security**: Implements secure access and operations.
+5. **Storage Management**: Supports shared and persistent storage for workloads.
+6. **Auto-Scaling**: Adjusts resources based on demand.
+7. **Extended Functionality**: Custom Resource Definitions (CRDs) in Kubernetes allow expanding beyond core functionalities (e.g., a MySQL CRD for managing MySQL instances).
+
+### Advantages of container orchestration
+
+- Standardizes the deployment process and integrates with various components like networking, storage, security, and autoscaling.
+- This enables developers to focus on writing code, rather than worrying about the underlying infrastructure.
+- Orchestrators available are: Nomad, Openshift, Docker, and Kubernetes.
+- Openshift provide additional functionality and a support model to Kubernetes.
+- Kubernetes is widely regarded as the gold standard for Container Orchestration due to its robust feature set, large community support, and widespread adoption across industries and organizations. Originally developed by Google and later open-sourced, Kubernetes has become the de facto standard for container orchestration and management.
+- CRDs (Custom Resource Definitions) are a means of expanding Kubernetes to have functionality outside of its core features.
+- CRDs allow developers to define new resources and APIs that can be used to extend the Kubernetes platform.
+- By creating custom resources, developers can add new features and functionality to their clusters without having to modify the underlying Kubernetes codebase.
+
 ## Container Registry
 
 A container registry is indeed a service that hosts and distributes container images. Registries provide a centralized location where images can be stored, shared, and accessed by multiple users or systems. They typically offer features such as image storage, versioning, tagging, and access control.
 
-## Running Containers
+## Container Runtimes
 
+- Using container runtimes that support CRI provides better compatibility and standardization across container runtimes.
 - **Validating Docker Installation**:
   - Check Docker version and configuration using `docker version`.
     - `docker version` provides detailed information about the Docker client and server versions, along with their configuration details.
     - Docker uses a client-server architecture, typically with both components running locally on Docker Desktop.
       - ![[Containers with Dockers Docker version.png]]
-      - Docker is using containerd
+      - Docker is using `containerd`
         - It is a high-level abstraction constructed on the top of `runc`, and manage the lifecycle of the containers.
+		- Provides image management, networking, and storage.
+		- Uses internally `runc`
         - `containerd`was donated to CNCF and now is a graduated project.
       - Docker is using `runc`
-        - `runc` is a container runtime designed to manage the lifecycle of the containers
+        - `runc` is a container runtime designed to create, run, and manage container processes.
+		- Used by higher-level container runtimes (e.g., `containerd`, `cri-o`)
         - Docker donated `runc` to OCI
+	- Commonly user Container Runtime Interface (CRI) in K8s 
+		- **CRI-O** – A lightweight container runtime optimized for Kubernetes (you are using this one).
+		- **containerd** – A core component of Docker, widely used in Kubernetes.
+		- **Docker (via `cri-dockerd`)** – Docker support was removed from Kubernetes v1.24, but can still be used through `cri-dockerd`.
 - **Container Runtime Basics**:
-  - Docker leverages containerd (donated to CNCF) and `runc` (donated to OCI) as foundational technologies.
+	- Docker leverages containerd (donated to CNCF) and `runc` (donated to OCI) as foundational technologies.
 - **Using the Funbox Image**:
-  - Pull the image using `docker pull wernight/funbox`.
-  - Run containers with commands like `docker run -it --rm wernight/funbox`, exploring options such as `-i` (interactive), `-t` (terminal), and `--rm` (auto-remove on exit).
-  - Override the default command (`/menu.sh`) to explore specific features like `Nyan Cat` or `ASCII Aquarium`.
-    - `docker run -it --rm wernight/funbox nyancat`
+	- Pull the image using `docker pull wernight/funbox`.
+	- Run containers with commands like `docker run -it --rm wernight/funbox`, exploring options such as `-i` (interactive), `-t` (terminal), and `--rm` (auto-remove on exit).
+	- Override the default command (`/menu.sh`) to explore specific features like `Nyan Cat` or `ASCII Aquarium`.
+	    - `docker run -it --rm wernight/funbox nyancat`
 - **Container States and Management**:
-  - View running containers using `docker ps`. Add `-a` to see all containers, including exited ones.
-  - Remove containers with `docker rm <container_id/name>`.
-  - Run containers without `--rm` to keep them for later interaction or reuse.
+	- View running containers using `docker ps`. Add `-a` to see all containers, including exited ones.
+	- Remove containers with `docker rm <container_id/name>`.
+	- Run containers without `--rm` to keep them for later interaction or reuse.
 - **Best Practices**:
   - ![[Containers with Dockers docker inspect.png]]
   - Run containers as non-root users for security.
@@ -253,7 +306,7 @@ A container registry is indeed a service that hosts and distributes container im
   - Use `bash` to access inside the container
     - `docker run -it --rm wernight/funbox bash`
 
-## Container Networking Service and Volumes
+### Container Networking Service and Volumes
 
 - **Publishing Ports**:
   - **`-P` (uppercase)**: **Publishes all exposed ports** from the container image to random host ports. In this case, the container is exposed in all IP addresses on port `55000`.
@@ -289,3 +342,38 @@ docker run -d --rm -p 12345:80 -v ./my_web_page/:/usr/share/nginx/html nginx
 ```
 
 - Changes to the host file (e.g., appending text) are immediately reflected in the container.
+
+### containerd
+
+- K8s introduced dockershim as a compatibility layer between k8s and docker
+	- Kubernetes v1.24 **removed `dockershim`** because maintaining it added complexity.
+	- Allow docker to communicate with k8s without using the CRI
+	- Docker itself was using `containerd` internally, so Kubernetes could directly interact with `containerd`, eliminating the need for `dockershim`.
+- `ctr` is bundled with containerd and should be used for debugging containerd
+	- not user friendly
+	- `ctr images pull docker.io/library/redis:alpine`
+	- `ctr run docker.io/library/redis:alpine redis`
+- `nerdctl` provides a docker-like cli and supports docker compose
+- `nerdctl` supports
+	- encrypted container images
+	- lazy pulling
+	- p2p image distribution
+	- image signing and verifying
+	- namespaces 
+- `crictl` is used to interact with CRI compatible runtimes
+	- It is necessary to set the endpoint to connect to CRI
+	```bash
+	crictl --runtime-endpoint
+	export CONTAINER_RUNTIME_ENDPOINT
+	```
+	
+
+| Feature                    | `crictl` 🛠️                                                                        | `nerdctl` 🐳                                                                             |
+| -------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **Purpose**                | Designed to interact with CRI-compatible runtimes (like `CRI-O` and `containerd`).  | A Docker-compatible CLI for `containerd`, offering a similar experience to `docker` CLI. |
+| **API Used**               | Uses the **Container Runtime Interface (CRI)**.                                     | Uses the **containerd API** directly.                                                    |
+| **Usage**                  | Primarily used in Kubernetes environments to debug and manage CRI-based containers. | Useful as a lightweight Docker alternative when using `containerd` without Docker.       |
+| **Supported Runtimes**     | Works with CRI-compatible runtimes like `CRI-O` and `containerd`.                   | Works only with `containerd`.                                                            |
+| **Commands**               | Similar to `kubectl` for containers (e.g., `crictl ps`, `crictl images`).           | Similar to `docker` CLI (e.g., `nerdctl run`, `nerdctl build`).                          |
+| **Kubernetes Integration** | Yes, commonly used for debugging Kubernetes pods and containers.                    | No direct Kubernetes integration; more focused on standalone containerd usage.           |
+| **Purpose**                | Debugging Purposes                                                                  | General purpose                                                                          |

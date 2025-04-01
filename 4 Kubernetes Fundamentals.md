@@ -21,38 +21,7 @@ summary: >
   This note covers Kubernetes fundamentals, including container orchestration, key features, architecture, pods, deployments, services, ConfigMaps, Secrets, and labels. It also explores Kubernetes' role as the gold standard for container orchestration.
 ---
 
-# Container Orchestration
-
-**Container orchestration automates the operational tasks required to run containers.**
-
-- This includes tasks such as:
-  - Scaling containerized applications up or down
-  - Managing resource allocation (e.g., CPU, memory)
-  - Handling rolling updates and deployments
-  - Monitoring application health and performance
-  - Providing high availability and fault tolerance.
-  - Orchestration tools help ensure that containers are running smoothly, efficiently, and in a way that aligns with the needs of the application.
-
-## Key features of container orchestration
-
-1. **Provisioning and Deployment**: Simplifies the setup and deployment of containers.
-2. **Self-Healing and Scheduling**: Ensures container availability and optimal use of compute resources.
-3. **Service Exposure**: Makes containers network-accessible.
-4. **Authorization and Security**: Implements secure access and operations.
-5. **Storage Management**: Supports shared and persistent storage for workloads.
-6. **Auto-Scaling**: Adjusts resources based on demand.
-7. **Extended Functionality**: Custom Resource Definitions (CRDs) in Kubernetes allow expanding beyond core functionalities (e.g., a MySQL CRD for managing MySQL instances).
-
-### Advantages of container orchestration
-
-- Standardizes the deployment process and integrates with various components like networking, storage, security, and autoscaling.
-- This enables developers to focus on writing code, rather than worrying about the underlying infrastructure.
-- Orchestrators available are: Nomad, Openshift, Docker, and Kubernetes.
-- Openshift provide additional functionality and a support model to Kubernetes.
-- Kubernetes is widely regarded as the gold standard for Container Orchestration due to its robust feature set, large community support, and widespread adoption across industries and organizations. Originally developed by Google and later open-sourced, Kubernetes has become the de facto standard for container orchestration and management.
-- CRDs (Custom Resource Definitions) are a means of expanding Kubernetes to have functionality outside of its core features.
-- CRDs allow developers to define new resources and APIs that can be used to extend the Kubernetes platform.
-- By creating custom resources, developers can add new features and functionality to their clusters without having to modify the underlying Kubernetes codebase.
+# Kubernetes Fundamentals
 
 ## Kubernetes Architecture
 
@@ -235,6 +204,10 @@ flowchart TD
 - **Kubernetes automates scheduling, networking, and scaling** for containers.
 - Static pods (API Server, etcd, scheduler)
 
+## Cluster Info
+
+- `kubectl cluster-info` - view information about the cluster
+- `kubectl get nodes` - view information about the nodes
 ## Pod Basics
 
 - A **Pod** is the smallest deployable unit in Kubernetes.
