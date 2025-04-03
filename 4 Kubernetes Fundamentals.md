@@ -498,7 +498,91 @@ kubectl run ubuntu --image=ubuntu --command -- sleep infinity
 - **Commands like `-n` and `set-context`** allow easy namespace management.
 - **Deleting a namespace removes all its resources** automatically.
 
-## Deployments and ReplicaSets
+## ReplicaSets
+
+ReplicaSets ensure high availability and load balancing by maintaining a specified number of pod replicas in a Kubernetes cluster. If a pod crashes or a node runs out of resources, new pods are scheduled automatically.
+
+### ReplicationController vs. ReplicaSet
+
+- **ReplicationController**: Older method, ensures a fixed number of pod replicas.
+- **ReplicaSet**: Newer and preferred, with additional capabilities like selector-based pod adoption.
+
+### ReplicaSet Practical Usage
+
+#### Creating a ReplicationController
+
+```yaml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: myapp-rc
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  replicas: 3
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+```
+- Defined in a YAML file (`rc-definition.yaml`).
+- Uses `apiVersion: v1` and `kind: ReplicationController`.
+- Specifies `replicas`, a `template` for pod definition, and a container (e.g., Nginx).
+- Created using: `kubectl create -f rc-definition.yaml`
+- Check status with: `kubectl get replicationcontroller kubectl get pods`
+
+#### Creating a ReplicaSet
+
+```yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: myapp-replicaset
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      type: front-end
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+```
+
+- Defined in `replicaset-definition.yml`.
+- Uses `apiVersion: apps/v1` and `kind: ReplicaSet`.
+- Requires a **selector** (`matchLabels`) to manage pods.
+- Created using: `kubectl create -f replicaset-definition.yml`
+- Verify with: `kubectl get replicaset && kubectl get pods`
+- Can adopt existing pods matching its labels.
+
+### Scaling ReplicaSet
+
+Adjust the number of replicas
+
+```
+kubectl scale --replicas=6 -f replicaset-definition.yml
+kubectl scale --replicas=6 replicaset/myapp-replicaset
+```
+
+---
+## Deployments 
 
 A **Kubernetes Deployment** is a resource object that enables **declarative updates** for applications. It defines how applications should run, including **image versions**, **replica counts**, and **update strategies**. Deployments ensure availability during updates and provide rollback mechanisms in case of failures.
 
@@ -508,12 +592,58 @@ A **Kubernetes Deployment** is a resource object that enables **declarative upda
 2. **Updates** – Allows gradual, rolling updates to prevent downtime.
 3. **Rollbacks** – Enables reverting to a previous version in case of failures.
 4. **ReplicaSet Management** – Deployments create and manage **ReplicaSets**, which control pod lifecycles.
+5. **Batch Changes**: Allows bundling updates, such as new container versions, scaling, and resource adjustments.
 
 ---
 
-### Practical Usage
+### Rollout and Versioning
+
+Kubernetes **Deployments** allow controlled application rollouts, tracking revisions for easy updates and rollbacks.
+
+- **Rollouts & Revisions**:
+    - Initial deployment creates **revision one**.
+    - Updating (e.g., changing the container image) triggers a new **revision two**.
+- **Rollback Capability**:
+    - Enables reverting to a previous stable version if needed.
+
+### Deployment Strategies
+
+![[Deployment Strategy.png]]
+- **Recreate Strategy**:
+    - Deletes all existing pods before creating new ones.
+    - Causes **downtime** but ensures a clean deployment.
+- **Rolling Update Strategy** _(default)_:
+    - Updates pods **incrementally**, replacing old ones gradually.
+    - Ensures **continuous availability** with no downtime.
+
+### Deployment Practical Usage
 
 #### 1. **Creating a Deployment**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      type: front-end
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx:1.7.1
+```
 
 ```bash
 kubectl create deployment nginx --image=nginx --dry-run=client -o yaml > nginx-deployment.yaml kubectl apply -f nginx-deployment.yaml
@@ -561,6 +691,7 @@ watch kubectl get pods
    kubectl rollout undo deployment/nginx
    ```
 
+- Before executing the rollback, the new replica set might show all pods (for instance, five replicas) while the old replica set shows none. After the rollback, these counts are reversed.
 - If an update fails, rolling back restores a stable version.
 
 #### 7. **Rolling Back to a Specific Version**
@@ -577,7 +708,7 @@ watch kubectl get pods
 
 ---
 
-### Key Takeaways for Kubernetes Services
+### Key Takeaways for Kubernetes Deployments
 
 - Kubernetes **Deployments** provide a structured approach to application management.
 - They enable **scalability, controlled updates, and rollback mechanisms**.
@@ -1091,5 +1222,21 @@ spec:
 By implementing a **well-structured labeling strategy**, you can improve resource management, automation, and scaling within your Kubernetes cluster. This includes better resource management, easier rollouts and rollbacks, and more targeted monitoring and logging.
 
 Effective use of Kubernetes labels can contribute to better cloud cost management by allowing administrators to identify and delete unused or idle resources. Labels provide a way to categorize and filter resources, making it easier to detect waste and optimize resource utilization. By deleting unnecessary resources, organizations can avoid paying for idle capacity.
+
+## Imperative vs Declarative
+
+For scenarios that require quick operations, the imperative commands can be time saving.
+
+```bash
+kubectl run --image=nginx nginx
+kubectl create deployment --image=nginx nginx
+kubectl expose deployment nginx --port=80
+kubectl edit deployment nginx
+kubectl scale deployment nginx --replicas=5
+kubectl set image deployment nginx nginx=nginx:1.18
+```
+
+For more complex environments—such as deploying multi-container pods, setting up environment variables, or initializing containers—it is recommended to use YAML configuration files in combination with `kubectl apply`.
+ 
 
 > #flashcards
