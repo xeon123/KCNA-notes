@@ -1,5 +1,9 @@
 ---
-tags: Kubernetes, container-orchestration, KCNA, certification
+tags:
+  - Kubernetes
+  - container-orchestration
+  - KCNA
+  - certification
 title: Kubernetes Fundamentals
 category: KCNA Notes
 topics:
@@ -17,8 +21,7 @@ created: 2025-03-31
 updated: 2025-03-31
 author: reissada
 status: draft
-summary: >
-  This note covers Kubernetes fundamentals, including container orchestration, key features, architecture, pods, deployments, services, ConfigMaps, Secrets, and labels. It also explores Kubernetes' role as the gold standard for container orchestration.
+summary: This note covers Kubernetes fundamentals, including container orchestration, key features, architecture, pods, deployments, services, ConfigMaps, Secrets, and labels. It also explores Kubernetes' role as the gold standard for container orchestration.
 ---
 
 # Kubernetes Fundamentals
@@ -253,9 +256,9 @@ kubectl run ubuntu --image=ubuntu --command -- sleep infinity
 
 - Exec into the Ubuntu pod:
 
-    ```bash
-    kubectl exec -it ubuntu -- bash
-    ```
+  ```bash
+  kubectl exec -it ubuntu -- bash
+  ```
 
 - Install `curl` and test access to nginx.
 
@@ -507,7 +510,7 @@ ReplicaSets ensure high availability and load balancing by maintaining a specifi
 
 - Helps to run multiple instances of a single pod.
 - Create multiple pods to share the load across them.
-  
+
 ### ReplicationController vs. ReplicaSet
 
 - **ReplicationController**: Older method, ensures a fixed number of pod replicas.
@@ -650,8 +653,8 @@ spec:
         type: front-end
     spec:
       containers:
-      - name: nginx-container
-        image: nginx:1.7.1
+        - name: nginx-container
+          image: nginx:1.7.1
 ```
 
 ```bash
@@ -686,33 +689,33 @@ watch kubectl get pods
 
 #### 5. **Updating Deployments**
 
-   ```bash
-   kubectl set image deployment/nginx nginx=nginx:stable
-   kubectl rollout status deployment/nginx
-   kubectl rollout history deploymnt/nginx
-   ```
+```bash
+kubectl set image deployment/nginx nginx=nginx:stable
+kubectl rollout status deployment/nginx
+kubectl rollout history deploymnt/nginx
+```
 
 - This updates the **Nginx image** to a new version with **rolling updates**.``
 
 #### 6. **Handling Rollbacks**
 
-   ```bash
-   kubectl set image deployment/nginx nginx=nginx:bananas
-   kubectl rollout undo deployment/nginx
-   ```
+```bash
+kubectl set image deployment/nginx nginx=nginx:bananas
+kubectl rollout undo deployment/nginx
+```
 
 - Before executing the rollback, the new replica set might show all pods (for instance, five replicas) while the old replica set shows none. After the rollback, these counts are reversed.
 - If an update fails, rolling back restores a stable version.
 
 #### 7. **Rolling Back to a Specific Version**
 
-   `kubectl rollout undo deployment/nginx --to-revision=1`
+`kubectl rollout undo deployment/nginx --to-revision=1`
 
 - This restores the deployment to **revision 1**.
 
 #### 8. **Deleting a Deployment**
 
-   `kubectl delete deployment/nginx`
+`kubectl delete deployment/nginx`
 
 - This removes the deployment along with associated **ReplicaSets** and **Pods**.
 
@@ -736,19 +739,18 @@ There are **four primary service types**, plus one additional variant:
 #### 1. **ClusterIP (Default)** – Provides an internal IP reachable only within the cluster
 
 ```yaml
-  apiVersion: v1
-  kind: Service
-  metadata:
-    name: nginx-clusterip
-  spec:
-    selector:
-    app: nginx
-    ports:
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-clusterip
+spec:
+  selector:
+  app: nginx
+  ports:
     - protocol: TCP
       port: 80
       targetPort: 80
-    type: ClusterIP # Optional (default type)
-
+  type: ClusterIP # Optional (default type)
 ```
 
 - Example: `kubectl expose deployment/nginx --port=80`
@@ -760,16 +762,16 @@ There are **four primary service types**, plus one additional variant:
 apiVersion: v1
 kind: Service
 metadata:
- name: nginx-nodeport
+  name: nginx-nodeport
 spec:
- selector:
-   app: nginx
- ports:
-   - protocol: TCP
-     port: 80
-     targetPort: 80
-     nodePort: 30080  # Optional, Kubernetes assigns a port if not specified (range: 30000-32767)
- type: NodePort
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080 # Optional, Kubernetes assigns a port if not specified (range: 30000-32767)
+  type: NodePort
 ```
 
 - Example: `kubectl expose deployment/nginx --type=NodePort --port=80`
@@ -777,20 +779,20 @@ spec:
 
 #### 3. **LoadBalancer** – Provides an external IP using a cloud provider’s load balancer (e.g., AWS, GCP)
 
-   ```yaml
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: nginx-loadbalancer
-   spec:
-     selector:
-       app: nginx
-     ports:
-       - protocol: TCP
-         port: 80
-         targetPort: 80
-     type: LoadBalancer
-   ```
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-loadbalancer
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+```
 
 - Example: `kubectl expose deployment/nginx --type=LoadBalancer --port=8080 --target-port=80`
 - Balances traffic across pods automatically.
@@ -798,15 +800,15 @@ spec:
 
 #### 4. **ExternalName** – Maps a service to an external DNS name
 
-   ```yaml
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: external-db
-   spec:
-     type: ExternalName
-     externalName: my.database.example.com
-   ```
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: external-db
+spec:
+  type: ExternalName
+  externalName: my.database.example.com
+```
 
 - Example: `kubectl create service externalname my-service --external-name=my.database.example.com`
 - Used for aliasing external resources.
@@ -817,20 +819,20 @@ spec:
 
 #### 5. **Headless Service (Variation of ClusterIP)** – Removes the cluster IP and provides direct DNS resolution to pod IPs
 
-   ```yaml
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: nginx-headless
-   spec:
-     selector:
-       app: nginx
-     clusterIP: None
-     ports:
-       - protocol: TCP
-         port: 80
-         targetPort: 80
-   ```
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-headless
+spec:
+  selector:
+    app: nginx
+  clusterIP: None
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+```
 
 - Example: Setting `clusterIP: None` in the YAML.
 - Enables direct pod communication without a proxy.
@@ -1135,7 +1137,7 @@ kubectl run --image=ubuntu --dry-run=client --restart=Never -o yaml ubuntu --com
 #### Cleaning Up
 
 - To delete the Secret and related resources:
-   `kubectl delete pod ubuntu secret color-secret --now`
+  `kubectl delete pod ubuntu secret color-secret --now`
 
 ### Key Takeaways
 
@@ -1178,6 +1180,7 @@ Many Kubernetes components use labels to select the resources they should operat
    `kubectl expose pod nginx --port=80 --target-port=80 --dry-run=client -o yaml`
 
    - The service uses **label selectors** to target resources with `app=web`.
+
 3. **Filtering Resources by Labels**
 
    ```bash
@@ -1198,9 +1201,9 @@ metadata:
     color: red
 spec:
   containers:
-  - name: ubuntu
-    image: ubuntu
-    command: ["sleep", "infinity"]
+    - name: ubuntu
+      image: ubuntu
+      command: ["sleep", "infinity"]
 ---
 apiVersion: v1
 kind: Pod
@@ -1210,18 +1213,18 @@ metadata:
     color: green
 spec:
   containers:
-  - name: ubuntu
-    image: ubuntu
-    command: ["sleep", "infinity"]
+    - name: ubuntu
+      image: ubuntu
+      command: ["sleep", "infinity"]
 ```
 
 ##### 2. Apply the configuration
 
-   `kubectl apply -f colored_pods.yaml`
+`kubectl apply -f colored_pods.yaml`
 
 ##### 3. Query resources using labels
 
-   `kubectl get pods --selector color=green`
+`kubectl get pods --selector color=green`
 
 #### Final Thoughts on Kubernetes Labels
 
@@ -1251,5 +1254,54 @@ kubectl set image deployment nginx nginx=nginx:1.18
 ```
 
 For more complex environments—such as deploying multi-container pods, setting up environment variables, or initializing containers—it is recommended to use YAML configuration files in combination with `kubectl apply`.
+
+### Apply vs create vs run
+
+| Feature              | `kubectl run`                            | `kubectl create`                           | `kubectl apply`                                       |
+| -------------------- | ---------------------------------------- | ------------------------------------------ | ----------------------------------------------------- |
+| Purpose              | Quickly run a pod/container (imperative) | Create resource from manifest (imperative) | Create or update resource from manifest (declarative) |
+| Input                | CLI args                                 | YAML/JSON manifest                         | YAML/JSON manifest                                    |
+| Idempotent           | ❌ No                                     | ❌ No                                       | ✅ Yes                                                 |
+| Creates new resource | ✅ Yes                                    | ✅ Yes                                      | ✅ Yes                                                 |
+| Updates existing     | ❌ No                                     | ❌ No                                       | ✅ Yes                                                 |
+| Error if exists      | ✅ Yes (if same pod name)                 | ✅ Yes                                      | ❌ No (it updates)                                     |
+| Ideal for            | Testing/debugging                        | First-time deployment from manifest        | Full config management & GitOps workflows             |
+
+---
+
+#### Quick Summary
+
+- ✅ **`kubectl run`**: Great for quick testing.
+- ✅ **`kubectl create`**: Good for one-time creation from files.    
+- ✅ **`kubectl apply`**: Best for managing resources over time with YAML files.
+
+## Failed Questions
+
+|  **Questions**                                                                                                                                 | **Answers**                                                                                                                                           |
+| ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| How can you limit resources in a namespace in Kubernetes?                                                                                      | Use the kubectl create -f quota-definition.yaml command and provide a definition file with the kind as ResourceQuota, namespace, and resource limits. |
+| What is the role of a Replicaset in Kubernetes?                                                                                                | To monitor and scale pods                                                                                                                             |
+| When a new deployment is created, what is the result of the rollout process?                                                                   | Creation of a new deployment revision,Creation of a new replica set                                                                                   |
+| What is the purpose of a Deployment in Kubernetes?                                                                                             | Managing and upgrading the underlying instances seamlessly using rolling updates                                                                      |
+| How can you rollback a Kubernetes deployment to a previous revision?                                                                           | kubectl rollout undo deployment/my-deployment                                                                                                         |
+| How can you update the number of replicas in a replica set using the kubectl scale command?                                                    | Use the "kubectl scale" command with the name of the replica set and provide the new number of replicas with the replicas parameter.                  |
+| Which approach is used to specify what actions should be performed in Kubernetes without specifying how they should be executed?               | Declarative approach                                                                                                                                  |
+| In Kubernetes, which namespace is automatically created by Kubernetes when the cluster is first set up?                                        | default Namespace,kube-system Namespace                                                                                                               |
+| When scaling an application in Kubernetes to handle increased user load, how are additional instances typically created?                       | By creating a new pod altogether with a new instance of the same application                                                                          |
+| Regardless of the approach used to create an object in Kubernetes, what does Kubernetes use to store information about the object internally?  | Live configuration on the Kubernetes cluster                                                                                                          |
+| In Kubernetes, which approach involves running the 'kubectl apply' command to create, update, or delete an object?                             | Declarative approach                                                                                                                                  |
+| What does the 'kubectl apply' command do in the declarative approach of managing objects in Kubernetes?                                        | Creates a new object based on the provided configuration,Updates an existing object based on the provided configuration                               |
+| Which approach is used to specify specific actions and how should they be performed in Kubernetes?                                             | Imperative approach                                                                                                                                   |
+| When using a replication controller in Kubernetes, how can you specify the number of replicas (instances) of a pod that should be running?     | Specify the number of replicas in the "replicas" property under the Replication Controller's spec section.                                            |
+| What is the correct API version to use in the replication controller definition file?                                                          | v1                                                                                                                                                    |
+| How can you check the status of a deployment rollout in Kubernetes?                                                                            | Use the command kubectl rollout status [deployment-name].                                                                                             |
+| To connect a web-app pod in the default namespace to a service named "db-service" in the "dev" namespace, what is the correct hostname format? | db-service.dev.svc.cluster.local                                                                                                                      |
+| Which of the following commands are considered as imperative approaches to managing objects in Kubernetes?                                     | kubectl run,kubectl create -f,kubectl delete -f                                                                                                       |
+| By default, when a Docker container is deployed within a pod, how can users access the application?                                            | Only through direct SSH access to the container                                                                                                       |
+| In a ReplicaSet's configuration, where should you specify the label key-value pairs that the ReplicaSet uses to identify its Pods?             | matchLabels                                                                                                                                           |
+| Why is the template section required in the replica set specification, even if there are existing pods with matching labels?                   | The template section is required to create new pods when needed.                                                                                      |
+| What is the recommended approach for expanding the physical capacity of a Kubernetes cluster when the current node lacks sufficient capacity?  | Deploy additional pods on a new node in the cluster to expand the cluster's physical capacity.                                                        |
+| Why does a ReplicaSet require a selector definition, even if the pod definition is provided in the template?                                   | The selector helps the ReplicaSet identify pods that were created before the ReplicaSet.                                                              |
+| In which Kubernetes namespace are the resources created that should be made available to all users?                                            | kube-public                                                                                                                                           |
 
 > #flashcards
