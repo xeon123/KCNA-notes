@@ -391,7 +391,8 @@ The **kube-scheduler** is responsible for assigning pods to nodes in a Kubernete
    - **Filtering:** Nodes that don't meet resource or constraint requirements are removed.
    - **Scoring:** The remaining nodes are scored based on various functions to determine the best fit. The nodes with the highest score is chosen.
    - **Binding:** The pod is assigned to the chosen node, and the kubelet starts the pod. The name of the node is stored in the node name field of the pod.
-4. **Custom Scheduler**
+
+### Custom Scheduler
 
    - Kubernetes allows running a custom scheduler by specifying the `schedulerName` field in the pod spec.
 
@@ -404,14 +405,14 @@ The **kube-scheduler** is responsible for assigning pods to nodes in a Kubernete
       run: nginx
      name: nginx
      spec:
-     schedulerName: my-scheduler
-     containers:
-      - image: nginx
-     name: nginx
-     resources: {}
-     dnsPolicy: ClusterFirst
-     restartPolicy: Always
-     status: {}
+      schedulerName: my-scheduler
+      containers:
+        - image: nginx
+      name: nginx
+      resources: {}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      status: {}
 
      ```
 
@@ -421,10 +422,11 @@ The **kube-scheduler** is responsible for assigning pods to nodes in a Kubernete
      - Filters pods scheduled with a custom scheduler.
      - Randomly selects a node and binds the pod.
 
-5. **Bypassing the Scheduler**
+### Bypassing the Scheduler
 
    - Instead of using a scheduler, a pod can be assigned directly to a node by setting `nodeName` in the pod spec.
    - `nodeName` specifies the desired node for scheduling, but it may not reflect the actual node the pod is running.
+   - In this example, the pod is assigned to the node `worker-2`.
 
    ```yaml
    apiVersion: v1
@@ -435,21 +437,41 @@ The **kube-scheduler** is responsible for assigning pods to nodes in a Kubernete
     run: nginx
    name: nginx
    spec:
-   nodeName: worker-2
-   containers:
-    - image: nginx
-   name: nginx
-   resources: {}
-   dnsPolicy: ClusterFirst
-   restartPolicy: Always
-   status: {}
+    nodeName: worker-2
+    containers:
+      - image: nginx
+    name: nginx
+    resources: {}
+    dnsPolicy: ClusterFirst
+    restartPolicy: Always
+    status: {}
    ```
 
-6. **Using labels**
+   Alternatively, it can be created a bind object that binds a pod to an object, and send a post request to the binding api.
+
+  ```yaml
+  apiVersion: v1
+  kind: Binding
+  metadata:
+    name: nginx
+  target:
+    apiVersion: v1
+    kind: Node
+    name: worker-2
+  ```
+
+  ```bash
+  curl --header "Content-Type:application/json" --request '{"apiVersion": "v1", "kind": "Binding", ...}' POST --data http://$SERVER/api/v1/namespaces/default/pods/$PODNAME/binding/
+  ```
+
+
+### Labels and Selectors
 
 - A more targeted approach than `nodeName` is `NodeSelectors`.
-- Instead of specifying a direct node, `NodeSelectors` use Kubernetes labels to identify the target node.
-- This allows for more flexibility and dynamic scheduling based on node characteristics.
+  - Instead of specifying a direct node, `NodeSelectors` use Kubernetes labels to identify the target node.
+  - Selectors filters the items by the label.
+    - We can group by the type, or by the application, or by the functionality.
+  - This allows for more flexibility and dynamic scheduling based on node characteristics.
 - To view available node labels, use the following command:
 
 ```bash
@@ -466,7 +488,7 @@ Labels:             beta.kubernetes.io/arch=arm64
                     node.kubernetes.io/instance-type=k3s
 ```
 
-- You can use the `nodeSelector` option to select specific nodes through the use of labels -
+- You can use the `nodeSelector` option to select specific nodes through the use of labels.
 
 ```yaml
 apiVersion: v1
@@ -474,6 +496,8 @@ kind: Pod
 metadata:
   creationTimestamp: null
   labels:
+    app: App1
+    function: backend
     run: nginx
   name: nginx
 spec:
@@ -487,6 +511,96 @@ spec:
   restartPolicy: Always
 status: {}
 ```
+```bash
+kubectl get pods --selector app=App1
+```
+
+To create a ReplicaSet with 3 different pods, you label the pod definitions and use a selector in the ReplicaSet to group them. In the ReplicaSet definition file, labels appear in two places:
+
+- The labels at the top define labels for the ReplicaSet.
+- The labels under the template section define labels for the pods themselves.
+
+```yaml
+apiVersion: v1
+kind: ReplicaSet
+metadata:
+  name: single-webapp
+  labels:
+    app: App1
+    function: Front-end
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: App1
+  template:
+    metadata:
+      labels:
+        app: App1
+        function: Front-end
+    spec:
+      containers:
+      - name: simple-webapp
+        image: nginx
+```
+
+The labels on the ReplicaSet are not immediately important for connecting the ReplicaSet to the pods. The key part is using the selector field in the ReplicaSet specification, which matches the labels on the pods.
+A single label can suffice if it uniquely identifies the pods, but if there might be other pods with the same label serving different purposes, you can specify multiple labels to ensure the correct pods are selected by the ReplicaSet.
+On creation, if the labels of the selector matches the label of the pods, the ReplicaSet is created successfully.
+
+### Taints and Tolerations
+
+- Taints and Tolerations in Kubernetes control which pods can be scheduled on specific nodes.
+  - Taints are set on nodes.
+  - Tolerations are set on pods.
+- Imagine a cluster with 3 nodes (Node1, Node2, Node3) and 4 pods (A, B, C, D).
+  - By default, the scheduler distributes pods evenly across nodes.
+  - If you want Node1 to be reserved for specific pods (e.g., for a special application):
+    - Add a taint (e.g., blue) to Node1.
+      - This prevents all pods from being scheduled on it unless they can tolerate the taint.
+  - How the scheduler works in this example:
+      - Pod A → Tries Node1 → Rejected due to taint → Placed on Node2
+      - Pod B → Tries Node1 → Rejected → Placed on Node3
+      - Pod C → Tries Node1 → Rejected → Placed on Node2
+      - Pod D → Tries Node1 → Accepted (has toleration for the taint) → Successfully scheduled on Node1
+  - Taints and tolerations does not tell the POD to go to only a particular Node. Instead it tells the Node to only accept PODs with certain tolerations.
+    - If your requirement is to restrict a POD to certain nodes, it is achieved through another concept called as Node Affinity
+
+Pods have no tolerations by default, so they will not be placed on Node1 anymore.
+
+To allow specific pods (e.g., Pod D) to run on Node1, add a toleration for the blue taint in Pod D’s definition.
+
+```bash
+kubectl taint nodes node-name key=value:taint-effect
+```
+
+- The taint effects tell what do happens to PODs that do not tolerate the taint.
+  - NoSchedule
+  - PreferNoSchedule: try to avoid to place the pod on the node, but there is no guarantee.
+  - NoExecute: New pods won´t be scheduled on the node, and existing pods on the node will be evicted if they do not tolerate the taint. These pods were scheduled on the node, before they were applied.
+
+
+```bash
+kubectl taint nodes worker-1 app=blue:NoSchedule
+```
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+spec:
+  containers:
+  - name: nginx-container
+    image: nginx
+  tolerations:
+  - key: "app"
+    operator: "Equal"
+    value: "blue"
+    effect: "NoSchedule"
+```
+
+
 
 ## Storage
 

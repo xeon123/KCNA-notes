@@ -433,6 +433,12 @@ kubectl run ubuntu --image=ubuntu --command -- sleep infinity
 4. **Security & Access Control** – Role-Based Access Control (**RBAC**) restricts access to namespaces.
 5. **Organization & Simplification** – Namespaces allow duplicate resource names without conflict.
 
+### Default kubernetes namespaces
+
+- default: automatically created when the cluster is setup.
+- kube-system: created at cluster setup and contains a set of pods and services for internal purpose.
+- kube-public: available to all users.
+
 ---
 
 ### Exploring Kubernetes Namespaces in Practice
