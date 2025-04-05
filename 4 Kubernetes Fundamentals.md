@@ -208,6 +208,7 @@ flowchart TD
 
 - `kubectl cluster-info` - view information about the cluster
 - `kubectl get nodes` - view information about the nodes
+
 ## Pod Basics
 
 - A **Pod** is the smallest deployable unit in Kubernetes.
@@ -502,6 +503,11 @@ kubectl run ubuntu --image=ubuntu --command -- sleep infinity
 
 ReplicaSets ensure high availability and load balancing by maintaining a specified number of pod replicas in a Kubernetes cluster. If a pod crashes or a node runs out of resources, new pods are scheduled automatically.
 
+### ReplicationController
+
+- Helps to run multiple instances of a single pod.
+- Create multiple pods to share the load across them.
+  
 ### ReplicationController vs. ReplicaSet
 
 - **ReplicationController**: Older method, ensures a fixed number of pod replicas.
@@ -532,9 +538,10 @@ spec:
         - name: nginx-container
           image: nginx
 ```
+
 - Defined in a YAML file (`rc-definition.yaml`).
 - Uses `apiVersion: v1` and `kind: ReplicationController`.
-- Specifies `replicas`, a `template` for pod definition, and a container (e.g., Nginx).
+- Specifies `replicas`, a `template` for pod definition, and a container (e.g., nginx).
 - Created using: `kubectl create -f rc-definition.yaml`
 - Check status with: `kubectl get replicationcontroller kubectl get pods`
 
@@ -567,31 +574,32 @@ spec:
 
 - Defined in `replicaset-definition.yml`.
 - Uses `apiVersion: apps/v1` and `kind: ReplicaSet`.
-- Requires a **selector** (`matchLabels`) to manage pods.
+- Requires a **selector** (`matchLabels`) to manage pods that falls inside the label.
 - Created using: `kubectl create -f replicaset-definition.yml`
 - Verify with: `kubectl get replicaset && kubectl get pods`
 - Can adopt existing pods matching its labels.
 
-### Scaling ReplicaSet
+##### Scaling ReplicaSet
 
 Adjust the number of replicas
 
-```
+```bash
 kubectl scale --replicas=6 -f replicaset-definition.yml
 kubectl scale --replicas=6 replicaset/myapp-replicaset
 ```
 
 ---
-## Deployments 
+
+## Deployments
 
 A **Kubernetes Deployment** is a resource object that enables **declarative updates** for applications. It defines how applications should run, including **image versions**, **replica counts**, and **update strategies**. Deployments ensure availability during updates and provide rollback mechanisms in case of failures.
 
 ### Key Features of Deployments
 
-1. **Pod Replication** – Ensures a specified number of pod instances are running at all times.
-2. **Updates** – Allows gradual, rolling updates to prevent downtime.
-3. **Rollbacks** – Enables reverting to a previous version in case of failures.
-4. **ReplicaSet Management** – Deployments create and manage **ReplicaSets**, which control pod lifecycles.
+1. **Pod Replication**: Ensures a specified number of pod instances are running at all times.
+2. **Updates**: Allows gradual rolling updates to prevent downtime.
+3. **Rollbacks**: Enables reverting to a previous version in case of failures.
+4. **ReplicaSet Management**: Deployments create and manage **ReplicaSets**, which control pod lifecycles.
 5. **Batch Changes**: Allows bundling updates, such as new container versions, scaling, and resource adjustments.
 
 ---
@@ -601,20 +609,21 @@ A **Kubernetes Deployment** is a resource object that enables **declarative upda
 Kubernetes **Deployments** allow controlled application rollouts, tracking revisions for easy updates and rollbacks.
 
 - **Rollouts & Revisions**:
-    - Initial deployment creates **revision one**.
-    - Updating (e.g., changing the container image) triggers a new **revision two**.
+  - Initial deployment creates **revision one**.
+  - Updating (e.g., changing the container image) triggers a new **revision two**.
 - **Rollback Capability**:
-    - Enables reverting to a previous stable version if needed.
+  - Enables reverting to a previous stable version if needed.
 
 ### Deployment Strategies
 
 ![[Deployment Strategy.png]]
+
 - **Recreate Strategy**:
-    - Deletes all existing pods before creating new ones.
-    - Causes **downtime** but ensures a clean deployment.
+  - Deletes all existing pods before creating new ones.
+  - Causes **downtime** but ensures a clean deployment.
 - **Rolling Update Strategy** _(default)_:
-    - Updates pods **incrementally**, replacing old ones gradually.
-    - Ensures **continuous availability** with no downtime.
+  - Updates pods **incrementally**, replacing old ones gradually.
+  - Ensures **continuous availability** with no downtime.
 
 ### Deployment Practical Usage
 
@@ -680,9 +689,10 @@ watch kubectl get pods
    ```bash
    kubectl set image deployment/nginx nginx=nginx:stable
    kubectl rollout status deployment/nginx
+   kubectl rollout history deploymnt/nginx
    ```
 
-- This updates the **Nginx image** to a new version with **rolling updates**.
+- This updates the **Nginx image** to a new version with **rolling updates**.``
 
 #### 6. **Handling Rollbacks**
 
@@ -1141,11 +1151,15 @@ kubectl run --image=ubuntu --dry-run=client --restart=Never -o yaml ubuntu --com
 - ConfigMaps are used to store non-secret configuration data such as environment variables, port numbers, or other application settings. The main difference between the two is that Secrets are encrypted at rest and in transit, whereas ConfigMaps are not.
 - Both objects have a **similar usage pattern**, but Secrets provide additional security measures.
 
-## Labels in Kubernetes
+## Labels and Selectors in Kubernetes
 
 **Labels** in Kubernetes are key-value pairs used to tag and organize resources. They help categorize and manage Kubernetes objects efficiently by allowing **grouping, selection, and filtering** of resources.
 
-Many Kubernetes components use labels to select the resources they should operate on. This includes but is not limited to **ReplicaSets** selecting Pods for scaling, **Services** routing traffic to Pods based on their labels, and **Deployments** managing rollouts of new versions by labeling Pods with specific version numbers. Labels provide a powerful mechanism for decoupling component logic from specific resource identities.
+Many Kubernetes components use labels to select the resources they should operate on. This includes but is not limited to:
+
+- **ReplicaSets** selecting Pods for scaling
+- **Services** routing traffic to Pods based on their labels
+- **Deployments** managing rollouts of new versions by labeling Pods with specific version numbers.
 
 ### Why Use Labels?
 
@@ -1237,6 +1251,5 @@ kubectl set image deployment nginx nginx=nginx:1.18
 ```
 
 For more complex environments—such as deploying multi-container pods, setting up environment variables, or initializing containers—it is recommended to use YAML configuration files in combination with `kubectl apply`.
- 
 
 > #flashcards
