@@ -1277,31 +1277,53 @@ For more complex environments—such as deploying multi-container pods, setting 
 
 ## Failed Questions
 
-|  **Questions**                                                                                                                                 | **Answers**                                                                                                                                           |
-| ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| How can you limit resources in a namespace in Kubernetes?                                                                                      | Use the kubectl create -f quota-definition.yaml command and provide a definition file with the kind as ResourceQuota, namespace, and resource limits. |
-| What is the role of a Replicaset in Kubernetes?                                                                                                | To monitor and scale pods                                                                                                                             |
-| When a new deployment is created, what is the result of the rollout process?                                                                   | Creation of a new deployment revision,Creation of a new replica set                                                                                   |
-| What is the purpose of a Deployment in Kubernetes?                                                                                             | Managing and upgrading the underlying instances seamlessly using rolling updates                                                                      |
-| How can you rollback a Kubernetes deployment to a previous revision?                                                                           | kubectl rollout undo deployment/my-deployment                                                                                                         |
-| How can you update the number of replicas in a replica set using the kubectl scale command?                                                    | Use the "kubectl scale" command with the name of the replica set and provide the new number of replicas with the replicas parameter.                  |
-| Which approach is used to specify what actions should be performed in Kubernetes without specifying how they should be executed?               | Declarative approach                                                                                                                                  |
-| In Kubernetes, which namespace is automatically created by Kubernetes when the cluster is first set up?                                        | default Namespace,kube-system Namespace                                                                                                               |
-| When scaling an application in Kubernetes to handle increased user load, how are additional instances typically created?                       | By creating a new pod altogether with a new instance of the same application                                                                          |
-| Regardless of the approach used to create an object in Kubernetes, what does Kubernetes use to store information about the object internally?  | Live configuration on the Kubernetes cluster                                                                                                          |
-| In Kubernetes, which approach involves running the 'kubectl apply' command to create, update, or delete an object?                             | Declarative approach                                                                                                                                  |
-| What does the 'kubectl apply' command do in the declarative approach of managing objects in Kubernetes?                                        | Creates a new object based on the provided configuration,Updates an existing object based on the provided configuration                               |
-| Which approach is used to specify specific actions and how should they be performed in Kubernetes?                                             | Imperative approach                                                                                                                                   |
-| When using a replication controller in Kubernetes, how can you specify the number of replicas (instances) of a pod that should be running?     | Specify the number of replicas in the "replicas" property under the Replication Controller's spec section.                                            |
-| What is the correct API version to use in the replication controller definition file?                                                          | v1                                                                                                                                                    |
-| How can you check the status of a deployment rollout in Kubernetes?                                                                            | Use the command kubectl rollout status [deployment-name].                                                                                             |
-| To connect a web-app pod in the default namespace to a service named "db-service" in the "dev" namespace, what is the correct hostname format? | db-service.dev.svc.cluster.local                                                                                                                      |
-| Which of the following commands are considered as imperative approaches to managing objects in Kubernetes?                                     | kubectl run,kubectl create -f,kubectl delete -f                                                                                                       |
-| By default, when a Docker container is deployed within a pod, how can users access the application?                                            | Only through direct SSH access to the container                                                                                                       |
-| In a ReplicaSet's configuration, where should you specify the label key-value pairs that the ReplicaSet uses to identify its Pods?             | matchLabels                                                                                                                                           |
-| Why is the template section required in the replica set specification, even if there are existing pods with matching labels?                   | The template section is required to create new pods when needed.                                                                                      |
-| What is the recommended approach for expanding the physical capacity of a Kubernetes cluster when the current node lacks sufficient capacity?  | Deploy additional pods on a new node in the cluster to expand the cluster's physical capacity.                                                        |
-| Why does a ReplicaSet require a selector definition, even if the pod definition is provided in the template?                                   | The selector helps the ReplicaSet identify pods that were created before the ReplicaSet.                                                              |
-| In which Kubernetes namespace are the resources created that should be made available to all users?                                            | kube-public                                                                                                                                           |
+- How can you limit resources in a namespace in Kubernetes?
+  - Use the kubectl create -f quota-definition.yaml command and provide a definition file with the kind as ResourceQuota, namespace, and resource limits.
+- What is the role of a Replicaset in Kubernetes?
+  - To monitor and scale pods                                                                                                                           
+- When a new deployment is created, what is the result of the rollout process?
+  - Creation of a new deployment revision,Creation of a new replica set                                                                                 
+- What is the purpose of a Deployment in Kubernetes?
+  - Managing and upgrading the underlying instances seamlessly using rolling updates                                                                    
+- How can you rollback a Kubernetes deployment to a previous revision?
+  - kubectl rollout undo deployment/my-deployment                                                                                                       
+- How can you update the number of replicas in a replica set using the kubectl scale command?
+  - Use the "kubectl scale" command with the name of the replica set and provide the new number of replicas with the replicas parameter.                
+- Which approach is used to specify what actions should be performed in Kubernetes without specifying how they should be executed?
+  - Declarative approach                                                                                                                                
+- In Kubernetes, which namespace is automatically created by Kubernetes when the cluster is first set up?
+  - default Namespace,kube-system Namespace                                                                                                             
+- When scaling an application in Kubernetes to handle increased user load, how are additional instances typically created?
+  - By creating a new pod altogether with a new instance of the same application                                                                        
+- Regardless of the approach used to create an object in Kubernetes, what does Kubernetes use to store information about the object internally?
+  - Live configuration on the Kubernetes cluster                                                                                                        
+- In Kubernetes, which approach involves running the 'kubectl apply' command to create, update, or delete an object?
+  - Declarative approach                                                                                                                                
+- What does the 'kubectl apply' command do in the declarative approach of managing objects in Kubernetes?
+  - Creates a new object based on the provided configuration,Updates an existing object based on the provided configuration                            
+- Which approach is used to specify specific actions and how should they be performed in Kubernetes?
+  - Imperative approach                                                                                                                               
+- When using a replication controller in Kubernetes, how can you specify the number of replicas (instances) of a pod that should be running?
+  - Specify the number of replicas in the "replicas" property under the Replication Controller's spec section.                                       
+- What is the correct API version to use in the replication controller definition file?
+  - v1                                                                                                                                              
+- How can you check the status of a deployment rollout in Kubernetes?
+  - Use the command kubectl rollout status [deployment-name].                                                                                      
+- To connect a web-app pod in the default namespace to a service named "db-service" in the "dev" namespace, what is the correct hostname format?
+  - db-service.dev.svc.cluster.local                                                                                                           
+- Which of the following commands are considered as imperative approaches to managing objects in Kubernetes?
+  - kubectl run,kubectl create -f,kubectl delete -f                                                        
+- By default, when a Docker container is deployed within a pod, how can users access the application?
+  - Only through direct SSH access to the container                                                       
+- In a ReplicaSet's configuration, where should you specify the label key-value pairs that the ReplicaSet uses to identify its Pods?
+  - matchLabels                                                                                          
+- Why is the template section required in the replica set specification, even if there are existing pods with matching labels?
+  - The template section is required to create new pods when needed.                                    
+- What is the recommended approach for expanding the physical capacity of a Kubernetes cluster when the current node lacks sufficient capacity?
+  - Deploy additional pods on a new node in the cluster to expand the cluster's physical capacity.     
+- Why does a ReplicaSet require a selector definition, even if the pod definition is provided in the template?
+  - The selector helps the ReplicaSet identify pods that were created before the ReplicaSet.          
+- In which Kubernetes namespace are the resources created that should be made available to all users?
+  - kube-public                                                                                      
 
 > #flashcards

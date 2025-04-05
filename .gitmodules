@@ -1,0 +1,3 @@
+[submodule "documentation"]
+	path = documentation
+	url = git@github.com:xeon123/kubernetes-documentation.git
