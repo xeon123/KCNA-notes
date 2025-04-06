@@ -394,50 +394,18 @@ The **kube-scheduler** is responsible for assigning pods to nodes in a Kubernete
 
 ### Custom Scheduler
 
-   - Kubernetes allows running a custom scheduler by specifying the `schedulerName` field in the pod spec.
+- Kubernetes allows running a custom scheduler by specifying the `schedulerName` field in the pod spec.
 
-     ```yaml
-     apiVersion: v1
-     kind: Pod
-     metadata:
-     creationTimestamp: null
-     labels:
-      run: nginx
-     name: nginx
-     spec:
-      schedulerName: my-scheduler
-      containers:
-        - image: nginx
-      name: nginx
-      resources: {}
-      dnsPolicy: ClusterFirst
-      restartPolicy: Always
-      status: {}
-
-     ```
-
-   - A simple example using a Bash script demonstrates a basic custom scheduler that:
-   - `git clone https://github.com/spurin/simple-kubernetes-scheduler-example`
-     - Queries available nodes.
-     - Filters pods scheduled with a custom scheduler.
-     - Randomly selects a node and binds the pod.
-
-### Bypassing the Scheduler
-
-   - Instead of using a scheduler, a pod can be assigned directly to a node by setting `nodeName` in the pod spec.
-   - `nodeName` specifies the desired node for scheduling, but it may not reflect the actual node the pod is running.
-   - In this example, the pod is assigned to the node `worker-2`.
-
-   ```yaml
-   apiVersion: v1
-   kind: Pod
-   metadata:
-   creationTimestamp: null
-   labels:
+  ```yaml
+  apiVersion: v1
+  kind: Pod
+  metadata:
+  creationTimestamp: null
+  labels:
     run: nginx
-   name: nginx
-   spec:
-    nodeName: worker-2
+  name: nginx
+  spec:
+    schedulerName: my-scheduler
     containers:
       - image: nginx
     name: nginx
@@ -445,25 +413,55 @@ The **kube-scheduler** is responsible for assigning pods to nodes in a Kubernete
     dnsPolicy: ClusterFirst
     restartPolicy: Always
     status: {}
-   ```
+  ```
 
-   Alternatively, it can be created a bind object that binds a pod to an object, and send a post request to the binding api.
+- A simple example using a Bash script demonstrates a basic custom scheduler that:
+- `git clone https://github.com/spurin/simple-kubernetes-scheduler-example`
+  - Queries available nodes.
+  - Filters pods scheduled with a custom scheduler.
+  - Randomly selects a node and binds the pod.
 
-  ```yaml
+### Bypassing the Scheduler
+
+- Instead of using a scheduler, a pod can be assigned directly to a node by setting `nodeName` in the pod spec.
+- `nodeName` specifies the desired node for scheduling, but it may not reflect the actual node the pod is running.
+- In this example, the pod is assigned to the node `worker-2`.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+creationTimestamp: null
+labels:
+  run: nginx
+name: nginx
+spec:
+  nodeName: worker-2
+  containers:
+    - image: nginx
+  name: nginx
+  resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+  status: {}
+```
+
+Alternatively, it can be created a bind object that binds a pod to an object, and send a post request to the binding api.
+
+```yaml
+apiVersion: v1
+kind: Binding
+metadata:
+  name: nginx
+target:
   apiVersion: v1
-  kind: Binding
-  metadata:
-    name: nginx
-  target:
-    apiVersion: v1
-    kind: Node
-    name: worker-2
-  ```
+  kind: Node
+  name: worker-2
+```
 
-  ```bash
-  curl --header "Content-Type:application/json" --request '{"apiVersion": "v1", "kind": "Binding", ...}' POST --data http://$SERVER/api/v1/namespaces/default/pods/$PODNAME/binding/
-  ```
-
+```bash
+curl --header "Content-Type:application/json" --request '{"apiVersion": "v1", "kind": "Binding", ...}' POST --data http://$SERVER/api/v1/namespaces/default/pods/$PODNAME/binding/
+```
 
 ### Labels and Selectors
 
@@ -496,8 +494,8 @@ kind: Pod
 metadata:
   creationTimestamp: null
   labels:
-    app: App1
-    function: backend
+  app: App1
+  function: backend
     run: nginx
   name: nginx
 spec:
@@ -511,6 +509,7 @@ spec:
   restartPolicy: Always
 status: {}
 ```
+
 ```bash
 kubectl get pods --selector app=App1
 ```
@@ -540,8 +539,8 @@ spec:
         function: Front-end
     spec:
       containers:
-      - name: simple-webapp
-        image: nginx
+        - name: simple-webapp
+          image: nginx
 ```
 
 The labels on the ReplicaSet are not immediately important for connecting the ReplicaSet to the pods. The key part is using the selector field in the ReplicaSet specification, which matches the labels on the pods.
@@ -559,10 +558,10 @@ On creation, if the labels of the selector matches the label of the pods, the Re
     - Add a taint (e.g., blue) to Node1.
       - This prevents all pods from being scheduled on it unless they can tolerate the taint.
   - How the scheduler works in this example:
-      - Pod A → Tries Node1 → Rejected due to taint → Placed on Node2
-      - Pod B → Tries Node1 → Rejected → Placed on Node3
-      - Pod C → Tries Node1 → Rejected → Placed on Node2
-      - Pod D → Tries Node1 → Accepted (has toleration for the taint) → Successfully scheduled on Node1
+    - Pod A → Tries Node1 → Rejected due to taint → Placed on Node2
+    - Pod B → Tries Node1 → Rejected → Placed on Node3
+    - Pod C → Tries Node1 → Rejected → Placed on Node2
+    - Pod D → Tries Node1 → Accepted (has toleration for the taint) → Successfully scheduled on Node1
   - Taints and tolerations does not tell the POD to go to only a particular Node. Instead it tells the Node to only accept PODs with certain tolerations.
     - If your requirement is to restrict a POD to certain nodes, it is achieved through another concept called as Node Affinity
 
@@ -578,7 +577,6 @@ kubectl taint nodes node-name key=value:taint-effect
   - NoSchedule
   - PreferNoSchedule: try to avoid to place the pod on the node, but there is no guarantee.
   - NoExecute: New pods won´t be scheduled on the node, and existing pods on the node will be evicted if they do not tolerate the taint. These pods were scheduled on the node, before they were applied.
-
 
 ```bash
 kubectl taint nodes worker-1 app=blue:NoSchedule
@@ -600,7 +598,290 @@ spec:
     effect: "NoSchedule"
 ```
 
+### Node Selectors
 
+Label nodes
+
+```bash
+kubectl label nodes <node-name> <label-key>=<label-value>
+kubectl label nodes node-1 size=Large
+```
+
+Then we can create the pod and force it to run in the node with the label Large.
+
+```yaml
+apiVersion:
+kind: Pod
+metadata:
+  name: myapp-pod
+spec:
+containers:
+  - name: data-processor
+    image: data-processor
+nodeSelector:
+  size: Large
+```
+
+But node selectors has some limitations.
+
+- 🚫 Limitations of nodeSelector:
+  - Single Key-Value Match Only
+  - nodeSelector can only match one or more exact key-value labels on a node.
+  - You can't use complex logic like OR, NOT, or inequalities.
+  - ❌ Example: You can’t say “schedule on nodes in region X or zone Y”.
+- No Advanced Expressions
+  - Unlike nodeAffinity, nodeSelector doesn't support set-based matching (like In, NotIn, Exists, etc.).
+- Static Configuration
+  - It's a static binding—you define it in the pod spec.
+  - There’s no way to update or modify the behavior dynamically without changing the pod spec and redeploying.
+- Not Flexible for Multiple Constraints
+  - If you need to match a combination of different labels under flexible conditions, nodeSelector won't cut it.
+- No Weighting or Prioritization
+  - nodeSelector only filters eligible nodes.
+  - It doesn’t allow prioritization or ranking of nodes (e.g., prefer a node, but not strictly require it).
+- Limited Scheduling Control
+  - You can’t express soft constraints (preferences) — all constraints are hard.
+  - If no node matches, the pod simply stays pending forever.
+
+### Node Affinity
+
+The Node Affinity feature provides us with advanced capabilities to limit POD placement on specific Nodes.
+This poh is set to execute in a node with the label Large.
+
+```yaml
+apiVersion:
+kind:
+metadata:
+  name: myapp-pod
+spec:
+  containers:
+    - name: data-processor
+      image: data-processor
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: size
+                operator: In
+                values:
+                  - Large
+```
+
+- There are two additional types of Node Affinity planned
+
+  - requiredDuringSchedulingRequiredDuringExecution
+  - preferredDuringSchedulingRequiredDuringExecution
+
+- 🧱 Types of Node Affinity:
+  - requiredDuringSchedulingIgnoredDuringExecution
+    - Strict requirement: the pod must be scheduled on a node that matches the label.
+    - ❌ If no matching node exists, the pod stays Pending.
+  - ✅ Use when placement is critical.
+- preferredDuringSchedulingIgnoredDuringExecution
+  - Soft requirement: scheduler tries to find a matching node,
+    - 😌 If none is found, it still schedules the pod on another available node.
+    - ✅ Use when placement is preferred, but running the workload is more important.
+- requiredDuringSchedulingRequiredDuringExecution
+  - The pod can only be scheduled on nodes that match the affinity rules.
+  - The pod would be evicted or fail if the node’s labels changed and no longer matched
+
+### Exercise
+
+- 🎯 Goal
+  - Place each colored pod (Blue, Red, Green) on its matching colored node and prevent interference from other teams’ pods.
+- 🛠 Taints and Tolerations Only
+  - Taints are applied to nodes (e.g., color=blue:NoSchedule).
+- Tolerations are added to pods (e.g., tolerate: color=blue).
+  - ✅ Ensures only pods with the correct toleration run on the node.
+  - ❌ But doesn't force pods to go to the tainted node — they can land elsewhere if allowed.
+- 🧭 Node Affinity Only
+  - Labels are added to nodes (e.g., color=blue).
+- Node selectors/affinity are added to pods to match labels.
+  - ✅ Ensures pods are placed on matching nodes.
+  - ❌ But doesn’t stop other (unrelated) pods from landing on those nodes.
+- ✅ Best Practice: Combine Both
+  - Use taints/tolerations to protect nodes from unwanted pods.
+  - Use node affinity to ensure your pods go to the correct nodes.
+  - This dedicates specific nodes to specific pods — no cross-contamination.
+
+## Resource limits
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: manual-claim
+spec:
+  containers:
+    - name: simple-webapp
+      image: nginx
+      ports:
+        containerPort: 80
+      resources:
+        requests:
+          mem: "250Mi"
+          cpu: "100mi"
+        limits:
+          memory: "1Gi"
+          cpu: 1
+```
+
+- The scheduler looks for a pod with enough resources to deploy the pod.
+- CPU can have decimal values
+  - 0.1 => 100 mili
+  - 1 CPU can mean 1 vCPU in AWS
+- resources (requests)
+  - Definition: The minimum amount of CPU or memory that a container is guaranteed to get.
+  - Purpose: Used by the scheduler to decide where to place the pod.
+  - Effect: If a node doesn’t have the requested resources available, the pod won’t be scheduled there.
+- limits
+  - Definition: The maximum amount of CPU or memory a container is allowed to use.
+  - Purpose: Prevents a container from over-consuming resources.
+  - Effect:
+    - For CPU: If it exceeds the limit, it’s throttled.
+    - For Memory: If it exceeds the limit, it gets killed (OOMKilled).
+- In a Pod with multiple containers, the `resources.requests` and `resources.limits` are assigned per container, not per Pod.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: multi-container-example
+spec:
+  containers:
+    - name: app
+      image: my-app
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "200Mi"
+        limits:
+          cpu: "200m"
+          memory: "400Mi"
+
+    - name: sidecar
+      image: my-sidecar
+      resources:
+        requests:
+          cpu: "50m"
+          memory: "100Mi"
+        limits:
+          cpu: "100m"
+          memory: "200Mi"
+```
+
+- Exceed Limits
+  - In a CPU, the container cannot exceed the CPU limits.
+  - If the pod starts to consume constantly more memory then set, the pod will be terminated with OOM (out of memory) error.
+- It is possible to combine the requests and limits
+
+| Requests Set | Limits Set | Scheduling Behavior                    | Runtime Behavior                                                        |
+| ------------ | ---------- | -------------------------------------- | ----------------------------------------------------------------------- |
+| ✅ Yes       | ✅ Yes     | Pod is scheduled based on requests     | Container is throttled (CPU) or OOMKilled (memory) if it exceeds limits |
+| ✅ Yes       | ❌ No      | Pod is scheduled based on requests     | Container can use **unlimited** resources (up to node capacity)         |
+| ❌ No        | ✅ Yes     | Pod might not be scheduled efficiently | Container is throttled or OOMKilled if it exceeds limits                |
+| ❌ No        | ❌ No      | Best-effort pod, lowest priority       | Can use any free resources but **can be evicted** anytime               |
+
+- Requests set and no limits is the ideal setup, athough sometimes it is necesary to set the limits.
+
+#### 🔍 Detailed Breakdown
+
+---
+
+##### ✅ Requests + ✅ Limits
+
+- **Best practice** in production.
+- Pod gets scheduled on a node with at least the amount of CPU/memory in the request.
+- Container cannot exceed the specified limit at runtime.
+- **CPU overuse**: throttled.
+- **Memory overuse**: OOMKilled.
+
+---
+
+##### ✅ Requests + ❌ Limits
+
+- Pod gets scheduled normally.
+- Container can consume **more than requested**, even up to the node’s free capacity.
+- But there’s **no upper bound** – risk of one container starving others.
+- Good for **batch jobs** or **low-priority workloads** that can scale opportunistically.
+
+---
+
+##### ❌ Requests + ✅ Limits
+
+- Kubernetes doesn't know how much to reserve for scheduling.
+- May overcommit nodes (since there's no reservation).
+- **Can cause scheduling delays** or poor balancing.
+- Limits are still enforced at runtime – the container will be **throttled or killed** if it exceeds them.
+
+---
+
+##### ❌ Requests + ❌ Limits
+
+- This is a **BestEffort** pod.
+- Kubernetes won’t reserve **any resources**.
+- Scheduled **only if resources are free** at the moment.
+- Will be the **first to get evicted** under memory pressure.
+- Useful for **non-critical** background tasks.
+
+---
+
+##### 📌 Summary Table
+
+| Quality of Service (QoS) Class | Requests | Limits    | Description                      |
+| ------------------------------ | -------- | --------- | -------------------------------- |
+| **Guaranteed**                 | ✅ Same  | ✅ Same   | Best; stable and protected       |
+| **Burstable**                  | ✅ Yes   | ✅ Yes/No | Flexible; for variable workloads |
+| **BestEffort**                 | ❌ No    | ❌ No     | Worst; no guarantees             |
+
+- You can set defaults limits for each container created with a 'LimitRange` object.
+  - This is set at namespace level.
+- This limits will only be enforced for new pods.
+
+```yaml
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: resource-limits
+  namespace: dev
+spec:
+  limits:
+    - default:
+        cpu: "500m"
+        memory: "512Mi"
+      defaultRequest:
+        cpu: "250m"
+        memory: "256Mi"
+      max:
+        cpu: "1"
+        memory: "1Gi"
+      min:
+        cpu: "100m"
+        memory: "128Mi"
+      type: Container
+```
+
+- Set the limits
+  - default: If a container has no limits defined, it gets these.
+  - defaultRequest: If a container has no requests, these will be applied.
+  - max: Users cannot set limits above this.
+  - min: Users must request at least this.
+  - type: Container: Applies to each container, not the whole Pod.
+- To restrict the total amount of resources that can be consumed by applications, there is ResourceQuotas.
+
+```yaml
+apiVersion: v1
+kind: ResourceQuotas
+metadata:
+  name: ResourceQuotas
+spec:
+  hard:
+    requests.cpu: 4
+    requests.memory: 4Gi
+    limits.cpu: 10
+    limits.memory: 10Gi
+```
 
 ## Storage
 

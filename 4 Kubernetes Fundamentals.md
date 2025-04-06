@@ -599,6 +599,236 @@ kubectl scale --replicas=6 replicaset/myapp-replicaset
 
 ---
 
+## DaemonSet
+
+![[Kubernetes Fundamentals Daemonset.png]]
+
+- A DaemonSet ensures that one copy of a pod runs on each node in the Kubernetes cluster.
+  - When new nodes are added, the pod is scheduled there automatically.
+  - When nodes are removed, the corresponding pods are cleaned up.
+- Similar to ReplicaSets, but with one pod per node rather than a specific number of replicas.
+- Use Cases of DaemonSets
+  - Monitoring & Logging Agents
+    - For example: Prometheus node exporter, Fluentd, etc.
+    - Automatically runs on every node to collect metrics/logs.
+  - Kube-proxy Deployment
+    - A core component required on every node; often deployed as a DaemonSet.
+  - Network Plugins
+    - Tools like weave-net, Calico, or Flannel use DaemonSets to place networking agents on all nodes.
+- Structure is similar to a ReplicaSet, with a pod template and label selector.
+- Before v1.12: Used nodeName in pod specs to directly assign to nodes.
+- Since v1.12: Uses default scheduler with Node Affinity to intelligently schedule pods on all nodes.
+
+```yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: monitoring-daemon
+spec:
+  selector:
+    matchLabels:
+      app: monitoring-agent
+  template:
+    metadata:
+      labels:
+        app: monitoring-agent
+    spec:
+      containers:
+        - name: monitoring-agent
+          image: monitoring-agent
+```
+
+---
+
+## Static Pods
+
+- What happens if there's no Kubernetes control plane?
+  - If you're running just the kubelet on a node—no kube-apiserver, kube-scheduler, ETCD, or any cluster—can you still run pods?
+    - ✅ Yes. The kubelet can run in standalone mode using Static Pods.
+- What are Static Pods?
+  - Static Pods are managed directly by the kubelet, not by the Kubernetes control plane.
+  - The kubelet watches a specific directory (e.g., /etc/kubernetes/manifests) for pod definition files (`*.yaml`).
+    - When files are added/updated/removed:
+      - The kubelet periodically checks this folder, read the files and create the pods.
+      - ➕ New pod definition file: kubelet creates the pod.
+      - ✏️ File is modified: kubelet recreates the pod with new config.
+      - ❌ File is deleted: kubelet deletes the pod.
+- No cluster, no API server needed.
+  - Only Pod resources are supported (not Deployments, Services, etc.).
+- Kubelet ensures pod liveness and restarts containers if they crash.
+- Kubelet doesn't manage higher-level abstractions like ReplicaSets or Deployments.
+- You can check running static pods using `docker ps` or `crictl ps` and observe pod names prefixed with `k8s_`.
+
+### Configuring Static Pods
+
+- There are two ways to tell the kubelet where to look for Static Pod definitions:
+  - Directly via the systemd service file:
+
+```bash
+ExecStart=/usr/local/bin/kubelet \
+  --pod-manifest-path=/etc/kubernetes/manifests \
+  ...
+```
+
+- Using a config file (preferred in kubeadm clusters):
+
+```yaml
+# kubeconfig.yaml
+staticPodPath: /etc/kubernetes/manifests
+```
+
+- And pass it to kubelet:
+
+```yaml
+--config=kubeconfig.yaml
+```
+
+### Kubelet in static pods
+
+- The kubelet creates pods from two sources:
+  - Static pod manifest files in a specified folder.
+  - Requests from the kube-apiserver via an HTTP API.
+- For static pods, the kubelet creates mirror pods on the API server so they appear when you run kubectl get pods. These mirror pods are read-only representations—you can't modify or delete them via the API. To change or remove static pods, you must update the files in the node’s manifest folder.
+
+### Use Case
+
+- Static Pods are useful for bootstrapping the Kubernetes control plane.
+- Since they don't rely on the control plane to run, you can use them to deploy core components (like kube-apiserver, controller-manager, and etcd) as pods.
+- How it works:
+  - Install the kubelet on each master node.
+  - Create pod definition files for each control plane component using Docker images.
+  - Place these files in the /etc/kubernetes/manifests folder.
+  - The kubelet automatically starts them as static pods and ensures they are restarted if they crash.
+  - This method avoids the need to manually manage binaries or services and is the approach used by the kubeadm tool to set up a Kubernetes cluster.
+
+### Static Pods vs DaemonSet
+
+| Feature                 | **DaemonSet**                                                        | **Static Pod**                                                               |
+| ----------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **Definition Location** | Defined via YAML and applied to the cluster (API server)             | Defined locally in a node's manifest directory (`/etc/kubernetes/manifests`) |
+| **Managed By**          | Kubernetes **Control Plane** (Scheduler & Controller)                | **Kubelet** directly on each node                                            |
+| **Use Case**            | Run a pod on all or selected nodes (e.g., logging agent, monitoring) | Bootstrap critical components (e.g., control plane pods)                     |
+| **Visibility**          | Fully visible and manageable via the Kubernetes API                  | Mirrored in the API server as **read-only mirror pods**                      |
+| **Scalability**         | Managed centrally, easily scaled or updated                          | Must be manually updated on each node                                        |
+| **Restart Handling**    | Handled by Kubernetes and controller loop                            | Handled by the local kubelet                                                 |
+| **Deletion Method**     | Delete using `kubectl delete`                                        | Delete the pod manifest file from the node                                   |
+| **Best For**            | Uniform deployment across nodes                                      | Running essential services even when control plane is down                   |
+
+---
+
+## Multiple Scheduler
+
+- Default-scheduler has an algorithm that distributes pods across nodes evenly, as well as, takes into consideration taints & tolerations and node affinity etc.
+- It is possible do defide a specific scheduler that instructs kubernetes when creating a POD or a Deployment.
+
+### Deploying a Scheduler
+
+#### **1. Deploying Additional Scheduler (Binary / Systemd approach)**
+
+- **Download kube-scheduler binary**:
+
+  ```bash
+  wget https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kube-scheduler
+  ```
+
+- **Run as a systemd service**:
+
+  - Create custom config files:
+    - `my-scheduler-config.yaml` or `my-scheduler-2-config.yaml` with a custom `schedulerName`.
+  - Configure systemd service:
+
+    - `my-scheduler.service`
+
+    ```ini
+    ExecStart=/usr/local/bin/kube-scheduler
+    --config=/etc/kubernetes/config/my-scheduler-config.yaml
+    ```
+
+    - `my-scheduler-config.yaml`
+
+    ```yaml
+    apiVersion: kubescheduler.config.k8s.io/v1
+    kind: KubeSchedulerConfiguration
+    profiles:
+      - schedulerName: my-scheduler-2
+    ```
+
+  - Each scheduler must:
+    - Use a **unique `schedulerName`**
+    - Use its own **config file**
+    - (Optionally) include `--kubeconfig` for authentication
+
+> 📝 **Note**: This is an outdated method. Modern deployments use Pods.
+
+---
+
+#### 🚀 **2. Deploying Additional Scheduler as a Pod (Recommended)**
+
+- **Define a Pod** (e.g., `my-custom-scheduler.yaml`):
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-custom-scheduler
+  namespace: kube-system
+spec:
+  containers:
+    - name: kube-scheduler
+      image: k8s.gcr.io/kube-scheduler-amd64:v1.11.3
+      command:
+        - kube-scheduler
+        - --address=127.0.0.1
+        - --kubeconfig=/etc/kubernetes/scheduler.conf
+        - --config=/etc/kubernetes/my-scheduler-config.yaml
+```
+
+- **Custom Config** (`my-scheduler-config.yaml`):
+
+```yaml
+apiVersion: kubescheduler.config.k8s.io/v1
+kind: KubeSchedulerConfiguration
+profiles:
+  - schedulerName: my-scheduler
+leaderElection:
+  leaderElect: true
+  resourceNamespace: kube-system
+  resourceName: lock-object-my-scheduler
+```
+
+> 🔐 **Leader Election** is used in HA setups to ensure only one scheduler is active at a time. The `resourceName` helps differentiate multiple schedulers during leader election.
+
+- Then you can define a pod that uses the scheduler.
+
+```yaml
+apiVersion: 1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+    - image: nginx
+      name: nginx
+  schedulerName: my-custom-scheduler
+```
+
+- If the scheduler was not configured correctly, the pod will stay in `PENDING` state.
+- You can view if the scheduler was picked up with `kubectl get events -o wide`, and the logs with `kubectl logs my-custom-scheduler --name-space=kube-system`
+
+---
+
+#### ✅ Key Points
+
+| Aspect             | Binary/Systemd Approach          | Pod Approach (Recommended)         |
+| ------------------ | -------------------------------- | ---------------------------------- |
+| Deployment Style   | Manual binary + service config   | Pod in `kube-system` namespace     |
+| Modern Usage       | Rare (legacy/manual setups)      | Common in kubeadm and cloud setups |
+| Leader Election    | Possible but manual              | Easy via config                    |
+| Flexibility        | Low                              | High                               |
+| Scheduler Identity | Custom `schedulerName` in config | Same (via profiles)                |
+
+---
+
 ## Deployments
 
 A **Kubernetes Deployment** is a resource object that enables **declarative updates** for applications. It defines how applications should run, including **image versions**, **replica counts**, and **update strategies**. Deployments ensure availability during updates and provide rollback mechanisms in case of failures.
@@ -715,13 +945,17 @@ kubectl rollout undo deployment/nginx
 
 #### 7. **Rolling Back to a Specific Version**
 
-`kubectl rollout undo deployment/nginx --to-revision=1`
+```bash
+kubectl rollout undo deployment/nginx --to-revision=1
+```
 
 - This restores the deployment to **revision 1**.
 
 #### 8. **Deleting a Deployment**
 
-`kubectl delete deployment/nginx`
+```bash
+kubectl delete deployment/nginx
+```
 
 - This removes the deployment along with associated **ReplicaSets** and **Pods**.
 
@@ -1267,10 +1501,10 @@ For more complex environments—such as deploying multi-container pods, setting 
 | -------------------- | ---------------------------------------- | ------------------------------------------ | ----------------------------------------------------- |
 | Purpose              | Quickly run a pod/container (imperative) | Create resource from manifest (imperative) | Create or update resource from manifest (declarative) |
 | Input                | CLI args                                 | YAML/JSON manifest                         | YAML/JSON manifest                                    |
-| Idempotent           | ❌ No                                     | ❌ No                                       | ✅ Yes                                                 |
-| Creates new resource | ✅ Yes                                    | ✅ Yes                                      | ✅ Yes                                                 |
-| Updates existing     | ❌ No                                     | ❌ No                                       | ✅ Yes                                                 |
-| Error if exists      | ✅ Yes (if same pod name)                 | ✅ Yes                                      | ❌ No (it updates)                                     |
+| Idempotent           | ❌ No                                    | ❌ No                                      | ✅ Yes                                                |
+| Creates new resource | ✅ Yes                                   | ✅ Yes                                     | ✅ Yes                                                |
+| Updates existing     | ❌ No                                    | ❌ No                                      | ✅ Yes                                                |
+| Error if exists      | ✅ Yes (if same pod name)                | ✅ Yes                                     | ❌ No (it updates)                                    |
 | Ideal for            | Testing/debugging                        | First-time deployment from manifest        | Full config management & GitOps workflows             |
 
 ---
@@ -1278,7 +1512,7 @@ For more complex environments—such as deploying multi-container pods, setting 
 #### Quick Summary
 
 - ✅ **`kubectl run`**: Great for quick testing.
-- ✅ **`kubectl create`**: Good for one-time creation from files.    
+- ✅ **`kubectl create`**: Good for one-time creation from files.
 - ✅ **`kubectl apply`**: Best for managing resources over time with YAML files.
 
 ## Failed Questions
@@ -1286,50 +1520,50 @@ For more complex environments—such as deploying multi-container pods, setting 
 - How can you limit resources in a namespace in Kubernetes?
   - Use the kubectl create -f quota-definition.yaml command and provide a definition file with the kind as ResourceQuota, namespace, and resource limits.
 - What is the role of a Replicaset in Kubernetes?
-  - To monitor and scale pods                                                                                                                           
+  - To monitor and scale pods
 - When a new deployment is created, what is the result of the rollout process?
-  - Creation of a new deployment revision,Creation of a new replica set                                                                                 
+  - Creation of a new deployment revision,Creation of a new replica set
 - What is the purpose of a Deployment in Kubernetes?
-  - Managing and upgrading the underlying instances seamlessly using rolling updates                                                                    
+  - Managing and upgrading the underlying instances seamlessly using rolling updates
 - How can you rollback a Kubernetes deployment to a previous revision?
-  - kubectl rollout undo deployment/my-deployment                                                                                                       
+  - kubectl rollout undo deployment/my-deployment
 - How can you update the number of replicas in a replica set using the kubectl scale command?
-  - Use the "kubectl scale" command with the name of the replica set and provide the new number of replicas with the replicas parameter.                
+  - Use the "kubectl scale" command with the name of the replica set and provide the new number of replicas with the replicas parameter.
 - Which approach is used to specify what actions should be performed in Kubernetes without specifying how they should be executed?
-  - Declarative approach                                                                                                                                
+  - Declarative approach
 - In Kubernetes, which namespace is automatically created by Kubernetes when the cluster is first set up?
-  - default Namespace,kube-system Namespace                                                                                                             
+  - default Namespace,kube-system Namespace
 - When scaling an application in Kubernetes to handle increased user load, how are additional instances typically created?
-  - By creating a new pod altogether with a new instance of the same application                                                                        
+  - By creating a new pod altogether with a new instance of the same application
 - Regardless of the approach used to create an object in Kubernetes, what does Kubernetes use to store information about the object internally?
-  - Live configuration on the Kubernetes cluster                                                                                                        
+  - Live configuration on the Kubernetes cluster
 - In Kubernetes, which approach involves running the 'kubectl apply' command to create, update, or delete an object?
-  - Declarative approach                                                                                                                                
+  - Declarative approach
 - What does the 'kubectl apply' command do in the declarative approach of managing objects in Kubernetes?
-  - Creates a new object based on the provided configuration,Updates an existing object based on the provided configuration                            
+  - Creates a new object based on the provided configuration,Updates an existing object based on the provided configuration
 - Which approach is used to specify specific actions and how should they be performed in Kubernetes?
-  - Imperative approach                                                                                                                               
+  - Imperative approach
 - When using a replication controller in Kubernetes, how can you specify the number of replicas (instances) of a pod that should be running?
-  - Specify the number of replicas in the "replicas" property under the Replication Controller's spec section.                                       
+  - Specify the number of replicas in the "replicas" property under the Replication Controller's spec section.
 - What is the correct API version to use in the replication controller definition file?
-  - v1                                                                                                                                              
+  - v1
 - How can you check the status of a deployment rollout in Kubernetes?
-  - Use the command kubectl rollout status [deployment-name].                                                                                      
+  - Use the command kubectl rollout status [deployment-name].
 - To connect a web-app pod in the default namespace to a service named "db-service" in the "dev" namespace, what is the correct hostname format?
-  - db-service.dev.svc.cluster.local                                                                                                           
+  - db-service.dev.svc.cluster.local
 - Which of the following commands are considered as imperative approaches to managing objects in Kubernetes?
-  - kubectl run,kubectl create -f,kubectl delete -f                                                        
+  - kubectl run,kubectl create -f,kubectl delete -f
 - By default, when a Docker container is deployed within a pod, how can users access the application?
-  - Only through direct SSH access to the container                                                       
+  - Only through direct SSH access to the container
 - In a ReplicaSet's configuration, where should you specify the label key-value pairs that the ReplicaSet uses to identify its Pods?
-  - matchLabels                                                                                          
+  - matchLabels
 - Why is the template section required in the replica set specification, even if there are existing pods with matching labels?
-  - The template section is required to create new pods when needed.                                    
+  - The template section is required to create new pods when needed.
 - What is the recommended approach for expanding the physical capacity of a Kubernetes cluster when the current node lacks sufficient capacity?
-  - Deploy additional pods on a new node in the cluster to expand the cluster's physical capacity.     
+  - Deploy additional pods on a new node in the cluster to expand the cluster's physical capacity.
 - Why does a ReplicaSet require a selector definition, even if the pod definition is provided in the template?
-  - The selector helps the ReplicaSet identify pods that were created before the ReplicaSet.          
+  - The selector helps the ReplicaSet identify pods that were created before the ReplicaSet.
 - In which Kubernetes namespace are the resources created that should be made available to all users?
-  - kube-public                                                                                      
+  - kube-public
 
 > #flashcards
