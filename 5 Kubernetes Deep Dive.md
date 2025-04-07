@@ -379,18 +379,25 @@ kubectl certificate approve batman
 
 The **kube-scheduler** is responsible for assigning pods to nodes in a Kubernetes cluster. The scheduling process consists of several key steps:
 
-1. **Pod Creation**
-   - If a pod is created without a specified node, the `kube-scheduler` determines the best node for it.
-     - It evaluates the pod's resource requirements (CPU, memory) against available nodes.
-   - Other factors such as **node affinity, anti-affinity, taints and tolerations** are also considered.
-2. **Pod Placement**
-   - After selecting a suitable node, the scheduler assigns the pod to that node.
-   - The **kubelet** on the node then starts the pod.
-3. **Scheduling Process**  
-   The scheduler follows three main operations:
-   - **Filtering:** Nodes that don't meet resource or constraint requirements are removed.
-   - **Scoring:** The remaining nodes are scored based on various functions to determine the best fit. The nodes with the highest score is chosen.
-   - **Binding:** The pod is assigned to the chosen node, and the kubelet starts the pod. The name of the node is stored in the node name field of the pod.
+- **Pod Creation**
+  - If a pod is created without a specified node, the `kube-scheduler` determines the best node for it.
+    - It evaluates the pod's resource requirements (CPU, memory) against available nodes.
+  - Other factors such as **node affinity, anti-affinity, taints and tolerations** are also considered.
+- **Queue Phase**
+  - Pods are placed in the scheduling queue.
+  - Sorted by priority, determined by the `priorityClassName`.
+  - A PriorityClass must be defined (e.g., high-priority with a value of 1,000,000).
+  - Plugin: `PrioritySort`
+- **Scheduling Process** The scheduler follows three main operations:
+  - **Filtering:** Nodes that don't meet resource or constraint requirements are removed.
+    - Plugin: `NodeResourcesFit`, `NodeName`, `NodeUnschedulable`, etc.
+  - **Scoring:** The remaining nodes are scored based on various functions to determine the best fit. The nodes with the highest score is chosen.
+    - Remaining nodes are scored.
+      - Score based on how much CPU will remain after placing the pod:
+        - E.g., Node A → 2 CPUs left, Node B → 6 CPUs left → Node B scores higher.
+    - Plugin: `NodeResourcesFit`, `ImageLocality`, etc.
+  - **Binding:** The pod is assigned to the node with the highest score, and the kubelet starts the pod. The name of the node is stored in the node name field of the pod.
+    - Plugin: `DefaultBinder`
 
 ### Custom Scheduler
 
@@ -686,7 +693,7 @@ spec:
   - The pod can only be scheduled on nodes that match the affinity rules.
   - The pod would be evicted or fail if the node’s labels changed and no longer matched
 
-### Exercise
+#### Exercise
 
 - 🎯 Goal
   - Place each colored pod (Blue, Red, Green) on its matching colored node and prevent interference from other teams’ pods.
@@ -704,6 +711,125 @@ spec:
   - Use taints/tolerations to protect nodes from unwanted pods.
   - Use node affinity to ensure your pods go to the correct nodes.
   - This dedicates specific nodes to specific pods — no cross-contamination.
+
+### Scheduler Profile
+
+#### Queueing phase Profile
+
+##### 1. Define the `PriorityClass` (run this first if not already created)
+
+```yaml
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority
+value: 1000000
+globalDefault: false
+description: "This priority class is used for high-priority pods."
+```
+
+Apply it:
+
+```bash
+kubectl apply -f high-priority-class.yaml
+```
+
+---
+
+##### 2. Define the Pod that uses the `PriorityClass`
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+spec:
+  priorityClassName: high-priority
+  containers:
+    - name: simple-webapp-color
+      image: simple-webapp-color
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: "10"
+```
+
+This pod will get scheduled with higher precedence compared to pods with lower or no priority class, when provided resources are available.
+Then the pod enters the Filter phase. This is where nodes that cannot run the pod are filtered out.
+Then it enters the Scoring phase. This is where nodes are scored with different weights.
+Then it enters the binding phase. This is where the pod is finally bound to a node with the highest score.
+
+#### Extension Points
+
+- The Kubernetes scheduler provides multiple extension points where custom plugins can hook into the scheduling process. These points allow developers to run custom logic at different phases of scheduling a Pod:
+  - PreFilter: Runs before the Filter phase. Used for preparing or shortlisting nodes early.
+  - Filter: Filters out nodes that do not meet the Pod’s requirements.
+  - PostFilter: Runs after the Filter phase. Can be used to take action if no suitable nodes were found.
+  - PreScore: Executes before Scoring. Used to set up or prepare scoring calculations.
+  - Score: Assigns scores to nodes based on criteria like available resources.
+  - Reserve: Runs after Scoring to temporarily reserve resources on the selected node.
+  - Permit: A checkpoint before Binding, which can allow or deny Pod placement.
+  - PreBind: Executes just before the Pod is bound to the selected node.
+  - Bind: Actually binds the Pod to the node.
+  - PostBind: Runs after the Bind phase is complete. Useful for cleanup or notification.
+- These extension points make the scheduler highly customizable using custom scheduler plugins.
+- Kubernetes Scheduler Profile with a custom configuration using plugins like `NodeResourcesFit`, `NodeAffinity`, and a sample custom plugin named `MyCustomPlugin`.
+- You define the scheduler profile in the scheduler configuration file, typically passed via `--config=/path/to/scheduler-config.yaml`.
+- `scheduler-config.yaml` example
+
+```yaml
+apiVersion: kubescheduler.config.k8s.io/v1
+kind: KubeSchedulerConfiguration
+clientConnection:
+  kubeconfig: /etc/kubernetes/scheduler.conf
+leaderElection:
+  leaderElect: true
+profiles:
+  - schedulerName: my-scheduler
+    plugins:
+      preFilter:
+        enabled:
+          - name: MyCustomPlugin
+      filter:
+        enabled:
+          - name: NodeResourcesFit
+          - name: NodeAffinity
+          - name: MyCustomPlugin
+      score:
+        enabled:
+          - name: NodeResourcesBalancedAllocation
+          - name: MyCustomPlugin
+        disabled:
+          - name: "*"
+      bind:
+        enabled:
+          - name: DefaultBinder
+    pluginConfig:
+      - name: MyCustomPlugin
+        args:
+          someKey: someValue
+```
+
+- Pod example using this scheduler
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-app
+spec:
+  schedulerName: my-scheduler
+  containers:
+    - name: app
+      image: nginx
+```
+
+##### 🧠 What’s Going On
+
+- schedulerName: You can match this in your Pod spec using schedulerName: my-scheduler.
+- plugins: Enables or disables specific scheduling plugins at various extension points.
+- pluginConfig: Supplies arguments to plugins, including your custom plugin.
+- MyCustomPlugin: This is a placeholder name for a scheduler plugin you’ve developed.
 
 ## Resource limits
 
