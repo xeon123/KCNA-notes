@@ -1345,3 +1345,28 @@ In a regular **Kubernetes cluster (without a service mesh)**, the **data plane a
 | **Data Plane**    | Proxies network traffic between services       | Runs actual application workloads                              |
 | **Example**       | Istio (**Istiod** = control, **Envoy** = data) | Kubernetes (**API server** = control, **Worker nodes** = data) |
 | **Purpose**       | Service-to-service communication               | Running containerized applications                             |
+
+## Failed Questions
+
+- Which statement accurately describes the behavior of a static pod in a Kubernetes cluster?
+	- When a kubelet creates a static pod, it also creates a read-only mirror object in the Kube API server.
+- How can you taint a node in Kubernetes using the kubectl command?
+	- kubectl taint nodes node-name key=value:taint-effect,kubectl taint node node-name key=value:taint-effect
+- How can you change the default resource limit for containers in Kubernetes?
+	- Add a ‘limit’ section under the resources section in the pod definition file.
+- Where are the labels defined for the pods in a ReplicaSet?
+	- Under the template section of the Replicaset definition file.
+- What approach can be used to specify the path for static pod definition files when not directly specifying it in the kubelet.service file?
+	- Creating a separate config file and defining the directory path as ‘staticPodPath’
+- How do you label a node in Kubernetes?
+	- kubectl label nodes <node_name\> <label-key\>=<label-value\>
+- The Kubernetes API server is aware of the static pods created by the kubelet.
+	- True
+- What does the taint effect "NoSchedule" indicate in Kubernetes?
+	- Pods will not be scheduled on the node.
+- To connect a ReplicaSet to the desired pods, which field in the ReplicaSet specification is used to match the labels defined on the pod?
+	- selector
+- What can be done to manually schedule a pod to a specific node in Kubernetes when there is no scheduler monitoring and scheduling the nodes?
+	- Set the NodeName field in the pod manifest to the desired node name.
+- How can you limit a pod to run on a specific node in Kubernetes?
+	- Add a label to the node and use nodeSelector in the pod's spec section.
