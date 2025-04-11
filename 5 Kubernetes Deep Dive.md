@@ -181,7 +181,7 @@ curl --location 'http://localhost:8001/api/v1/nodes' --header 'Accept: applicati
 Kubernetes supports several ways to authenticate users accessing the API server:
 
 - Static Password File
-  -  A CSV file (user-details.csv) contains credentials.
+  - A CSV file (user-details.csv) contains credentials.
   - Format: password, username, userID.
   - Specified in the API server using the flag: `--basic-auth-file=user-details.csv`
   - Requires a restart of the kube-apiserver.
@@ -210,34 +210,35 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --service-node-port-range=30000-32767
 ```
 
-- If you setup your cluster using the kubeadm tool, then you must modify the kube apiserver POD definition file. 
+- If you setup your cluster using the kubeadm tool, then you must modify the kube apiserver POD definition file.
 
 ```yaml
-apiVersion : v1
+apiVersion: v1
 kind: Pod
 metadata:
-  creationTimestamp : null
+  creationTimestamp: null
   name: kube apiserver
   namespace: kube system
 spec:
   containers:
-  - command:
-    -  kube apiserver
-    -  --authorization mode= Node,RBAC
-    -  --advertise address=172.17.0.107
-    -  --allow privileged=true
-    -  --enable admission plugins= NodeRestriction
-    -  --enable bootstrap token auth=true
-    image: k8s.gcr.io/kube apiserver amd64:v1.11.3
-    name: kube apiserver
+    - command:
+        - kube apiserver
+        - --authorization mode= Node,RBAC
+        - --advertise address=172.17.0.107
+        - --allow privileged=true
+        - --enable admission plugins= NodeRestriction
+        - --enable bootstrap token auth=true
+      image: k8s.gcr.io/kube apiserver amd64:v1.11.3
+      name: kube apiserver
 ```
+
 - To authenticate using the basic credentials while accessing the API server, specify theuser and password in a curl command.
 
 ```bash
 curl -v -k https://master-node-ip:6443/api/v1/pods -u "user1:password123"
 ```
 
-#### Kubeconfig
+##### Kubeconfig
 
 - The kubeconfig file is how kubectl (or any Kubernetes client) knows how to connect to a Kubernetes cluster and authenticate the user. Think of it as a configuration file that tells your CLI:
   - Which cluster to connect to (address of the API server)
@@ -245,27 +246,27 @@ curl -v -k https://master-node-ip:6443/api/v1/pods -u "user1:password123"
   - What namespace to use by default
   - Which context to operate under (a combo of user + cluster + namespace)
 
-##### Anatomy of kubeconfig (~/.kube/config)
+###### Anatomy of kubeconfig (~/.kube/config)
 
 ```yaml
 apiVersion: v1
 kind: Config
 clusters:
-- name: my-cluster
-  cluster:
-    server: https://192.168.1.100:6443
-    certificate-authority: /path/to/ca.crt
+  - name: my-cluster
+    cluster:
+      server: https://192.168.1.100:6443
+      certificate-authority: /path/to/ca.crt
 users:
-- name: my-user
-  user:
-    client-certificate: /path/to/client.crt
-    client-key: /path/to/client.key
+  - name: my-user
+    user:
+      client-certificate: /path/to/client.crt
+      client-key: /path/to/client.key
 contexts:
-- name: my-context
-  context:
-    cluster: my-cluster
-    user: my-user
-    namespace: default
+  - name: my-context
+    context:
+      cluster: my-cluster
+      user: my-user
+      namespace: default
 current-context: my-context
 ```
 
@@ -277,15 +278,77 @@ current-context: my-context
   - Contexts: Link a specific user to a specific cluster. Example: Admin@Production uses the admin user to access the Prod cluster.
     - Each context links a user to a cluster. e.g., my-user@my-cluster
 
+#### Authorization mechanisms
 
-#### RBAC Components
+- Node
+- ABAC
+- RBAC
+- Webhook
 
-- **Users**: External identities interacting with Kubernetes. Users are not managed by Kubernetes.
-- **Groups**: Collections of users with shared permissions. They are manage outside the Kubernetes. When permissions are given to a group, all users that are part of that group receives those permissions.
-- **ServiceAccounts**: Managed by Kubernetes, used by applications inside the cluster. They are tied to a namespace and permissions are scoped to the namespaces.
-- ServiceAccounts are used to give permissions to the pod to interact with Kube API.
+##### Node authorized
 
-RBAC permissions are defined via **RoleBindings** and **ClusterRoleBindings**, granting users, groups, or service accounts access to specific resources.
+- The Node Authorizer is a specialized authorization mechanism that is used specifically for nodes in a Kubernetes cluster. It verifies whether a node is authorized to access resources within the cluster.
+- How it works: It checks the identity of the node (usually via service account credentials) to determine if the node has permission to perform actions, such as pulling images or managing its pods.
+- The Node Authorizer checks if the service account associated with the node has permission to perform the requested action. The service account’s permissions are usually defined using RBAC rules.
+- RBAC and Node Authorizer deals with authorization, but they operate in different contexts. While RBAC provides fine-grained control over access to cluster resources based on roles and bindings, the Node Authorizer is a more specialized authorization mechanism specifically for nodes in the cluster.
+
+###### Example of the Interaction
+
+- A kubelet (node) tries to get the list of pods in the cluster.
+  - The kubelet sends an API request to the Kubernetes API server with its associated service account token.
+- The Node Authorizer receives this request and checks whether the kubelet’s service account is authorized to access the pods resource.
+  - The Node Authorizer determines the service account's permissions based on its RBAC configuration.
+  - For instance, if the node's service account is associated with a ClusterRole that allows it to get pods (pods: get), then the request will be authorized.
+    - If the service account does not have the required permissions in the RBAC configuration, the Node Authorizer will deny the request.
+
+##### ABAC
+
+- Authorization mechanism that grants access based on a user's attributes, such as roles, namespaces, or the specific resource they are trying to interact with.
+
+###### Structure of ABAC Policy File
+
+The ABAC policy file in Kubernetes is typically in JSON format. It consists of a series of rules, where each rule specifies what attributes (such as users, namespaces, or resources) are required for a user to be authorized to perform a particular action. Each rule is essentially a JSON object containing:
+
+- user: The identity of the user.
+- group: The group the user belongs to (optional).
+- verb: The operation the user is attempting (e.g., get, create, delete).
+- namespace: The namespace in which the action is being performed (optional).
+- resource: The resource being accessed (e.g., pods, deployments).
+- resourceNames: Specific resource names (optional).
+- apigroup: Since pods belong to the core API group, it is set to empty (""). Deployments belong to the apps group.
+- effect: The action to take (allow or deny).
+
+```json
+[
+  {
+    "user": "alice",
+    "verb": "get",
+    "resource": "pods",
+    "namespace": "default",
+    "apigroup": "",
+    "effect": "allow"
+  },
+  {
+    "group": "dev-users",
+    "verb": "get",
+    "resource": "deployments",
+    "namespace": "default",
+    "apigroup": "apps",
+    "effect": "allow"
+  }
+]
+```
+
+##### RBAC Components
+
+- More standard approach to manage access to kubernetes cluster.
+- RBAC Components
+  - **Users**: External identities interacting with Kubernetes. Users are not managed by Kubernetes.
+  - **Groups**: Collections of users with shared permissions. They are manage outside the Kubernetes. When permissions are given to a group, all users that are part of that group receives those permissions.
+  - **ServiceAccounts**: Managed by Kubernetes, used by applications inside the cluster. They are tied to a namespace and permissions are scoped to the namespaces.
+  - ServiceAccounts are used to give permissions to the pod to interact with Kube API.
+- We create a role with all the permissions, and then associate the users to the role.
+- RBAC permissions are defined via **RoleBindings** and **ClusterRoleBindings**, granting users, groups, or service accounts access to specific resources.
 
 ![[Kubernetes Deep Dive clusterrolebinding.png]]
 
@@ -333,7 +396,7 @@ RBAC permissions are defined via **RoleBindings** and **ClusterRoleBindings**, g
     kubectl auth can-i '*' '*' --as-group="cluster-superheroes" --as="wonder-woman"
     ```
 
-##### Setup Kubernetes authentication and authorization using RBAC
+###### Setup Kubernetes authentication and authorization using RBAC
 
 ![[Kubernetes Deep Dive certificates generation path.png]]
 
@@ -441,6 +504,14 @@ kubectl certificate approve batman
     kubectl -n gryffindor auth can-i '*' '*' --as-group="gryffindor-admins" --as=harry
     ```
 
+##### Webhooks
+
+- Webhooks are used to extend and customize the behavior of the Kubernetes API server. There are two main types of webhooks in Kubernetes:
+  - Admission Webhooks: These are used to intercept requests to the Kubernetes API server and allow you to modify or validate the requests before they are persisted in the Kubernetes cluster. They can be classified into two types:
+    - Mutating Admission Webhooks: These webhooks can modify the incoming request, allowing you to change the object being created, updated, or deleted before it is persisted.
+    - Validating Admission Webhooks: These webhooks validate the incoming request and can reject it based on custom logic.
+  - Audit Webhooks: These webhooks allow you to collect logs or data about API requests made to the Kubernetes API server, typically for monitoring, auditing, or compliance purposes.
+
 #### Authentication vs Kubeconfig
 
 Even when Kubernetes authenticates users via external certificates, the **kubeconfig** file is still essential because it serves as a configuration file that stores authentication and cluster access details.
@@ -459,7 +530,7 @@ Even when Kubernetes authenticates users via external certificates, the **kubeco
 ![[Kubernetes Deep Dive CA authentication.png]]
 
 - Kubernetes does not manage users directly but relies on certificates issued by a CA to prevent man-in-the-middle attacks.
-	- This data is encoded in base64
+  - This data is encoded in base64
 - We can see the certificate from the certificate-authority-data
 - ![[Kubernetes Deep Dive decode certificate.png]]
 - Users and groups are identified by **Common Name (CN)** and **Organization (O)** fields in certificates.
@@ -488,46 +559,54 @@ Kubernetes APIs are divided into **two main groups**:
 ##### 🔹 Core Group (`/api/v1`)
 
 - Contains fundamental Kubernetes resources:
-    - **Pods**
-    - **Namespaces**
-    - **Nodes**
-    - **Services**
-    - **Secrets**
-    - **ConfigMaps**
-    - **PersistentVolumes (PV)**
-    - **PersistentVolumeClaims (PVC)**
-    - **ReplicationControllers**
-    - **Endpoints**, **Events**, **Bindings**, etc.
+  - **Pods**
+  - **Namespaces**
+  - **Nodes**
+  - **Services**
+  - **Secrets**
+  - **ConfigMaps**
+  - **PersistentVolumes (PV)**
+  - **PersistentVolumeClaims (PVC)**
+  - **ReplicationControllers (RC)**
+  - **Endpoints**
+  - **Events**
+  - **Bindings**
 
 ---
 
 ##### 🔸 Named Groups (`/apis/<group>/<version>`)
 
 - More modular and organized.
-- Used for **newer and advanced features**.
+  - Used for **newer and advanced features**.
 - Examples of named groups:
-    - `apps/v1`: Deployments, ReplicaSets, StatefulSets
-    - `extensions/v1beta1`
-    - `networking.k8s.io/v1`: NetworkPolicies
-    - `certificates.k8s.io/v1`: CertificateSigningRequests
-    - `authentication.k8s.io/v1`
-    - `storage.k8s.io/v1`
+  - `apps/v1`: Deployments, ReplicaSets, StatefulSets
+  - `extensions/v1beta1`
+  - `networking.k8s.io/v1`: NetworkPolicies
+  - `certificates.k8s.io/v1`: CertificateSigningRequests
+  - `authentication.k8s.io/v1`
+  - `storage.k8s.io/v1`
 
 ---
 
 ##### 🛠 Resources and Verbs
 
-- Each group contains **resources** (like deployments, pods, etc.).
-	- You can view the group with 
+- Each group contains **resources** (like deployments, replicasets, statefulsets, pods, etc.). - You can view the group with
 
   ```bash
   curl http://localhost:6443 -k
+  {
+    "paths": [
+      "/api",
+      "/healthz",
+      ...]
   ```
-or  
+
+  or
 
 ```bash
 curl http://localhost:6443 –k --key admin.key --cert admin.crt --cacert ca.crt
 ```
+
 - An alternate option is to start a kubectl proxy client.
 
 ```bash
@@ -535,11 +614,10 @@ kubectl proxy
 curl http://localhost:8001 -k
 ```
 
-- You interact with resources using **verbs** (operations):
+- You interact with resources using **verbs** (operations): list, get, create, update, delete, watch, etc...
 - kube proxy is not kubectl proxy
-  - kube proxy is used to enable is a used to enable connectivity between pods and services across different nodes in the cluster.
+  - kube proxy is used to enable connectivity between pods and services across different nodes in the cluster.
   - kubectl proxy is an HTTP proxy service created by kubectl utility to access the kube api server.
-
 
 ## Scheduling process
 
@@ -1515,24 +1593,24 @@ In a regular **Kubernetes cluster (without a service mesh)**, the **data plane a
 ## Failed Questions
 
 - Which statement accurately describes the behavior of a static pod in a Kubernetes cluster?
-	- When a kubelet creates a static pod, it also creates a read-only mirror object in the Kube API server.
+  - When a kubelet creates a static pod, it also creates a read-only mirror object in the Kube API server.
 - How can you taint a node in Kubernetes using the kubectl command?
-	- kubectl taint nodes node-name key=value:taint-effect,kubectl taint node node-name key=value:taint-effect
+  - kubectl taint nodes node-name key=value:taint-effect,kubectl taint node node-name key=value:taint-effect
 - How can you change the default resource limit for containers in Kubernetes?
-	- Add a ‘limit’ section under the resources section in the pod definition file.
+  - Add a ‘limit’ section under the resources section in the pod definition file.
 - Where are the labels defined for the pods in a ReplicaSet?
-	- Under the template section of the Replicaset definition file.
+  - Under the template section of the Replicaset definition file.
 - What approach can be used to specify the path for static pod definition files when not directly specifying it in the kubelet.service file?
-	- Creating a separate config file and defining the directory path as ‘staticPodPath’
+  - Creating a separate config file and defining the directory path as ‘staticPodPath’
 - How do you label a node in Kubernetes?
-	- kubectl label nodes <node_name\> <label-key\>=<label-value\>
+  - kubectl label nodes <node_name\> <label-key\>=<label-value\>
 - The Kubernetes API server is aware of the static pods created by the kubelet.
-	- True
+  - True
 - What does the taint effect "NoSchedule" indicate in Kubernetes?
-	- Pods will not be scheduled on the node.
+  - Pods will not be scheduled on the node.
 - To connect a ReplicaSet to the desired pods, which field in the ReplicaSet specification is used to match the labels defined on the pod?
-	- selector
+  - selector
 - What can be done to manually schedule a pod to a specific node in Kubernetes when there is no scheduler monitoring and scheduling the nodes?
-	- Set the NodeName field in the pod manifest to the desired node name.
+  - Set the NodeName field in the pod manifest to the desired node name.
 - How can you limit a pod to run on a specific node in Kubernetes?
-	- Add a label to the node and use nodeSelector in the pod's spec section.
+  - Add a label to the node and use nodeSelector in the pod's spec section.
