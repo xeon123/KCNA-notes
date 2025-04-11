@@ -176,43 +176,109 @@ curl --location 'http://localhost:8001/api/v1/nodes' --header 'Accept: applicati
 - A **Certificate Authority (CA)** ensures secure communication with the API server, preventing man-in-the-middle attacks.
 - kubeconfig file reference the public key of the CA.
 
-#### User Authentication and RBAC
+#### Authentication mechanisms
 
-![[Kubernetes Deep Dive CA authentication.png]]
+Kubernetes supports several ways to authenticate users accessing the API server:
 
-- Kubernetes does not manage users directly but relies on certificates issued by a CA to prevent man-in-the-middle attacks.
-- This data is encoded in base64
-- We can see the certificate from the certificate-authority-data
-- ![[Kubernetes Deep Dive decode certificate.png]]
-- Users and groups are identified by **Common Name (CN)** and **Organization (O)** fields in certificates.
-- Example: A user "James" in the "whales" group would need a certificate signed with `CN=James, O=whales`.
-- In users we find client certificate data (user data that has been signed by the CA) and client key data (user's private key).
-  - ![[Kubernetes Deep Dive users data.png]]
-  - The client-key-data is sensitive and it is used to sign requests make via kubectl to the API server. This is the gateway to the kubernetes cluster.
-  - ![[Kubernetes Deep Dive client private key decode.png]]
-  - The client-certificate-data show certificates data.
-  - ![[Kubernetes Deep Dive client certificates data.png]]
-  - ![[Kubernetes Deep Dive client certificates data decoded.png]]
-  - We can see that the public key was issued by kubernetes CA
-  - `O = system:masters` is the group where the username is assigned.
-  - `CN=system:admin` references to the username.
-- In kubernetes, we don't create users or groups. We have certificates that relates users to the groups, and then we permission those users and groups with RBAC.
-- ![[Kubernetes Deep Dive rbac certificates.png]]
+- Static Password File
+  -  A CSV file (user-details.csv) contains credentials.
+  - Format: password, username, userID.
+  - Specified in the API server using the flag: `--basic-auth-file=user-details.csv`
+  - Requires a restart of the kube-apiserver.
+- Static Token File
+  - Similar to the static password file, but uses tokens instead.
+  - Used for service accounts or user authentication via tokens.
+- Client Certificates
+  - Each user has their own certificate.
+  - The API server validates these against a certificate authority (CA).
+- External Authentication Providers
+  - Integration with external systems:
+    - LDAP
+    - Kerberos
+    - OIDC (OpenID Connect)
+    - Webhook token authentication
 
-#### Authentication vs Kubeconfig
+##### Example: kube-apiserver Configuration (Partial)
 
-Even when Kubernetes authenticates users via external certificates, the **kubeconfig** file is still essential because it serves as a configuration file that stores authentication and cluster access details.
+```bash
+ExecStart=/usr/local/bin/kube-apiserver \
+  --advertise-address=${INTERNAL_IP} \
+  --basic-auth-file=user-details.csv \
+  --authorization-mode=Node,RBAC \
+  --etcd-servers=https://127.0.0.1:2379 \
+  --service-cluster-ip-range=10.32.0.0/24 \
+  --service-node-port-range=30000-32767
+```
 
-1. **Client Configuration**: The `kubeconfig` file contains the information needed for `kubectl` or any Kubernetes client to connect to the cluster, including:
-   - The API server endpoint (`server`).
-   - The authentication method (`certificate-authority`, `client-certificate`, `client-key`, `token`, or an external authentication provider).
-   - The cluster name and context.
-2. **Certificate Storage and Reference**: Even if Kubernetes is using an external Certificate Authority (CA) to authenticate users, the `kubeconfig` file typically the certificates (or other credentials like bearer tokens) to authenticate requests.
-3. **Multi-Cluster and Multi-User Management**: A `kubeconfig` file can store multiple clusters and user credentials, allowing users to switch between different environments (e.g., development, testing, production) easily.
-4. **Delegating Authentication to External Providers**: If Kubernetes uses an **OIDC provider, LDAP, or another external system**, the `kubeconfig` may contain a token or instructions for retrieving credentials dynamically.
-5. **Context Switching**: The `kubeconfig` file allows users to manage multiple Kubernetes environments efficiently by defining different contexts.
+- If you setup your cluster using the kubeadm tool, then you must modify the kube apiserver POD definition file. 
 
-### RBAC Components
+```yaml
+apiVersion : v1
+kind: Pod
+metadata:
+  creationTimestamp : null
+  name: kube apiserver
+  namespace: kube system
+spec:
+  containers:
+  - command:
+    -  kube apiserver
+    -  --authorization mode= Node,RBAC
+    -  --advertise address=172.17.0.107
+    -  --allow privileged=true
+    -  --enable admission plugins= NodeRestriction
+    -  --enable bootstrap token auth=true
+    image: k8s.gcr.io/kube apiserver amd64:v1.11.3
+    name: kube apiserver
+```
+- To authenticate using the basic credentials while accessing the API server, specify theuser and password in a curl command.
+
+```bash
+curl -v -k https://master-node-ip:6443/api/v1/pods -u "user1:password123"
+```
+
+#### Kubeconfig
+
+- The kubeconfig file is how kubectl (or any Kubernetes client) knows how to connect to a Kubernetes cluster and authenticate the user. Think of it as a configuration file that tells your CLI:
+  - Which cluster to connect to (address of the API server)
+  - Who you are (your user credentials)
+  - What namespace to use by default
+  - Which context to operate under (a combo of user + cluster + namespace)
+
+##### Anatomy of kubeconfig (~/.kube/config)
+
+```yaml
+apiVersion: v1
+kind: Config
+clusters:
+- name: my-cluster
+  cluster:
+    server: https://192.168.1.100:6443
+    certificate-authority: /path/to/ca.crt
+users:
+- name: my-user
+  user:
+    client-certificate: /path/to/client.crt
+    client-key: /path/to/client.key
+contexts:
+- name: my-context
+  context:
+    cluster: my-cluster
+    user: my-user
+    namespace: default
+current-context: my-context
+```
+
+- kubeconfig contains these sections
+  - Clusters: Define the Kubernetes clusters you can connect to (e.g., Dev, Test, Prod, across different clouds or orgs).
+    - name, server url, and the CA cert to verify the server
+  - Users: Represent the identities you can use to connect (e.g., admin, dev user), each with their own permissions.
+    - name, a client certificate, and key for authentication
+  - Contexts: Link a specific user to a specific cluster. Example: Admin@Production uses the admin user to access the Prod cluster.
+    - Each context links a user to a cluster. e.g., my-user@my-cluster
+
+
+#### RBAC Components
 
 - **Users**: External identities interacting with Kubernetes. Users are not managed by Kubernetes.
 - **Groups**: Collections of users with shared permissions. They are manage outside the Kubernetes. When permissions are given to a group, all users that are part of that group receives those permissions.
@@ -267,7 +333,7 @@ RBAC permissions are defined via **RoleBindings** and **ClusterRoleBindings**, g
     kubectl auth can-i '*' '*' --as-group="cluster-superheroes" --as="wonder-woman"
     ```
 
-### Setup Kubernetes authentication and authorization using RBAC
+##### Setup Kubernetes authentication and authorization using RBAC
 
 ![[Kubernetes Deep Dive certificates generation path.png]]
 
@@ -374,6 +440,106 @@ kubectl certificate approve batman
     kubectl -n gryffindor create rolebinding gryffindor-admin --role=gryffindor-admin --group=gryffindor-admins
     kubectl -n gryffindor auth can-i '*' '*' --as-group="gryffindor-admins" --as=harry
     ```
+
+#### Authentication vs Kubeconfig
+
+Even when Kubernetes authenticates users via external certificates, the **kubeconfig** file is still essential because it serves as a configuration file that stores authentication and cluster access details.
+
+1. **Client Configuration**: The `kubeconfig` file contains the information needed for `kubectl` or any Kubernetes client to connect to the cluster, including:
+   - The API server endpoint (`server`).
+   - The authentication method (`certificate-authority`, `client-certificate`, `client-key`, `token`, or an external authentication provider).
+   - The cluster name and context.
+2. **Certificate Storage and Reference**: Even if Kubernetes is using an external Certificate Authority (CA) to authenticate users, the `kubeconfig` file typically the certificates (or other credentials like bearer tokens) to authenticate requests.
+3. **Multi-Cluster and Multi-User Management**: A `kubeconfig` file can store multiple clusters and user credentials, allowing users to switch between different environments (e.g., development, testing, production) easily.
+4. **Delegating Authentication to External Providers**: If Kubernetes uses an **OIDC provider, LDAP, or another external system**, the `kubeconfig` may contain a token or instructions for retrieving credentials dynamically.
+5. **Context Switching**: The `kubeconfig` file allows users to manage multiple Kubernetes environments efficiently by defining different contexts.
+
+#### User Authentication and RBAC
+
+![[Kubernetes Deep Dive CA authentication.png]]
+
+- Kubernetes does not manage users directly but relies on certificates issued by a CA to prevent man-in-the-middle attacks.
+	- This data is encoded in base64
+- We can see the certificate from the certificate-authority-data
+- ![[Kubernetes Deep Dive decode certificate.png]]
+- Users and groups are identified by **Common Name (CN)** and **Organization (O)** fields in certificates.
+- Example: A user "James" in the "whales" group would need a certificate signed with `CN=James, O=whales`.
+- In users we find client certificate data (user data that has been signed by the CA) and client key data (user's private key).
+  - ![[Kubernetes Deep Dive users data.png]]
+  - The client-key-data is sensitive and it is used to sign requests make via kubectl to the API server. This is the gateway to the kubernetes cluster.
+  - ![[Kubernetes Deep Dive client private key decode.png]]
+  - The client-certificate-data show certificates data.
+  - ![[Kubernetes Deep Dive client certificates data.png]]
+  - ![[Kubernetes Deep Dive client certificates data decoded.png]]
+  - We can see that the public key was issued by kubernetes CA
+  - `O = system:masters` is the group where the username is assigned.
+  - `CN=system:admin` references to the username.
+- In kubernetes, we don't create users or groups. We have certificates that relates users to the groups, and then we permission those users and groups with RBAC.
+- ![[Kubernetes Deep Dive rbac certificates.png]]
+
+#### API Groups
+
+### 📦 Kubernetes API Groups Summary
+
+Kubernetes APIs are divided into **two main groups**:
+
+---
+
+##### 🔹 Core Group (`/api/v1`)
+
+- Contains fundamental Kubernetes resources:
+    - **Pods**
+    - **Namespaces**
+    - **Nodes**
+    - **Services**
+    - **Secrets**
+    - **ConfigMaps**
+    - **PersistentVolumes (PV)**
+    - **PersistentVolumeClaims (PVC)**
+    - **ReplicationControllers**
+    - **Endpoints**, **Events**, **Bindings**, etc.
+
+---
+
+##### 🔸 Named Groups (`/apis/<group>/<version>`)
+
+- More modular and organized.
+- Used for **newer and advanced features**.
+- Examples of named groups:
+    - `apps/v1`: Deployments, ReplicaSets, StatefulSets
+    - `extensions/v1beta1`
+    - `networking.k8s.io/v1`: NetworkPolicies
+    - `certificates.k8s.io/v1`: CertificateSigningRequests
+    - `authentication.k8s.io/v1`
+    - `storage.k8s.io/v1`
+
+---
+
+##### 🛠 Resources and Verbs
+
+- Each group contains **resources** (like deployments, pods, etc.).
+	- You can view the group with 
+
+  ```bash
+  curl http://localhost:6443 -k
+  ```
+or  
+
+```bash
+curl http://localhost:6443 –k --key admin.key --cert admin.crt --cacert ca.crt
+```
+- An alternate option is to start a kubectl proxy client.
+
+```bash
+kubectl proxy
+curl http://localhost:8001 -k
+```
+
+- You interact with resources using **verbs** (operations):
+- kube proxy is not kubectl proxy
+  - kube proxy is used to enable is a used to enable connectivity between pods and services across different nodes in the cluster.
+  - kubectl proxy is an HTTP proxy service created by kubectl utility to access the kube api server.
+
 
 ## Scheduling process
 
