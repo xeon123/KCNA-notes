@@ -342,12 +342,12 @@ The ABAC policy file in Kubernetes is typically in JSON format. It consists of a
 ##### RBAC Components
 
 - More standard approach to manage access to kubernetes cluster.
+  - We create a role with all the permissions, and then associate the users to the role.
 - RBAC Components
   - **Users**: External identities interacting with Kubernetes. Users are not managed by Kubernetes.
   - **Groups**: Collections of users with shared permissions. They are manage outside the Kubernetes. When permissions are given to a group, all users that are part of that group receives those permissions.
   - **ServiceAccounts**: Managed by Kubernetes, used by applications inside the cluster. They are tied to a namespace and permissions are scoped to the namespaces.
   - ServiceAccounts are used to give permissions to the pod to interact with Kube API.
-- We create a role with all the permissions, and then associate the users to the role.
 - RBAC permissions are defined via **RoleBindings** and **ClusterRoleBindings**, granting users, groups, or service accounts access to specific resources.
 
 ![[Kubernetes Deep Dive clusterrolebinding.png]]
@@ -367,11 +367,74 @@ The ABAC policy file in Kubernetes is typically in JSON format. It consists of a
   - Run `kubectl api-resources --sort-by=name -o wide | more` to list resources and available verbs.
     - Example: `nodes` is a non-namespaced resource with specific verbs assigned.
 
-- **ClusterRole vs. ClusterRoleBinding**
-  ![[Kubernetes Deep Dive clusterrole clusterrolebinding connection.png]]
-  - A **ClusterRole** is **non-namespaced** and applies to all resources across all namespaces.
-    - The **cluster-admin** role grants full permissions to the full cluster (`*` on all resources and verbs).
-  - A **ClusterRoleBinding** links a ClusterRole to users, groups, or service accounts.
+###### Role and RoleBinding
+
+- This role allows access to pods, services, and configmaps in the namespace default:
+  - apiGroups: [""] refers to the core group (no version prefix in API path, e.g., /api/v1/pods).
+  - For core resources, keep apiGroups as an empty string.
+  - Other groups, like apps, use values like apiGroups: ["apps"] for resources like deployments.
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: core-resources-reader
+  namespace: default
+rules:
+  - apiGroups: [""]
+    resources:
+      - pods
+      - services
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+```
+
+- Bind the role to a user/service account/group:
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: core-resources-reader-binding
+  namespace: default
+subjects:
+  - kind: User
+    name: johndoe # or kind: ServiceAccount / Group
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: core-resources-reader
+  apiGroup: rbac.authorization.k8s.io
+```
+
+- The subject is where we specify the user details.
+- The RoleRef is where we specify the details of the role
+- Check the access:
+
+```bash
+kubectl auth can-i create deployments
+yes
+```
+
+- You can impersonate another user:
+
+```bash
+kubectl auth can-i create deployments --as dev-user
+no
+```
+
+###### ClusterRole and ClusterRoleBinding
+
+![[Kubernetes Deep Dive clusterrole clusterrolebinding connection.png]]
+
+- Non-namespaced resources: nodes, PV, clusterroles, clusterrolesbindings, certificatesigningrequests, namespaces.
+  - `kubectl api-resources --namespaced=true` or `kubectl api-resources --namespaced=false`
+- A **ClusterRole** is **non-namespaced** and applies to all resources across all namespaces.
+  - The **cluster-admin** role grants full permissions to the full cluster (`*` on all resources and verbs).
+- A **ClusterRoleBinding** links a ClusterRole to users, groups, or service accounts.
 - **Example: Creating a New Superuser Group**
 
   - A new **ClusterRole** called `cluster-superhero` is created with full permissions.
@@ -379,11 +442,12 @@ The ABAC policy file in Kubernetes is typically in JSON format. It consists of a
   - A **ClusterRoleBinding** associates this role with the **cluster-superheroes** group.
 
     ```bash
+    kubectl create clusterrole cluster-superhero --verb="*" --resource="*"
     kubectl create clusterrolebinding cluster-superhero --clusterrole=cluster-superhero --group=cluster-superheroes
     kubectl auth can-i '*' '*'
     ```
 
-  - Users (e.g., `Batman`, `Superman`, `Wonder Woman`) within this group automatically inherit the permissions.
+  - All users that authenticate with the group cluster-superheroes (e.g., Batman, Superman, Wonder Woman) will now have cluster-wide admin privileges.
 
 - **Validating Permissions with `kubectl auth can-i`**
 
@@ -396,7 +460,125 @@ The ABAC policy file in Kubernetes is typically in JSON format. It consists of a
     kubectl auth can-i '*' '*' --as-group="cluster-superheroes" --as="wonder-woman"
     ```
 
-###### Setup Kubernetes authentication and authorization using RBAC
+###### Service Accounts
+
+- There are service accounts for the user and services.
+  - When a service account is created, it is create a service account object, and then a token that it is going to be used by external applications.
+  - The token is stored as a secret object. (execute `kubectl describe serviceaccount <name>`)
+- We are a binding a ServiceAccount to a ClusterRoleBinding, allowing to grant specific permissions to the ServiceAccount at the cluster level, meaning the ServiceAccount can perform actions on cluster-wide resources (across all namespaces) or all namespaces if specified.
+
+- Create the ServiceAccount
+
+  ```bash
+   kubectl create serviceaccount superhero-sa --namespace=default
+  ```
+
+- Create a ClusterRole (if not already created)
+
+  ```yaml
+  apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    name: cluster-superhero
+  rules:
+    - apiGroups: ["*"]
+      resources: ["*"]
+      verbs: ["*"]
+  ```
+
+- Bind the serviceaccount to the clusterrole
+
+```yaml
+# cluster-superhero-binding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-superhero-binding
+subjects:
+  - kind: ServiceAccount
+    name: superhero-sa
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: cluster-superhero
+  apiGroup: rbac.authorization.k8s.io
+```
+
+- Verify the permissions
+
+```bash
+kubectl auth can-i '*' '*' --as=system:serviceaccount:default:superhero-sa
+yes
+```
+
+- You can go inside the pod and see the tokens assigned to the pod. You cannot edit an assigned serviceccount. If you want to modify the serviceaccount, you need to delete and create a new one.
+
+```bash
+kubectl exec -it my-kubernetes-dashboard --ls /var/run/secrets/kubernetes.io/serviceaccount
+ca.crt
+namespace
+token
+```
+
+##### Webhooks
+
+- Webhooks are used to extend and customize the behavior of the Kubernetes API server. There are two main types of webhooks in Kubernetes:
+  - Admission Webhooks: These are used to intercept requests to the Kubernetes API server and allow you to modify or validate the requests before they are persisted in the Kubernetes cluster. They can be classified into two types:
+    - Mutating Admission Webhooks: These webhooks can modify the incoming request, allowing you to change the object being created, updated, or deleted before it is persisted.
+    - Validating Admission Webhooks: These webhooks validate the incoming request and can reject it based on custom logic.
+  - Audit Webhooks: These webhooks allow you to collect logs or data about API requests made to the Kubernetes API server, typically for monitoring, auditing, or compliance purposes.
+
+##### AlwaysAllow
+
+- Allows everything without requiring authorization checks.
+- Mode set in the kube-api server.
+- In your kube-apiserver startup command or manifest, include the following:
+
+```bash
+--authorization-mode=AlwaysAllow
+--authentication-token-webhook=false
+--anonymous-auth=true
+```
+
+- Or, update the `/etc/kubernetes/manifests/kube-apiserver.yaml` file:
+
+```yaml
+spec:
+  containers:
+    - name: kube-apiserver
+      command:
+        - kube-apiserver
+        - --authorization-mode=AlwaysAllow
+        - --authentication-token-webhook=false
+        - --anonymous-auth=true
+      # ... other existing flags
+```
+
+- `--authorization-mode=AlwaysAllow`: disables all authorization checks.
+- `--authentication-token-webhook=false`: disables remote authentication webhooks.
+- `--anonymous-auth=true`: allows requests from unauthenticated users.
+
+##### AlwaysDeny
+
+Always deny.
+
+##### Multiple modes
+
+- It is possible to have multiple modes configured. The authorization happens in the order of the modes specified.
+  - In this example, first it is handled by the node authorizer.
+  - When a module denies a request, it is forwarded to the next mode. When a module accepts a request, no more verification is done.
+
+```ỳaml
+ExecStart=/usr/local/bin/kube-server \\
+  --advertise-address=${INTERNAL_IP} \\
+  --allow-privileged=true \\
+  --apiserver-count=3 \\
+  --authorization-mode=Node,RBAC,Webhook \\
+  --bind-address=0.0.0.0 \\
+  # ... other existing flags
+```
+
+#### Setup Kubernetes authentication and authorization using RBAC
 
 ![[Kubernetes Deep Dive certificates generation path.png]]
 
@@ -503,14 +685,6 @@ kubectl certificate approve batman
     kubectl -n gryffindor create rolebinding gryffindor-admin --role=gryffindor-admin --group=gryffindor-admins
     kubectl -n gryffindor auth can-i '*' '*' --as-group="gryffindor-admins" --as=harry
     ```
-
-##### Webhooks
-
-- Webhooks are used to extend and customize the behavior of the Kubernetes API server. There are two main types of webhooks in Kubernetes:
-  - Admission Webhooks: These are used to intercept requests to the Kubernetes API server and allow you to modify or validate the requests before they are persisted in the Kubernetes cluster. They can be classified into two types:
-    - Mutating Admission Webhooks: These webhooks can modify the incoming request, allowing you to change the object being created, updated, or deleted before it is persisted.
-    - Validating Admission Webhooks: These webhooks validate the incoming request and can reject it based on custom logic.
-  - Audit Webhooks: These webhooks allow you to collect logs or data about API requests made to the Kubernetes API server, typically for monitoring, auditing, or compliance purposes.
 
 #### Authentication vs Kubeconfig
 
