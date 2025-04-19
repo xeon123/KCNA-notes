@@ -1647,49 +1647,104 @@ spec:
 
 ## Storage
 
+### Docker Storage
+
+#### Layered Architecture
+
+- When you build a Docker image using a Dockerfile, each instruction creates a new layer in the final image. These layers stack on top of each other — like a cake — and together they form the complete image.
+
+```Dockerfile
+FROM ubuntu:22.04             # Layer 1: Base image
+RUN apt-get update            # Layer 2
+RUN apt-get install -y nginx  # Layer 3
+COPY index.html /usr/share/nginx/html  # Layer 4
+```
+
+🔁 Layer Caching
+
+- Docker caches each layer.
+- If you rebuild and don’t change a layer, it reuses the cache.
+- This makes rebuilds much faster and more efficient.
+
+🧹 Storage Efficiency
+
+- Shared base layers (like ubuntu:22.04) are reused across images.
+- Reduces duplication on disk.
+
+📦 Image Distribution
+
+- When pushing/pulling images, only new layers are sent.
+
+🔄 Writable Container Layer
+
+- When you start a container:
+  - Docker adds a read-write layer on top of the image.
+  - Any file changes (writes, deletions, etc.) happen there.
+  - The image layers below stay unchanged (read-only).
+- Faster deployment across nodes (especially in Kubernetes or CI/CD).
+
+##### Volumes
+
+- Volumes are Docker's way of persisting data outside the container's ephemeral filesystem.
+- By default, anything written inside a container is lost when the container stops or is removed.
+- Volumes solve that by storing data on the host machine, outside the container lifecycle.
+
+```bash
+docker volume create data_volume
+```
+
+The directory is created in `/var/lib/docker/volumes/data_volume`.
+
+```bash
+docker run -d -v data_volume:/var/lib/mysql mysql
+```
+
+- Mounts `data_volume` to the path `/var/lib/mysql` inside mysql container.
+
 <https://kubernetes.io/docs/concepts/storage/volumes/#emptydir>
 
-1. **Ephemeral Storage:**
+### **Ephemeral Storage:**
 
-   - **Does not persist** across restarts.
-     - Example: `emptyDir`, used for temporary storage or fast caching.
-     - **emptyDir** is a volume created when a Pod is assigned to a node. It's initially empty, and all containers in the Pod can access and modify the files in it, even if mounted at different paths.
-     - **Data loss**: When the Pod is removed, the data in the emptyDir is deleted. However, **container crashes do not affect the data**.
-   - **Use cases**:
-     - Scratch space (e.g., disk-based merge sort).
-     - Checkpointing for crash recovery.
-     - Holding temporary files for content management.
-   - **Storage options**:
-     - By default, stored on the node's medium (disk, SSD, or network storage).
-     - If `emptyDir.medium` is set to "Memory", it uses a **tmpfs (RAM-backed filesystem)**, which is a high-performed cache area.
-     - A **size limit** can be specified for storage, and it will be limited by the node's ephemeral storage. If no size is specified, memory-backed volumes use the node's allocatable memory.
-   - Demonstrates an `emptyDir` volume backed by **memory**, showcasing its speed with a performance test using `dd`.
+- **Does not persist** across restarts.
+  - Example: `emptyDir`, used for temporary storage or fast caching.
+  - **emptyDir** is a volume created when a Pod is assigned to a node. It's initially empty, and all containers in the Pod can access and modify the files in it, even if mounted at different paths.
+  - **Data loss**: When the Pod is removed, the data in the emptyDir is deleted. However, **container crashes do not affect the data**.
+- **Use cases**:
+  - Scratch space (e.g., disk-based merge sort).
+  - Checkpointing for crash recovery.
+  - Holding temporary files for content management.
+- **Storage options**:
+  - By default, stored on the node's medium (disk, SSD, or network storage).
+  - If `emptyDir.medium` is set to "Memory", it uses a **tmpfs (RAM-backed filesystem)**, which is a high-performed cache area.
+  - A **size limit** can be specified for storage, and it will be limited by the node's ephemeral storage. If no size is specified, memory-backed volumes use the node's allocatable memory.
+- Demonstrates an `emptyDir` volume backed by **memory**, showcasing its speed with a performance test using `dd`.
 
-2. **Persistent Storage:**
-   <https://kubernetes.io/docs/concepts/storage/persistent-volumes/>
-   <https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/>
+### **Persistent Storage:**
 
-   - **Persists** even after a pod is removed.
-   - Discusses **Storage Classes, Persistent Volumes (PV), and Persistent Volume Claims (PVC)**.
-     - When provisioning storage, there are 3 aspects to take into account
-       - **Storage classes:** defines the type and characteristics of storage provided by the cluster. It allows administrators to describe the "classes" of storage they offer.
-       - **Persistent Volumes:** represents a piece of storage in the cluster that has been provisioned by the administrator or dynamically using a StorageClass.
-       - **Persistent Volume Claims:** A **request for storage by the user**. It specifies the amount and characteristics of storage needed by a pod.
-       - Once bound to a PV, the PVC can be used to access the storage.
-         - PVC are namespaced objects.
-   - Manual vs. dynamic provisioning:
-     - **Manual**: We create a PV and PVC is created explicitly.
-     - **Dynamic**: We create a PVC against a StorageClass. This will create a PV automatically.
-     - Volumes are created automatically when PVC is created.
-     - These approaches have unique characteristics in Reclaim Policies.
-       - **Delete**: The volume will be deleted on the release from its claim
-       - **Retain**: The volume will be left in its current phase. This is the default policy.
-       - **Recycle**: The files are deleted and the persistent volume is reused. Deprecated since Kubernetes 1.9 in favor of external storage solutions that handle cleanup process.
-   - Ceph is a Kubernetes storage for Openshift
-     - Ceph is a highly scalable and flexible storage solution that provides comprehensive storage capabilities, including block, file, and object storage, in distributed systems.
-     - It uses a decentralized architecture to store data across multiple nodes, making it highly fault-tolerant and reliable.
-     - [ceph](https://www.redhat.com/en/technologies/storage/ceph)
-     - [ceph example](https://docs.openshift.com/container-platform/3.11/install_config/storage_examples/ceph_example.html)
+<https://kubernetes.io/docs/concepts/storage/persistent-volumes/>
+<https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/>
+
+- **Persists** even after a pod is removed.
+- Discusses **Storage Classes, Persistent Volumes (PV), and Persistent Volume Claims (PVC)**.
+  - When provisioning storage, there are 3 aspects to take into account
+    - **Storage classes:** defines the type and characteristics of storage provided by the cluster. It allows administrators to describe the "classes" of storage they offer.
+    - **Persistent Volumes:** represents a piece of storage in the cluster that has been provisioned by the administrator or dynamically using a StorageClass.
+    - **Persistent Volume Claims:** A **request for storage by the user**. It specifies the amount and characteristics of storage needed by a pod.
+    - Once bound to a PV, the PVC can be used to access the storage.
+      - PVC are namespaced objects.
+- Manual vs. dynamic provisioning:
+  - **Manual**: We create a PV and PVC is created explicitly.
+  - **Dynamic**: We create a PVC against a StorageClass. This will create a PV automatically.
+  - Volumes are created automatically when PVC is created.
+  - These approaches have unique characteristics in Reclaim Policies.
+    - **Delete**: The volume will be deleted on the release from its claim
+    - **Retain**: The volume will be left in its current phase. This is the default policy.
+    - **Recycle**: The files are deleted and the persistent volume is reused. Deprecated since Kubernetes 1.9 in favor of external storage solutions that handle cleanup process.
+- Ceph is a Kubernetes storage for Openshift
+  - Ceph is a highly scalable and flexible storage solution that provides comprehensive storage capabilities, including block, file, and object storage, in distributed systems.
+  - It uses a decentralized architecture to store data across multiple nodes, making it highly fault-tolerant and reliable.
+  - [ceph](https://www.redhat.com/en/technologies/storage/ceph)
+  - [ceph example](https://docs.openshift.com/container-platform/3.11/install_config/storage_examples/ceph_example.html)
 
 ## StatefulSets
 
@@ -2006,10 +2061,6 @@ In a regular **Kubernetes cluster (without a service mesh)**, the **data plane a
   - Set the NodeName field in the pod manifest to the desired node name.
 - How can you limit a pod to run on a specific node in Kubernetes?
   - Add a label to the node and use nodeSelector in the pod's spec section.
-````
-
-## Failed Questions
-
 - Which of the following statements is true regarding service accounts in Kubernetes version 1.24?
   - When a service account is created, it no longer automatically creates a secret or a token access secret.
 - What is a service account in Kubernetes?
@@ -2055,10 +2106,10 @@ In a regular **Kubernetes cluster (without a service mesh)**, the **data plane a
 - Which of the following is true about the format of the sections in the kubeconfig file?
   - Each section is in an array format.
 - What command can be used to view the contents of a secret object in Kubernetes?
-  - kubectl describe secret <token-name\>
+  - `kubectl describe secret <token-name>`
 - What is the role of the node authoriser in Kubernetes cluster?
   - Handles requests from the kubelets on nodes to the kube-apiserver
 - What is the kubectl command to change the current context?
-  - kubectl config use-context <context\>
+  - `kubectl config use-context <context>`
 - When configuring security settings at the pod level, what happens to the settings?
   - They apply to all containers within the pod.

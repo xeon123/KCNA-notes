@@ -3,11 +3,11 @@
 ## Cluster Networking
 
 - **Node Configuration:**
-    - Each **node** (master or worker) must have:
-        - At least **one network interface** (e.g., `eth0`)
-        - A **configured IP address**
-        - A **unique hostname**
-        - A **unique MAC address** (important when cloning VMs)
+  - Each **node** (master or worker) must have:
+    - At least **one network interface** (e.g., `eth0`)
+    - A **configured IP address**
+    - A **unique hostname**
+    - A **unique MAC address** (important when cloning VMs)
 
 ---
 
@@ -18,6 +18,7 @@
 - `master-01`: `192.168.1.10`
 - `worker-01`: `192.168.1.11`
 - `worker-02`: `192.168.1.12`
+
 #### **Key Ports to Open:**
 
 There are some ports that need to be open, because they are going to be used by the Kubernetes components.
@@ -38,9 +39,9 @@ If there are multiple master nodes, it is also necessary to open port 2380.
 
 **Summary of Kubernetes Pod Networking Setup**
 
-After setting up Kubernetes master and worker nodes with proper networking and control plane components (kube-apiserver, etcd, kubelets, etc.), the focus shifts to Pod networking, a critical layer for cluster functionality. Kubernetes requires a networking solution to address Pod communication, but it does not provide a built-in solution. Instead, it defines clear requirements for Pod networking, which must be implemented using a Container Network Interface (CNI) plugin or custom solution.
+After setting up Kubernetes master and worker nodes with proper networking and control plane components (kube-apiserver, etcd, kubelets, etc.), the focus shifts to Pod networking, a critical layer for cluster functionality. Kubernetes requires a networking solution to address Pod communication, but it does **not provide a built-in solution**. Instead, it defines clear requirements for Pod networking, which must be implemented using a Container Network Interface (CNI) plugin or custom solution.
 
-### Kubernetes Pod Networking Requirements
+### Pod Networking Requirements
 
 1. **Unique IP Address**: Every Pod must have its own unique IP address.
 2. **Intra-Node Communication**: Pods on the same node must communicate with each other using their IP addresses.
@@ -53,41 +54,42 @@ To meet these requirements, a manual networking setup is described, which helps 
 #### Steps for Pod Networking
 
 1. **Create Bridge Networks**:
-    - On each node, a bridge network (v-net-0) is created to connect Pods.
-    - Each bridge is assigned a unique subnet:
-        - Node1: 10.244.1.0/24 (bridge IP: 10.244.1.1)
-        - Node2: 10.244.2.0/24 (bridge IP: 10.244.2.1)
-        - Node3: 10.244.3.0/24 (bridge IP: 10.244.3.1)
-    - Commands:
-        
 
-    ```bash
-    ip link add v-net-0 type bridge
-	ip link set dev v-net-0 up
-	ip addr add <bridge-ip>/24 dev v-net-0
-	```
+   - On each node, a bridge network (v-net-0) is created to connect Pods.
+   - Each bridge is assigned a unique subnet:
+     - Node1: 10.244.1.0/24 (bridge IP: 10.244.1.1)
+     - Node2: 10.244.2.0/24 (bridge IP: 10.244.2.1)
+     - Node3: 10.244.3.0/24 (bridge IP: 10.244.3.1)
+   - Commands:
 
-        
+   ```bash
+   ip link add v-net-0 type bridge
+   ip link set dev v-net-0 up
+   ip addr add <bridge-ip>/24 dev v-net-0
+   ```
+
 2. **Connect Pods to Bridge**:
-    - For each Pod, Kubernetes creates a network namespace.
-    - A virtual Ethernet (veth) pair is created to connect the Pod’s namespace to the bridge:
-        - One end (veth-red) is placed in the Pod’s namespace.
-        - The other end (veth-red-br) is attached to the bridge.
-    - Assign a unique IP from the node’s subnet (e.g., 10.244.1.2 for a Pod on Node1).
-    - Commands are scripted (net-script.sh) for automation:
-    ```bash
-	ip link add veth-red type veth peer name veth-red-br
-	ip link set veth-red netns <pod-namespace>
-	ip -n <pod-namespace> addr add <pod-ip> dev veth-red
-	ip link set veth-red-br master v-net-0
-	ip -n <pod-namespace> link set veth-red up
-	ip -n <pod-namespace> route add default via <bridge-ip>
-	```
-	
+
+   - For each Pod, Kubernetes creates a network namespace.
+   - A virtual Ethernet (veth) pair is created to connect the Pod’s namespace to the bridge:
+     - One end (veth-red) is placed in the Pod’s namespace.
+     - The other end (veth-red-br) is attached to the bridge.
+   - Assign a unique IP from the node’s subnet (e.g., 10.244.1.2 for a Pod on Node1).
+   - Commands are scripted (net-script.sh) for automation:
+
+   ```bash
+   ip link add veth-red type veth peer name veth-red-br
+   ip link set veth-red netns <pod-namespace>
+   ip -n <pod-namespace> addr add <pod-ip> dev veth-red
+   ip link set veth-red-br master v-net-0
+   ip -n <pod-namespace> link set veth-red up
+   ip -n <pod-namespace> route add default via <bridge-ip>
+   ```
+
 3. **Enable Inter-Node Pod Communication**:
-    - Pods on different nodes need routing to communicate.
-    - Add routes on each node to direct traffic to other nodes’ subnets via their external IPs:
-    - Alternatively, configure a router with routes for all subnets (e.g., 10.244.0.0/16) and set it as the default gateway for nodes to simplify management.
+   - Pods on different nodes need routing to communicate.
+   - Add routes on each node to direct traffic to other nodes’ subnets via their external IPs:
+   - Alternatively, configure a router with routes for all subnets (e.g., 10.244.0.0/16) and set it as the default gateway for nodes to simplify management.
 
 ```bash
 # On Node1
@@ -100,38 +102,77 @@ ip route add 10.244.3.0/24 via 192.168.1.13
 ip route add 10.244.1.0/24 via 192.168.1.11
 ip route add 10.244.2.0/24 via 192.168.1.12
 ```
-        
-- 
+
+-
+
 4. **Automate with CNI**:
-    - Manual scripting is impractical for large clusters, so the script is adapted for CNI compatibility.
-    - The script includes:
-        - **ADD**: Creates veth pair, assigns IP, connects to bridge, and sets routes.
-        - **DEL**: Removes veth pair and frees IP when a Pod is deleted.
-    - Kubelet uses CNI configuration (/etc/cni/net.d) and binaries (/etc/cni/bin) to execute the script automatically when Pods are created or deleted:
+   - Manual scripting is impractical for large clusters, so the script is adapted for CNI compatibility.
+   - The script includes:
+     - **ADD**: Creates veth pair, assigns IP, connects to bridge, and sets routes.
+     - **DEL**: Removes veth pair and frees IP when a Pod is deleted.
+   - Kubelet uses CNI configuration (/etc/cni/net.d) and binaries (/etc/cni/bin) to execute the script automatically when Pods are created or deleted:
 
 ```bash
 ./net-script.sh add <container> <namespace>
-```  
+```
 
 ### Outcome
 
 - Pods receive unique IPs (e.g., 10.244.1.2, 10.244.2.2) and can communicate within and across nodes without NAT.
 - The setup ensures scalability by scripting repetitive tasks and integrating with CNI for automation.
 - While this is a basic solution, production clusters typically use CNI plugins (e.g., Flannel, Calico) that handle these tasks more efficiently.
-- 
+-
 
 ## CNI in Kubernetes
 
 - CNI lets Kubernetes **plug in a networking backend** so that **pods can communicate** with each other, with services, and with the outside world.
 - When a **pod is created**, Kubernetes asks the CNI plugin to:
-	- **Create a network interface** in the pod's network namespace.
-	- **Assign an IP address** to the pod.
-	-  **Connect the pod** to the cluster network (e.g., via a virtual bridge or overlay).
-	- Optionally set up **routing, NAT, DNS**, etc.
+  - **Create a network interface** in the pod's network namespace.
+  - **Assign an IP address** to the pod.
+  - **Connect the pod** to the cluster network (e.g., via a virtual bridge or overlay).
+  - Optionally set up **routing, NAT, DNS**, etc.
 - When a pod is deleted, CNI also **cleans up** the networking setup.
+- CNI configs and binaries typically go in:
+  - Configs: `/etc/cni/net.d/`
+  - Binaries: `/opt/cni/bin/`
+-
 
 ### CNI weave
 
+**Weave Net** creates a **virtual network** that connects all the pods across your Kubernetes nodes. It handles:
+
+- IP address assignment
+- Pod-to-pod communication (within and across nodes)
+- Automatic discovery and routing between nodes
+- Network encryption and isolation (optional)
+
+| Feature                    | Description                                                            |
+| -------------------------- | ---------------------------------------------------------------------- |
+| 🔌 **CNI-compatible**      | Works seamlessly with Kubernetes via the CNI standard.                 |
+| 🔁 **Automatic mesh**      | Nodes automatically discover and connect to each other to form a mesh. |
+| 🔒 **Optional encryption** | Secure traffic between nodes with no extra setup.                      |
+| 📦 **IP allocation**       | Automatically allocates pod IPs and routes them.                       |
+| 🔐 **Network policies**    | Supports Kubernetes NetworkPolicies.                                   |
+| 🛠️ **Simplicity**          | Minimal configuration compared to more advanced plugins.               |
+
+#### Bridge
+
+A **bridge** is a virtual switch that operates at **Layer 2 (Data Link Layer)** of the OSI model. Think of it as a **software switch** that allows multiple interfaces to communicate **as if they were on the same Ethernet network**.
+
+When a pod is created:
+
+- The CNI plugin (like Weave, Flannel, Calico, etc.) sets up a **veth pair** (virtual Ethernet interfaces).
+- One end of the veth goes **inside the pod**.
+- The other end connects to a **bridge interface** on the **host (node)**, typically named something like `cni0`, `br0`, or `weave`.
+
+| Function                             | Explanation                                                                                                               |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| 🧵 **Connect pods on the same node** | Pods are attached to the same bridge, so they can talk to each other like devices on a LAN.                               |
+| 🌐 **Connect to outside the node**   | The bridge is connected to the node’s main interface or tunnel interfaces (e.g., VXLAN), enabling access beyond the node. |
+| 🔀 **Packet forwarding**             | It forwards packets from one pod to another, or from a pod to the external world.                                         |
+| 🧰 **Simplifies routing**            | Kubernetes can assign pod IPs and let the bridge handle forwarding instead of managing complex routing per pod.           |
+
+---
 
 ## DNS in Kubernetes
 
@@ -153,14 +194,17 @@ sequenceDiagram
     KubeDNSService-->>ResolvConf: DNS Response
     ResolvConf-->>Pod: IP of my-service
 ```
+
 - KubeDNS provides DNS resolution within the cluster.
 - It allows **pods to discover other services and pods** using DNS names like:
+
 ```pgsql
 my-service.my-namespace.svc.cluster.local
 <service>.<namespace>.svc.cluster.local
 ```
 
 - For pods
+
 ```pgsql
 10-244-2-5.my-namespace.svc.cluster.local
 <pod ip>.<namespace>.svc.cluster.local
@@ -172,22 +216,24 @@ my-service.my-namespace.svc.cluster.local
 | Performance   | Good             | Better (more efficient)         |
 | Extensibility | Limited          | Plugin-based, highly extensible |
 | Default since | Older clusters   | Kubernetes 1.11+                |
--  **kube-dns receives the request** 
-	- `kube-dns` is a **Deployment** with a `kube-dns` **Service** pointing to its pods. It runs:
-		- `dnsmasq` (a lightweight DNS server that does caching and forwarding)
-		- `kubedns` (a Go program that talks to the Kubernetes API)
-	    - `sidecar` (for health checks and metrics)
+
+- **kube-dns receives the request**
+  - `kube-dns` is a **Deployment** with a `kube-dns` **Service** pointing to its pods. It runs:
+    - `dnsmasq` (a lightweight DNS server that does caching and forwarding)
+    - `kubedns` (a Go program that talks to the Kubernetes API)
+      - `sidecar` (for health checks and metrics)
 - **kubedns looks up the service**
-	- `kubedns` queries the **Kubernetes API** to check if `my-service` exists in `my-namespace`
-	- If yes, it gets the **ClusterIP** of that service
+  - `kubedns` queries the **Kubernetes API** to check if `my-service` exists in `my-namespace`
+  - If yes, it gets the **ClusterIP** of that service
 
 ## Ingress
 
 ### Deploying on Kubernetes
 
-#### Deploy the application on on-prem datacenter.
+#### Deploy the application on on-prem datacenter
 
 ![[Application-on-Prem.png]]
+
 - You deploy an application for an online store (`my-online-store.com`) using a Docker image inside a **Pod**, managed by a **Deployment**.
 - You deploy a **MySQL Pod** and expose it internally using a **ClusterIP service** called `mysql-service`.
 - You create a **NodePort service**, which assigns a high-numbered port (e.g., `38080`) on each node. Users can now access the app via `http://<NodeIP>:38080`.
@@ -198,14 +244,19 @@ my-service.my-namespace.svc.cluster.local
 #### Deploy the application on GCP
 
 ![[Application-on-GCP.png]]
+
 - In a **public cloud environment** like **Google Cloud Platform (GCP)**, instead of using a **NodePort** service, you can expose your application using a **LoadBalancer** service type.
 - When you create a LoadBalancer service, Kubernetes still provisions a high port (like with NodePort), but it also **requests GCP to provision a network load balancer**.
 - GCP then automatically sets up the load balancer, routing traffic to the appropriate node ports, and provides an **external IP**.
 - You can point your **DNS (e.g., `my-online-store.com`)** to this external IP, allowing users to access the application directly without needing to remember port numbers or specific node IPs.
+
 ##### Adding another service
+
 - A new **video streaming application** is deployed in the **same Kubernetes cluster** to share resources. It is set up as a separate **Deployment**, and a **LoadBalancer service** (`video-service`) is created for it.
 - Kubernetes assigns **port 38282** and requests the cloud provider to create a **new network load balancer**, which comes with a **new external IP**.
+
 ##### Emerging problems
+
 - It's important to note that **each LoadBalancer incurs cost**, and using multiple LoadBalancers can **significantly increase your cloud bill**.
 - To traffic between load balancers, your need another proxy or load balancer that can re-direct traffic based on URLs to the different services.
 - If you need SSL, it can be done at different levels, either at the application level itself, or at the load balancer or proxy server level, but which one?
@@ -225,7 +276,8 @@ my-service.my-namespace.svc.cluster.local
 - Once configured, all future **load balancing**, **authentication**, **SSL**, and **URL-based routing** are handled through the **Ingress Controller** and its associated **Ingress Resources**.
 - Without Ingress, you would manually deploy and configure **NGINX** as a **reverse proxy** inside your cluster to handle routing, SSL, etc.
 - With ingress, **NGINX** act as an **Ingress Controller**.
-	- You define **Ingress Resources** (YAML manifests with routing and SSL rules) as a Deployment.
+  - You define **Ingress Resources** (YAML manifests with routing and SSL rules) as a Deployment.
+
 ```yaml
 ---
 apiVersion: v1
@@ -303,7 +355,7 @@ metadata:
   name: ingress-nginx-controller
   namespace: ingress-nginx
 spec:
-  type: NodePort  # Change to LoadBalancer if you're on cloud
+  type: NodePort # Change to LoadBalancer if you're on cloud
   selector:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/component: controller
@@ -320,14 +372,53 @@ spec:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-	name: nginx-ingress-serviceaccount
+  name: nginx-ingress-serviceaccount
 ```
 
 - `--configmap=$(POD_NAMESPACE)/nginx-config`: links the controller to the `ConfigMap`.
-	- - `proxy-body-size: "4m"` limits request body size to 4MB.
+  - - `proxy-body-size: "4m"` limits request body size to 4MB.
     - `enable-vts-status: "true"` is for monitoring via the NGINX VTS (Virtual Host Traffic Status) module.
 - You can add more settings like gzip, timeout, etc., to `nginx-config`.
 - You expose HTTP and HTTPS via `NodePort` to receive traffic (or `LoadBalancer` if you're in a cloud).
 - `serviceaccount` to assign roles and roles bindings.
-    
+
 ⚠️ **Note**: Kubernetes does **not include an Ingress Controller by default**, so simply creating Ingress Resources won't work unless you’ve first deployed an Ingress Controller in your cluster.
+
+## Failed Questions
+
+- In a Kubernetes cluster, how can a pod reach a service using its service name?
+  - Only if the pod and service are in the same namespace
+- Does Kubernetes currently provide a built-in solution for pod networking?
+  - No, Kubernetes does not have a built-in solution for pod networking.
+- How should you refer to a service located in a separate namespace called "apps" from the default namespace in Kubernetes?
+  - By using the pattern: .apps
+- What are the two unique identifiers required for hosts in a network?
+  - Unique hostname and MAC address
+- How are all the pods and services for a namespace grouped together within the DNS subdomain in Kubernetes?
+  - They are grouped under the subdomain with the name of the namespace.
+- In a Container Network Interface (CNI) setup, where does the kubelet look to determine which plugin should be used?
+  - In the CNI config directory containing configuration files
+- In a Container Network Interface (CNI) plugin configuration file, what does the "type" field indicate when set to "host-local" under the IPAM section?
+  - The type of IP address management used for pods
+- How can a pod within a Kubernetes cluster reach a service?
+  - By using the service name
+- Which HTTPS port does the kube-controller-manager component of Kubernetes require to be open?
+  - Port 10257
+- When setting up a Kubernetes cluster, does Kubernetes deploy a built-in DNS server by default?
+  - Yes, a built-in DNS server is automatically deployed by default.
+- In a Kubernetes cluster, how can a pod reach a service using its service name?
+  - Only if the pod and service are in the same namespace
+- Does Kubernetes currently provide a built-in solution for pod networking?
+  - No, Kubernetes does not have a built-in solution for pod networking.
+- How should you refer to a service located in a separate namespace called "apps" from the default namespace in Kubernetes?
+  - By using the pattern: .apps
+- What are the two unique identifiers required for hosts in a network?
+  - Unique hostname and MAC address
+- How are all the pods and services for a namespace grouped together within the DNS subdomain in Kubernetes?
+  - They are grouped under the subdomain with the name of the namespace.
+- In a Container Network Interface (CNI) setup, where does the kubelet look to determine which plugin should be used?
+  - In the CNI config directory containing configuration files
+- In a Container Network Interface (CNI) plugin configuration file, what does the "type" field indicate when set to "host-local" under the IPAM section?
+  - The type of IP address management used for pods
+- How can a pod within a Kubernetes cluster reach a service?
+  - By using the service name
