@@ -1039,26 +1039,24 @@ The **kube-scheduler** is responsible for assigning pods to nodes in a Kubernete
 
 - Kubernetes allows running a custom scheduler by specifying the `schedulerName` field in the pod spec.
 
-  ```yaml
-  apiVersion: v1
-  kind: Pod
-  metadata:
-  creationTimestamp: null
-  labels:
-    run: nginx
-  name: nginx
-  spec:
-    schedulerName: my-scheduler
-    containers:
-      - image: nginx
-    name: nginx
-    resources: {}
-    dnsPolicy: ClusterFirst
-    restartPolicy: Always
-    status: {}
-  ```
-
-````
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+creationTimestamp: null
+labels:
+run: nginx
+name: nginx
+spec:
+schedulerName: my-scheduler
+containers:
+  - image: nginx
+name: nginx
+resources: {}
+dnsPolicy: ClusterFirst
+restartPolicy: Always
+status: {}
+```
 
 - A simple example using a Bash script demonstrates a basic custom scheduler that:
 - `git clone https://github.com/spurin/simple-kubernetes-scheduler-example`
