@@ -2113,3 +2113,5 @@ In a regular **Kubernetes cluster (without a service mesh)**, the **data plane a
   - `kubectl config use-context <context>`
 - When configuring security settings at the pod level, what happens to the settings?
   - They apply to all containers within the pod.
+
+---
