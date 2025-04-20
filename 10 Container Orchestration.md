@@ -87,14 +87,6 @@ To meet these requirements, a manual networking setup is described, which helps 
    ```
 
 3. **Enable Inter-Node Pod Communication**:
-<<<<<<< Updated upstream
-   - Pods on different nodes need routing to communicate.
-   - Add routes on each node to direct traffic to other nodes’ subnets via their external IPs:
-   - Alternatively, configure a router with routes for all subnets (e.g., 10.244.0.0/16) and set it as the default gateway for nodes to simplify management.
-
-```bash
-# On Node1
-=======
 
    - Pods on different nodes need routing to communicate.
    - Add routes on each node to direct traffic to other nodes’ subnets via their external IPs:
@@ -102,7 +94,6 @@ To meet these requirements, a manual networking setup is described, which helps 
 #### On Node1
 
 ```bash
->>>>>>> Stashed changes
 ip route add 10.244.2.0/24 via 192.168.1.12
 ip route add 10.244.3.0/24 via 192.168.1.13
 ```
@@ -121,20 +112,6 @@ ip route add 10.244.1.0/24 via 192.168.1.11
 ip route add 10.244.2.0/24 via 192.168.1.12
 ```
 
-<<<<<<< Updated upstream
--
-
-4. **Automate with CNI**:
-   - Manual scripting is impractical for large clusters, so the script is adapted for CNI compatibility.
-   - The script includes:
-     - **ADD**: Creates veth pair, assigns IP, connects to bridge, and sets routes.
-     - **DEL**: Removes veth pair and frees IP when a Pod is deleted.
-   - Kubelet uses CNI configuration (/etc/cni/net.d) and binaries (/etc/cni/bin) to execute the script automatically when Pods are created or deleted:
-
-```bash
-./net-script.sh add <container> <namespace>
-```
-=======
 - Alternatively, configure a router with routes for all subnets (e.g., 10.244.0.0/16) and set it as the default gateway for nodes to simplify management.
 
 4. **Automate with CNI**:
@@ -148,7 +125,6 @@ ip route add 10.244.2.0/24 via 192.168.1.12
   ```bash
   ./net-script.sh add <container> <namespace>
   ```
->>>>>>> Stashed changes
 
 ### Outcome
 
@@ -159,19 +135,6 @@ ip route add 10.244.2.0/24 via 192.168.1.12
 
 ## CNI in Kubernetes
 
-<<<<<<< Updated upstream
-- CNI lets Kubernetes **plug in a networking backend** so that **pods can communicate** with each other, with services, and with the outside world.
-- When a **pod is created**, Kubernetes asks the CNI plugin to:
-  - **Create a network interface** in the pod's network namespace.
-  - **Assign an IP address** to the pod.
-  - **Connect the pod** to the cluster network (e.g., via a virtual bridge or overlay).
-  - Optionally set up **routing, NAT, DNS**, etc.
-- When a pod is deleted, CNI also **cleans up** the networking setup.
-- CNI configs and binaries typically go in:
-  - Configs: `/etc/cni/net.d/`
-  - Binaries: `/opt/cni/bin/`
--
-=======
 - CNI (Container Network Interface) outlines the responsibilities of the container runtime (e.g., Kubernetes) in networking. According to CNI, the runtime must:
   - Create network namespaces for containers
   - Identify the appropriate network
@@ -221,45 +184,72 @@ cat /etc/cni/net.d/10-bridge.conf
   - ipMasq: enables NAT masquerading for outbound traffic.
   - IPAM section: specifies IP address management settings, like the subnet for Pods and routing rules.
   - type: host-local: means IPs are managed locally; it can also be set to dhcp to use an external DHCP server.
->>>>>>> Stashed changes
 
-### CNI weave
+## CNI weave
 
-<<<<<<< Updated upstream
-**Weave Net** creates a **virtual network** that connects all the pods across your Kubernetes nodes. It handles:
+![[CNI Weave Network.png]]
 
-- IP address assignment
-- Pod-to-pod communication (within and across nodes)
-- Automatic discovery and routing between nodes
-- Network encryption and isolation (optional)
+The Weave CNI plugin simplifies networking in large Kubernetes clusters by deploying agents (peers) on each node. These agents:
 
-| Feature                    | Description                                                            |
-| -------------------------- | ---------------------------------------------------------------------- |
-| 🔌 **CNI-compatible**      | Works seamlessly with Kubernetes via the CNI standard.                 |
-| 🔁 **Automatic mesh**      | Nodes automatically discover and connect to each other to form a mesh. |
-| 🔒 **Optional encryption** | Secure traffic between nodes with no extra setup.                      |
-| 📦 **IP allocation**       | Automatically allocates pod IPs and routes them.                       |
-| 🔐 **Network policies**    | Supports Kubernetes NetworkPolicies.                                   |
-| 🛠️ **Simplicity**          | Minimal configuration compared to more advanced plugins.               |
+- Form a network among themselves to share information about pods and IP addresses across the cluster.
+- Create a custom bridge (weave) on each node and assign IPs to connected pods.
+- Encapsulate packets for inter-node communication: when a pod sends a packet to another pod on a different node, the local Weave agent wraps the packet and sends it to the destination node, where the receiving agent unwraps and delivers it to the correct pod.
+- This avoids the complexity of maintaining large routing tables, as agents handle routing internally.
 
-#### Bridge
+### Example
 
-A **bridge** is a virtual switch that operates at **Layer 2 (Data Link Layer)** of the OSI model. Think of it as a **software switch** that allows multiple interfaces to communicate **as if they were on the same Ethernet network**.
+![[Weave Network Package Delivery.png]]
+1. **Package is sent**:  
+    Someone in `office-10` sends a package to `office-3`, not knowing the exact path—only the target office name.    
+2. **Local agent intercepts**:  
+    The **shipping agent** at `office-10` intercepts the package. He checks the destination (`office-3`) and, through his internal network (i.e., communication with other agents), knows exactly which **site and department** it belongs to.
+3. **Encapsulation**:  
+    The agent **wraps** the original package inside a new one, adding the **destination site’s address** as the outer label—this is similar to network **encapsulation** where the packet is wrapped with new headers.
+4. **Sending the package**:  
+    The agent sends this newly wrapped package across the **external network** toward the correct destination site.
+5. **Reception at destination site**:  
+    Once the package reaches the destination site, the **shipping agent** there intercepts it.
+6. **Decapsulation**:  
+    The receiving agent **opens** (decapsulates) the outer package and retrieves the original one.
+7. **Final delivery**:  
+    The original package is then delivered to `office-3` (the final target).
 
-When a pod is created:
+### Analogy to Weave CNI:
 
-- The CNI plugin (like Weave, Flannel, Calico, etc.) sets up a **veth pair** (virtual Ethernet interfaces).
-- One end of the veth goes **inside the pod**.
-- The other end connects to a **bridge interface** on the **host (node)**, typically named something like `cni0`, `br0`, or `weave`.
+- The **shipping agents** = Weave peers on each node.
+- The **internal network of agents** = Weave's peer-to-peer control plane that keeps track of pod IPs and locations.
+- **Encapsulation** = Wrapping the original packet in a new packet with new headers for inter-node communication.
+- **Decapsulation** = Extracting the original packet at the receiving node.
+- **Delivery to target** = Routing the packet to the correct pod on the destination node.
 
-| Function                             | Explanation                                                                                                               |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
-| 🧵 **Connect pods on the same node** | Pods are attached to the same bridge, so they can talk to each other like devices on a LAN.                               |
-| 🌐 **Connect to outside the node**   | The bridge is connected to the node’s main interface or tunnel interfaces (e.g., VXLAN), enabling access beyond the node. |
-| 🔀 **Packet forwarding**             | It forwards packets from one pod to another, or from a pod to the external world.                                         |
-| 🧰 **Simplifies routing**            | Kubernetes can assign pod IPs and let the bridge handle forwarding instead of managing complex routing per pod.           |
+#### Steps:
 
----
+- **Peer communication and topology sharing**:  
+    Weave agents (peers) on each node constantly communicate and **exchange information** about nodes, networks, and pod IPs. Each peer maintains a **complete topology** of the cluster.
+- **Bridge creation and IP assignment**:  
+    Weave creates a **custom bridge** on each node called `weave`, and **assigns IP ranges** for pod communication.
+- **Pod network attachment**:  
+    Pods can be attached to multiple bridges (e.g., Docker’s default bridge and Weave’s bridge).  
+    **Routing is configured** to ensure traffic goes through the correct bridge.
+- **Routing through Weave**:  
+    When a pod sends a packet to another pod on a different node:
+    - The local **Weave agent intercepts** the packet.
+    - It **detects** that the destination pod is on a different node.
+    - The packet is **encapsulated** in a new one with updated source and destination.
+    - The encapsulated packet is **sent over the network** to the destination node.
+- **Decapsulation and delivery**:
+    - The destination node’s **Weave agent receives** the encapsulated packet.
+    - It **decapsulates** the packet.
+    - Then, it **routes** the original packet to the correct destination pod.
+
+Deployment:
+
+- Weave can be installed as a DaemonSet, ensuring one Weave pod per node. You can deploy it with a single kubectl apply command after your Kubernetes control plane is set up.
+
+Troubleshooting:
+
+- You can inspect Weave pods and view logs using kubectl logs.
+- The office analogy explains that Weave acts like a smart internal courier system that automatically knows how to route messages (packets) between offices (pods) across many locations (nodes).
 
 ## DNS in Kubernetes
 
@@ -509,77 +499,4 @@ metadata:
   - The type of IP address management used for pods
 - How can a pod within a Kubernetes cluster reach a service?
   - By using the service name
-=======
-![[CNI Weave Network.png]]
 
-The Weave CNI plugin simplifies networking in large Kubernetes clusters by deploying agents (peers) on each node. These agents:
-
-- Form a network among themselves to share information about pods and IP addresses across the cluster.
-- Create a custom bridge (weave) on each node and assign IPs to connected pods.
-- Encapsulate packets for inter-node communication: when a pod sends a packet to another pod on a different node, the local Weave agent wraps the packet and sends it to the destination node, where the receiving agent unwraps and delivers it to the correct pod.
-- This avoids the complexity of maintaining large routing tables, as agents handle routing internally.
-
-### Example
-
-![[Weave Network Package Delivery.png]]
-1. **Package is sent**:  
-    Someone in `office-10` sends a package to `office-3`, not knowing the exact path—only the target office name.    
-2. **Local agent intercepts**:  
-    The **shipping agent** at `office-10` intercepts the package. He checks the destination (`office-3`) and, through his internal network (i.e., communication with other agents), knows exactly which **site and department** it belongs to.
-3. **Encapsulation**:  
-    The agent **wraps** the original package inside a new one, adding the **destination site’s address** as the outer label—this is similar to network **encapsulation** where the packet is wrapped with new headers.
-4. **Sending the package**:  
-    The agent sends this newly wrapped package across the **external network** toward the correct destination site.
-5. **Reception at destination site**:  
-    Once the package reaches the destination site, the **shipping agent** there intercepts it.
-6. **Decapsulation**:  
-    The receiving agent **opens** (decapsulates) the outer package and retrieves the original one.
-7. **Final delivery**:  
-    The original package is then delivered to `office-3` (the final target).
-
-### Analogy to Weave CNI:
-
-- The **shipping agents** = Weave peers on each node.
-- The **internal network of agents** = Weave's peer-to-peer control plane that keeps track of pod IPs and locations.
-- **Encapsulation** = Wrapping the original packet in a new packet with new headers for inter-node communication.
-- **Decapsulation** = Extracting the original packet at the receiving node.
-- **Delivery to target** = Routing the packet to the correct pod on the destination node.
-
-#### Steps:
-
-- **Peer communication and topology sharing**:  
-    Weave agents (peers) on each node constantly communicate and **exchange information** about nodes, networks, and pod IPs. Each peer maintains a **complete topology** of the cluster.
-- **Bridge creation and IP assignment**:  
-    Weave creates a **custom bridge** on each node called `weave`, and **assigns IP ranges** for pod communication.
-- **Pod network attachment**:  
-    Pods can be attached to multiple bridges (e.g., Docker’s default bridge and Weave’s bridge).  
-    **Routing is configured** to ensure traffic goes through the correct bridge.
-- **Routing through Weave**:  
-    When a pod sends a packet to another pod on a different node:
-    - The local **Weave agent intercepts** the packet.
-    - It **detects** that the destination pod is on a different node.
-    - The packet is **encapsulated** in a new one with updated source and destination.
-    - The encapsulated packet is **sent over the network** to the destination node.
-- **Decapsulation and delivery**:
-    - The destination node’s **Weave agent receives** the encapsulated packet.
-    - It **decapsulates** the packet.
-    - Then, it **routes** the original packet to the correct destination pod.
-
-Deployment:
-
-- Weave can be installed as a DaemonSet, ensuring one Weave pod per node. You can deploy it with a single kubectl apply command after your Kubernetes control plane is set up.
-
-Troubleshooting:
-
-- You can inspect Weave pods and view logs using kubectl logs.
-- The office analogy explains that Weave acts like a smart internal courier system that automatically knows how to route messages (packets) between offices (pods) across many locations (nodes).
-
-## DNS in Kubernetes
-
-## Ingress
-
-```
-
-```
-
->>>>>>> Stashed changes
