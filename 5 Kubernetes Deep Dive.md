@@ -1675,19 +1675,21 @@ COPY index.html /usr/share/nginx/html  # Layer 4
 
 - When pushing/pulling images, only new layers are sent.
 
-🔄 Writable Container Layer
-
-- When you start a container:
-  - Docker adds a read-write layer on top of the image.
-  - Any file changes (writes, deletions, etc.) happen there.
-  - The image layers below stay unchanged (read-only).
-- Faster deployment across nodes (especially in Kubernetes or CI/CD).
+- 🔄 Writable Container Layer
+  - When you start a container:
+    - Docker adds a read-write layer on top of the image.
+    - Any file changes (writes, deletions, etc.) happen there.
+    - The image layers below stay unchanged (read-only).
+  - Faster deployment across nodes (especially in Kubernetes or CI/CD).
+- Common Docker storage drivers: AUFS, ZFS, BTRFS, Device Mapper
 
 ##### Volumes
 
 - Volumes are Docker's way of persisting data outside the container's ephemeral filesystem.
 - By default, anything written inside a container is lost when the container stops or is removed.
 - Volumes solve that by storing data on the host machine, outside the container lifecycle.
+- Volumes are not handled by storage drivers. They are handled by volume drivers plugins.
+  - Azure File Storage, Convoy, GlusterFS, Portworx, VMWare vSphere Storage, etc.
 
 ```bash
 docker volume create data_volume
@@ -1700,8 +1702,60 @@ docker run -d -v data_volume:/var/lib/mysql mysql
 ```
 
 - Mounts `data_volume` to the path `/var/lib/mysql` inside mysql container.
+- When mounting, it is possible to define a specific volume driver.
+
+```bash
+docker run -it \
+ --name mysql \
+ --volume-driver rexray/ebs \
+ --mount src=ebs-vol, target=/var/lib/mysql \
+ mysql
+```
+
+Link for reference: [https://docs.docker.com/storage/bind-mounts/#choose-the--v-or---mount-flag](https://docs.docker.com/storage/bind-mounts/#choose-the--v-or---mount-flag)
+
+- Bind mounts mounts a directory from any location in the host filesystem.
+
+```bash
+docker run -v /host/path:/container/path <image>
+```
+
+| Feature                             | **Bind Mount**                               | **Volume Mount**                                |
+| ----------------------------------- | -------------------------------------------- | ----------------------------------------------- |
+| **Storage Location**                | Any path on the **host filesystem**          | Managed by Docker in `/var/lib/docker/volumes/` |
+| **Managed By**                      | You (manually)                               | Docker                                          |
+| **Host Path Must Exist?**           | ✅ Yes                                       | ❌ No (Docker creates it)                       |
+| **Isolation from Host**             | ❌ Low (direct access to host files)         | ✅ High (Docker manages the storage)            |
+| **Portability**                     | ❌ Tied to specific host paths               | ✅ Portable across systems                      |
+| **Permissions Management**          | Manual (can be tricky)                       | Handled by Docker                               |
+| **Backups**                         | Must be handled manually                     | Easier with `docker volume` commands            |
+| **Performance (Linux)**             | Slightly better (no Docker overlay involved) | Slightly slower, but negligible in most cases   |
+| **Typical Use Cases**               | Development, config injection                | Databases, persistent container data            |
+| **Docker Compose Compatibility**    | ✅ Supported                                 | ✅ Supported                                    |
+| **Data Sharing Between Containers** | Yes (via path)                               | Yes (via named volume)                          |
 
 <https://kubernetes.io/docs/concepts/storage/volumes/#emptydir>
+
+### Container Storage Interface
+
+- The **Container Storage Interface (CSI)** is a (universal) **standardized API** that allows **container orchestration systems** (like Kubernetes) to **interact with storage systems** in a consistent way.
+  - CSI lets **Kubernetes (or any other orchestrator)** plug in and manage **different storage solutions** (like AWS EBS, Ceph, OpenEBS, NFS, etc.) **without hardcoding support** for each.
+  - CSI defines a set of RPC that will be called by the container orchestractor, and this must be implemented by the storage driver (kubernetes, mesos, etc.).
+    - should call to provision new volume (Create a volume)
+    - should call to delete a volume (Delete a volume)
+    - should call to place a workload that uses the volume onto a node (ControllerPublishVolume)
+  - Storage drivers should (portworx, Amazon EBS, GlusterFS, etc):
+    - provision a new volume
+    - delete a volume
+    - make the storage available on the node
+- The **Container Runtime Interface (CRI)** is a **standard API** that allows **Kubernetes** to communicate with different **container runtimes** (like containerd, CRI-O, Docker via shim, etc.).
+  - Kubernetes doesn’t directly manage containers — instead, it talks to a **container runtime** using CRI to:
+    - Start / stop containers
+    - Pull images
+    - Manage logs
+    - Handle networking
+- The **Container Network Interface (CNI)** is a **specification and set of libraries** for configuring **network interfaces in Linux containers**.
+  - CNI is what Kubernetes (or other container orchestrators) uses to **set up networking for containers** — like assigning IP addresses, setting up routes, and applying network policies.
 
 ### **Ephemeral Storage:**
 
@@ -1729,22 +1783,113 @@ docker run -d -v data_volume:/var/lib/mysql mysql
   - When provisioning storage, there are 3 aspects to take into account
     - **Storage classes:** defines the type and characteristics of storage provided by the cluster. It allows administrators to describe the "classes" of storage they offer.
     - **Persistent Volumes:** represents a piece of storage in the cluster that has been provisioned by the administrator or dynamically using a StorageClass.
+      - It is a cluster-wide pool of storage volumes configured to be used by apps on the cluster.
+      - The user can select the storage using PVC.
     - **Persistent Volume Claims:** A **request for storage by the user**. It specifies the amount and characteristics of storage needed by a pod.
-    - Once bound to a PV, the PVC can be used to access the storage.
-      - PVC are namespaced objects.
+      - Once bound to a PV, the PVC can be used to access the storage.
+        - PVC are namespaced objects.
+    - A PVC is bound to a single PV.
+    - If PVC is deleted, by default the volume is retained, or it can be deleted automatically
+      `persistentVolumeReclaimPolicy: Delete`
+    - Or set to `recycle`. The data is deleted before being used to other claims.
 - Manual vs. dynamic provisioning:
   - **Manual**: We create a PV and PVC is created explicitly.
   - **Dynamic**: We create a PVC against a StorageClass. This will create a PV automatically.
-  - Volumes are created automatically when PVC is created.
+- Volumes are created automatically when PVC is created.
+
   - These approaches have unique characteristics in Reclaim Policies.
     - **Delete**: The volume will be deleted on the release from its claim
     - **Retain**: The volume will be left in its current phase. This is the default policy.
     - **Recycle**: The files are deleted and the persistent volume is reused. Deprecated since Kubernetes 1.9 in favor of external storage solutions that handle cleanup process.
-- Ceph is a Kubernetes storage for Openshift
-  - Ceph is a highly scalable and flexible storage solution that provides comprehensive storage capabilities, including block, file, and object storage, in distributed systems.
-  - It uses a decentralized architecture to store data across multiple nodes, making it highly fault-tolerant and reliable.
-  - [ceph](https://www.redhat.com/en/technologies/storage/ceph)
-  - [ceph example](https://docs.openshift.com/container-platform/3.11/install_config/storage_examples/ceph_example.html)
+  - Ceph is a Kubernetes storage for Openshift
+    - Ceph is a highly scalable and flexible storage solution that provides comprehensive storage capabilities, including block, file, and object storage, in distributed systems.
+    - It uses a decentralized architecture to store data across multiple nodes, making it highly fault-tolerant and reliable.
+    - [ceph](https://www.redhat.com/en/technologies/storage/ceph)
+    - [ceph example](https://docs.openshift.com/container-platform/3.11/install_config/storage_examples/ceph_example.html)
+
+- Local Persistent Volume
+
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+ name: pv-voll
+spec:
+ accessModes:
+  - ReadWriteOnce
+ capacity:
+  storage: 1Gi
+ hostPath:
+  path: /tmp/data
+```
+
+- AWS Persistent Volume
+
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+ name: pv-voll
+spec:
+ accessModes:
+  - ReadWriteOnce
+ capacity:
+  storage: 1Gi
+ awsElasticBlockStore:
+  volumeID: <volume-id>
+  fsType: ext4
+```
+
+- Persistent Volume Claim
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: myclaim
+spec:
+ accessModes:
+  - ReadWriteOnce
+ resources:
+  requests:
+   storage: 500Mi
+```
+
+- The PVC requests 500Mi, but the volume is 1Gi.
+  - Overprovisioning is common, especially when dynamic provisioning creates standard-size volumes (like 1Gi or 10Gi), and apps don’t always need that much.
+
+### Storage Classes
+
+- **StorageClasses** in Kubernetes define **how** and **what kind** of **storage** to provision **dynamically** when a user requests a PersistentVolumeClaim (PVC).
+  - It acts like a blueprint for **creating volumes on demand**.
+  - When a storage class is created, a PV is created.
+
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: aws-storage
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp3
+  encrypted: "true"
+```
+
+- Define the storage class name in the PVC definition
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: myclaim
+spec:
+ accessModes:
+  - ReadWriteOnce
+ storageClassName: aws-storage
+ resources:
+  requests:
+   storage: 500Mi
+```
 
 ## StatefulSets
 
@@ -2113,5 +2258,31 @@ In a regular **Kubernetes cluster (without a service mesh)**, the **data plane a
   - `kubectl config use-context <context>`
 - When configuring security settings at the pod level, what happens to the settings?
   - They apply to all containers within the pod.
-
----
+- What are the different access modes available for a volume in Kubernetes?
+  - readonlymany, readwriteonce, readwritemany
+- What is the preferred option to mount a volume in the Docker run command?
+  - --mount
+- What happens to the bound volume when a persistent volume claim gets deleted in Kubernetes?
+  - The bound volume becomes unbound.
+- Which of the following are common Container Storage Interface (CSI) drivers used for container orchestrators?
+  - Portworx, Amazon EBS, GlusterFs, Dell EMS
+- What happens when persistent volume claims are created in Kubernetes?
+  - Kubernetes binds the persistent volumes to claims based on the request and properties set on the volume.
+- What is the purpose of Docker's writable layer?
+  - To store data created by the container
+- What happens to the data stored in the container layer when a container is deleted?
+  - The data is deleted along with the container.
+- Which of the following is responsible for handling Docker volumes?
+  - Volume driver plugins
+- What is the role of storage drivers in the Container Storage Interface (CSI) standard?
+  - To implement the set of remote procedure calls defined by CSI
+- What is the purpose of Docker storage drivers?
+  - To enable the layered architecture of Docker images
+- What happens when you run a container based on a Docker image using the docker run command?
+  - A new writeable layer is created on top of the existing image layer.
+- Which command is used to create a volume in Docker?
+  - docker volume create
+- What is the purpose of the Container Storage Interface (CSI)?
+  - To support multiple storage solutions to work with kubernetes
+- How can you specify a preferred volume driver plugin solution for Docker volumes?
+  - Use the --volume-driver option with the docker run command.
