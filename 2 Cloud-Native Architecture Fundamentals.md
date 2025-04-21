@@ -89,8 +89,8 @@ summary: >
 
 ### 4. **Observability**
 
-    - Provides insight into the internal state of systems through outputs like logs, metrics, and traces.
-    - Enables effective issue diagnosis and understanding of application performance.
+- Provides insight into the internal state of systems through outputs like logs, metrics, and traces.
+- Enables effective issue diagnosis and understanding of application performance.
 
 ### Tip for KCNA Exam Preparation
 
@@ -103,28 +103,28 @@ These practices emphasize proactive design, automation, and scalability, ensurin
 
 ### 1. **Resilience**
 
-    - Design applications to anticipate failures, incorporating self-healing mechanisms.
-    - Example: In a replica set, Kubernetes automatically maintains the desired number of replicas in deployments.
-        - If a pod is killed, kubernetes restarts a new replica (self-healing)
+- Design applications to anticipate failures, incorporating self-healing mechanisms.
+- Example: In a replica set, Kubernetes automatically maintains the desired number of replicas in deployments.
+  - If a pod is killed, kubernetes restarts a new replica (self-healing)
 
 ### 2. **Automation**
 
-    - Reduces manual intervention with tools like Ansible and Terraform.
-    - Facilitates rapid deployments and frequent updates, e.g., Kubespray leverages Ansible for Kubernetes deployment automation .
-    - **Terraform** is a Infrastructure as a Code (IaC) tool.
-        - Allows users to define and provision infrastructure using code, enabling automated, consistent, and repeatable deployments of cloud resources across various providers.
-    - **Ansible** is a **open-source automation tool** that is used for configuration management, application deployment, task automation, and multi-node orchestration.
-     - While it can be used for some IAC tasks, it is not as focused on infrastructure provisioning and management as Terraform.
-    - This provides speed and agility through automated processes that deploys infrastructure and applications rapidly and update frequently.
-        - Allows faster interactions, reduces human error, and ensures consistency across environments.
+- Reduces manual intervention with tools like Ansible and Terraform.
+- Facilitates rapid deployments and frequent updates, e.g., Kubespray leverages Ansible for Kubernetes deployment automation .
+- **Terraform** is a Infrastructure as a Code (IaC) tool.
+  - Allows users to define and provision infrastructure using code, enabling automated, consistent, and repeatable deployments of cloud resources across various providers.
+- **Ansible** is a **open-source automation tool** that is used for configuration management, application deployment, task automation, and multi-node orchestration.
+  - While it can be used for some IAC tasks, it is not as focused on infrastructure provisioning and management as Terraform.
+- This provides speed and agility through automated processes that deploys infrastructure and applications rapidly and update frequently.
+  - Allows faster interactions, reduces human error, and ensures consistency across environments.
 
 ### 3. **CI/CD (Continuous Integration and Continuous Delivery/Deployment)**
 
-    - Is a practice that encourages frequent development changes with an emphasis on automated testing, leading to a release build.
-    - **Continuous Integration**: Frequent code commits with automated testing.
-    - **Continuous Delivery**: Automates release preparation, requiring human initiation for deployment.
-    - **Continuous Deployment**: Fully automated release to production, emphasizing testing and rollback procedures, often without requiring human initiation.
-    - In KCNA exams, interpret "CI/CD" as Continuous Delivery by default.
+- Is a practice that encourages frequent development changes with an emphasis on automated testing, leading to a release build.
+- **Continuous Integration**: Frequent code commits with automated testing.
+- **Continuous Delivery**: Automates release preparation, requiring human initiation for deployment.
+- **Continuous Deployment**: Fully automated release to production, emphasizing testing and rollback procedures, often without requiring human initiation.
+- In KCNA exams, interpret "CI/CD" as Continuous Delivery by default.
 
 ### 4. **Secure by Default**
 
@@ -137,15 +137,15 @@ These practices emphasize proactive design, automation, and scalability, ensurin
 
 ### 5. **Speed, Efficiency, and Cost Optimization**
 
-    - Use auto-scaling to handle varying workloads dynamically.
-    - Leverage serverless architectures for scalability and cost-effectiveness, including scaling down to zero when idle.
-    - Adopt proactive infrastructure design to ensure readiness for unpredictable peak demands.
+- Use auto-scaling to handle varying workloads dynamically.
+- Leverage serverless architectures for scalability and cost-effectiveness, including scaling down to zero when idle.
+- Adopt proactive infrastructure design to ensure readiness for unpredictable peak demands.
 
 ### 6. **Service Discovery**
 
-    - Automate detection of services on a network, avoiding manual configurations.
-    - Use cloud-native tools like Kubernetes' DNS service and environment variables for seamless service discovery.
-     - Environment Variables can automatically populate service-related information, and Kubernetes' built-in DNS server allows services to communicate using DNS names. These methods enable automatic service detection and routing within the cluster.
+- Automate detection of services on a network, avoiding manual configurations.
+- Use cloud-native tools like Kubernetes' DNS service and environment variables for seamless service discovery.
+  - Environment Variables can automatically populate service-related information, and Kubernetes' built-in DNS server allows services to communicate using DNS names. These methods enable automatic service detection and routing within the cluster.
 
 ## Key Pillars of Cloud-Native Architecture
 
@@ -153,23 +153,23 @@ Cloud-native architecture, rooted in **Microservices, Containerisation, DevOps, 
 
 ### 1. **Microservices Architecture**
 
-    - Breaks applications into loosely coupled, independently deployable components.
-    - Promotes agility, scalability, and resilience by enabling independent development and management.
+- Breaks applications into loosely coupled, independently deployable components.
+- Promotes agility, scalability, and resilience by enabling independent development and management.
 
 ### 2. **Containerisation**
 
-    - Encapsulates applications and dependencies into containers for consistent operation across environments.
-    - Ensures isolation, efficiency, and ease of deployment and management.
+- Encapsulates applications and dependencies into containers for consistent operation across environments.
+- Ensures isolation, efficiency, and ease of deployment and management.
 
 ### 3. **DevOps**
 
-    - Combines software development (Dev) and IT operations (Ops) for collaborative efficiency.
-    - Emphasizes automation, monitoring, and cross-team collaboration to enhance reliability and speed of delivery.
+- Combines software development (Dev) and IT operations (Ops) for collaborative efficiency.
+- Emphasizes automation, monitoring, and cross-team collaboration to enhance reliability and speed of delivery.
 
 ### 4. **Continuous Delivery (CD)**
 
-    - Automates building, testing, and preparing code for release.
-    - Speeds up the release cycle, improves productivity, and minimizes deployment risks and downtime.
+- Automates building, testing, and preparing code for release.
+- Speeds up the release cycle, improves productivity, and minimizes deployment risks and downtime.
 
 ### Takeaway
 
@@ -186,40 +186,116 @@ Auto scaling plays a pivotal role in ensuring that resources are efficiently all
 
 ### 1. **Types of Auto Scaling**
 
-    - **Reactive Auto Scaling**: Triggered when metrics hit predefined thresholds. For example, if CPU usage exceeds a threshold, the system automatically adds resources. When the demand decreases, resources are scaled back down.
-    - **Scheduled Auto Scaling**: Scaling is based on known future demand. This is useful when there are predictable spikes, such as end-of-month processing or periodic events like sales promotions.
-    - **Predictive Auto Scaling**: Uses AI and machine learning to anticipate future scaling needs based on historical data. It allows the system to "predict" demand and scale in advance, minimizing the impact of latency during scaling events.
+- **Reactive Auto Scaling**: Triggered when metrics hit predefined thresholds. For example, if CPU usage exceeds a threshold, the system automatically adds resources. When the demand decreases, resources are scaled back down.
+- **Scheduled Auto Scaling**: Scaling is based on known future demand. This is useful when there are predictable spikes, such as end-of-month processing or periodic events like sales promotions.
+- **Predictive Auto Scaling**: Uses AI and machine learning to anticipate future scaling needs based on historical data. It allows the system to "predict" demand and scale in advance, minimizing the impact of latency during scaling events.
 
 ### 2. **Vertical vs Horizontal Scaling**
 
-    - **Vertical Scaling (Scale-Up)**: Involves increasing the resources (CPU, memory, etc.) of an existing server or virtual machine. While this is feasible with virtual machines, it may require downtime and has physical limitations. E.g., in VMware ESXi, scaling down may incur a power down or a reboot of the resource, depending on the strategy used.
-        - The addition or removal of resources in relation to the physical resources.
-    - **Horizontal Scaling (Scale-Out)**: Involves adding or removing instances or nodes, typically in a cloud-native context. This is often more flexible and scalable than vertical scaling, especially in distributed applications.
-        - The addition or removal of resources in relation to the existing resources.
-    - In cloud native environments, horizontal scaling is used more.
-        - Unused resources, such as idle virtual machines or storage, typically incur costs even if they are not being utilized.
-    - Automation is a key component when using scaling.
-    - Testing should be part of the autoscaling solutions. Horizontal scaling increases complexity of data sharing. More resources = more routes between resources and increased concurrency.
+#### Vertical Scaling
+
+- **Vertical Scaling (Scale-Up)**: Involves increasing the resources (CPU, memory, etc.) of an existing server or virtual machine. While this is feasible with virtual machines, it may require downtime and has physical limitations. E.g., in VMware ESXi, scaling down may incur a power down or a reboot of the resource, depending on the strategy used.
+  - The addition or removal of resources in relation to the physical resources.
+- VPA has three components
+  - VPA Recommender: monitors the pod resources from a metric server and Recommends increasing Mem/CPU requests/limits
+  - VPA Updater: checks the current status of the pod, and align current resources with the recommendations
+  - VPA Admission Controller: is a mutating admission webhook that intercepts pod creation requests and modifies the resource requests/limits (CPU and memory) based on recommendations from the VPA.
+- `VerticalPodAutoscaler` (VPA) automatically sets (or recommends) CPU and memory requests and limits for your pods based on observed usage over time.
+
+```yaml
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: nginx-vpa
+spec:
+  targetRef:
+    apiVersion: "apps/v1"
+    kind: Deployment
+    name: nginx
+  updatePolicy:
+    updateMode: "Auto" # Other options: "Off", "Initial"
+```
+
+#### Horizontal Scaling
+
+- **Horizontal Scaling (Scale-Out)**: Involves adding or removing instances or nodes, typically in a cloud-native context. This is often more flexible and scalable than vertical scaling, especially in distributed applications.
+  - The addition or removal of resources in relation to the existing resources.
+- In cloud native environments, horizontal scaling is used more.
+  - Unused resources, such as idle virtual machines or storage, typically incur costs even if they are not being utilized.
+- Automation is a key component when using scaling.
+- Testing should be part of the autoscaling solutions. Horizontal scaling increases complexity of data sharing. More resources = more routes between resources and increased concurrency.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+            limits:
+              cpu: 200m
+```
+
+- Make sure to set resources.requests.cpu, or HPA won’t trigger!
+
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nginx-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx-deployment
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
+```
+
+- This HPA keeps CPU usage around 50%. If it goes higher, more pods are created (up to 5)
 
 ### 3. **Kubernetes Auto Scaling**
 
-    - **Cluster Autoscaler**: Automatically adjusts the size of a Kubernetes cluster based on workload demand, adding or removing nodes as needed.
-     - **Horizontal Pod Autoscaler (HPA)**: Automatically adjusts the number of pod replicas in a deployment based on resource usage (e.g., CPU or memory).
-         - The Horizontal Pod Autoscaler (HPA) in Kubernetes automatically scales the number of replicas of a pod based on observed metrics such as CPU utilization or custom metrics. This helps ensure that the application can handle varying loads efficiently by adjusting the number of pod instances dynamically.
-     - **Vertical Pod Autoscaler (VPA)**: Adjusts the resource requests and limits for individual pods based on their observed usage.
-         - Vertical Pod Autoscalers (VPA) automatically adjust the resource requests and limits (such as CPU and memory) for containers in a pod based on their usage patterns. This helps ensure that the pod has the appropriate amount of resources, improving performance and resource utilization.
-    - **KEDA (Kubernetes Event-Driven Autoscaling)**: A solution for event-driven applications that scales based on events, and can even scale to zero, which is useful for saving costs.
-        - It allows applications to scale based on external event sources, such as message queues or databases, using custom resources called ScaledObjects to define scaling criteria and behaviour.
+- **Cluster Autoscaler**: Automatically adjusts the size of a Kubernetes cluster based on workload demand, adding or removing nodes as needed.
+  - **Horizontal Pod Autoscaler (HPA)**: Automatically adjusts the number of pod replicas in a deployment based on resource usage (e.g., CPU or memory).
+    - The Horizontal Pod Autoscaler (HPA) in Kubernetes automatically scales the number of replicas of a pod based on observed metrics such as CPU utilization or custom metrics. This helps ensure that the application can handle varying loads efficiently by adjusting the number of pod instances dynamically.
+  - **Vertical Pod Autoscaler (VPA)**: Adjusts the resource requests and limits for individual pods based on their observed usage.
+    - Vertical Pod Autoscalers (VPA) automatically adjust the resource requests and limits (such as CPU and memory) for containers in a pod based on their usage patterns. This helps ensure that the pod has the appropriate amount of resources, improving performance and resource utilization.
+- **KEDA (Kubernetes Event-Driven Autoscaling)**: A solution for event-driven applications that scales based on events, and can even scale to zero, which is useful for saving costs.
+  - It allows applications to scale based on external event sources, such as message queues or databases, using custom resources called ScaledObjects to define scaling criteria and behaviour.
 
 ### 4. **Considerations**
 
-    - Autoscaling accelerates application availability and access.
-    - Always add automation as an appropriate action
-    - **Automation**: Essential for achieving speed, consistency, and cost-efficiency in auto scaling.
-    - **Testing**: Ensure that your applications can scale correctly and maintain performance under increased load.
-    - **Complexity of Data Sharing**: As scaling increases the number of resources, managing data consistency and concurrency becomes more complex.
+- Autoscaling accelerates application availability and access.
+- Always add automation as an appropriate action
+- **Automation**: Essential for achieving speed, consistency, and cost-efficiency in auto scaling.
+- **Testing**: Ensure that your applications can scale correctly and maintain performance under increased load.
+- **Complexity of Data Sharing**: As scaling increases the number of resources, managing data consistency and concurrency becomes more complex.
 
-## Serverless Computing
+## Serverless
 
 Serverless computing still involves servers, but are managed by a service provider. Users don't manage or maintain servers, focusing instead on deploying code or container images. The provider handles provisioning, scaling, and maintaining the underlying infrastructure, reducing complexity and cost for users.
 
@@ -230,13 +306,13 @@ One of the main challenges with serverless solutions is the potential for vendor
 ### Core Features of Serverless
 
 1. **Event-Driven Architecture**:
-    - Serverless applications operate in response to events, such as HTTP requests or changes in data.
-    - Billing is based on resource usage during code execution.
+   - Serverless applications operate in response to events, such as HTTP requests or changes in data.
+   - Billing is based on resource usage during code execution.
 2. **Auto-Scaling**:
-    - Serverless platforms automatically scale applications from zero to accommodate demand.
-    - This eliminates manual scaling configurations but requires budget considerations to manage costs effectively.
+   - Serverless platforms automatically scale applications from zero to accommodate demand.
+   - This eliminates manual scaling configurations but requires budget considerations to manage costs effectively.
 3. **Abstracted Infrastructure Management**:
-    - Users don't need to worry about infrastructure details such as memory, CPUs, operating systems, or patching.
+   - Users don't need to worry about infrastructure details such as memory, CPUs, operating systems, or patching.
 
 - Code execution and autoscaling are the two most critical factors that affect costs in serverless computing.
   - In a serverless model, you are charged based on the number of function executions and the time taken to execute them (code execution).
@@ -303,14 +379,14 @@ Kubernetes was the first project donated to the CNCF when the foundation was est
 ![[Cloud-Native Architecture Fundamentals Project Maturity.png]]
 
 1. **Sandbox Projects**:
-    - Early-stage projects with a low entry barrier.
-    - Typically alpha or proof of concept, appealing to innovators.
+   - Early-stage projects with a low entry barrier.
+   - Typically alpha or proof of concept, appealing to innovators.
 2. **Incubating Projects**:
-    - Show adoption, external contributions, and adherence to CNCF standards.
-    - Involves early adopters who provide feedback and help shape the project.
+   - Show adoption, external contributions, and adherence to CNCF standards.
+   - Involves early adopters who provide feedback and help shape the project.
 3. **Graduated Projects**:
-    - Mature projects meeting strict criteria, including security, performance, and broad adoption.
-    - Examples: Kubernetes after reaching its first major release version.
+   - Mature projects meeting strict criteria, including security, performance, and broad adoption.
+   - Examples: Kubernetes after reaching its first major release version.
 
 ### **"Crossing the Chasm":**
 
@@ -336,42 +412,42 @@ Projects face a challenge transitioning from niche (early adopters/incubating) t
 ### **CNCF Governance:**
 
 1. **Technical Oversight Committee (TOC)**:
-    - Guides project maturity by evaluating adoption, community engagement, and technical quality.
-        - It decides whether projects should move between stages—Sandbox, Incubated, and Graduated—based on criteria such as adoption, stability, and community support.
-    - Ensures adherence to the Core Infrastructure Initiative Best Practices.
+   - Guides project maturity by evaluating adoption, community engagement, and technical quality.
+     - It decides whether projects should move between stages—Sandbox, Incubated, and Graduated—based on criteria such as adoption, stability, and community support.
+   - Ensures adherence to the Core Infrastructure Initiative Best Practices.
 2. **Special Interest Groups (SIGs)**:
-    - Focused groups within projects like Kubernetes that address specific areas (e.g., security, storage).
-    - Open to contributors and vital for driving development.
+   - Focused groups within projects like Kubernetes that address specific areas (e.g., security, storage).
+   - Open to contributors and vital for driving development.
 3. **Technical Advisory Groups (TAGs)**:
-    - Evolved from CNCF SIGs to avoid overlap with project-specific SIGs, such as in Kubernetes.
-        - **CNCF** changed its terminology from **Special Interest Groups (SIGs)** to **Technical Advisory Groups (TAGs)** to avoid confusion with other projects, particularly Kubernetes, which also uses the term SIGs.
-    - Provide domain-specific guidance (e.g., storage, app delivery).
-    - Assist projects in transitioning across maturity levels.
+   - Evolved from CNCF SIGs to avoid overlap with project-specific SIGs, such as in Kubernetes.
+     - **CNCF** changed its terminology from **Special Interest Groups (SIGs)** to **Technical Advisory Groups (TAGs)** to avoid confusion with other projects, particularly Kubernetes, which also uses the term SIGs.
+   - Provide domain-specific guidance (e.g., storage, app delivery).
+   - Assist projects in transitioning across maturity levels.
 
 ---
 
 #### **Conflict Resolution in CNCF:**
 
 1. **Discussion**:
-    - Key for resolving disagreements through open debates during CNCF calls.
+   - Key for resolving disagreements through open debates during CNCF calls.
 2. **Voting**:
-    - Used when consensus isn’t reached.
-    - Binding votes determine outcomes, while non-binding votes express preferences.
+   - Used when consensus isn’t reached.
+   - Binding votes determine outcomes, while non-binding votes express preferences.
 
 ---
 
 **Resources to Explore:**
 
 1. **CNCF Landscape Page**:
-    - Visual overview of cloud-native projects and their maturity levels.
+   - Visual overview of cloud-native projects and their maturity levels.
 2. **TOC GitHub Page** (Technical oversight community):
-    - Details on project evaluation criteria and the maturity model.
+   - Details on project evaluation criteria and the maturity model.
 3. **SIGs (Special interest group) and TAGs (Technical advisory group)**:
-    - Great entry points for contributing to open-source projects like Kubernetes.
-    - TAGs provide technical guidance across specific domains: storage, security, app delivery, network, observability, runtime, contributor strategy
-        - Guide and support new projects with the onboarding of sandbox proposals
-        - Support and review CNCFs projects, transitioning from sandbox to incubation
-        - Coordinate the needs and requirements of users/participants within the TAG space
+   - Great entry points for contributing to open-source projects like Kubernetes.
+   - TAGs provide technical guidance across specific domains: storage, security, app delivery, network, observability, runtime, contributor strategy
+     - Guide and support new projects with the onboarding of sandbox proposals
+     - Support and review CNCFs projects, transitioning from sandbox to incubation
+     - Coordinate the needs and requirements of users/participants within the TAG space
 
 ### **Conclusion:**
 
@@ -384,7 +460,7 @@ CNCF plays a pivotal role in nurturing and standardizing cloud-native technologi
 
 ## Cloud-Native Personas
 
- **DevOps Engineer**
+**DevOps Engineer**
 ![[Cloud-Native Architecture Fundamentals devops engineer role.png]]
 
 - **Focus**: Bridges development and operations.
@@ -505,15 +581,16 @@ CNCF plays a pivotal role in nurturing and standardizing cloud-native technologi
 
 #### 1. **Open Container Initiative (OCI)**
 
-    - Established in 2015 by Docker Inc., CoreOS, and others under the Linux Foundation.
-     - The Linux Foundation plays a pivotal role in the open-source ecosystem by hosting a variety of critical projects such as the Linux Kernel, Kubernetes, and the CNCF (Cloud Native Computing Foundation).
-      - The Linux Foundation was founded in 2000 through the merger of Open Source Development Labs (OSDL) and the Free Standards Group to promote and support the Linux operating system and open-source software development.
-    - It provides resources, governance, and support to foster the development and widespread adoption of these technologies.
-    - Docker has indeed been instrumental in the creation of Open Standards and Open Contributions. The company behind Docker was a key contributor to the development of the OCI specification, which is an **open standard for container runtime environments**. Additionally, Docker's platform is built on top of several other open standards, including Linux kernel namespaces and `cgroups`.
-    - The OCI Image Specification is an open standard that defines **how a filesystem bundle should be packaged into a container image**. It provides a set of rules and guidelines for creating container images that are compliant with the OCI format, ensuring that they can be used across different platforms and environments.
-    - Docker Inc donate to Open Container Initiative `runc`, Docker’s underlying runtime software.
-        - `runc` was a critical component of the Docker platform at the time and provided the low-level functionality needed to create and manage containers.
-        - Docker donated `runc` to the OCI, Docker marked the first open standard for container runtime environments.
+- Established in 2015 by Docker Inc., CoreOS, and others under the Linux Foundation.
+  - The Linux Foundation plays a pivotal role in the open-source ecosystem by hosting a variety of critical projects such as the Linux Kernel, Kubernetes, and the CNCF (Cloud Native Computing Foundation).
+  - The Linux Foundation was founded in 2000 through the merger of Open Source Development Labs (OSDL) and the Free Standards Group to promote and support the Linux operating system and open-source software development.
+- It provides resources, governance, and support to foster the development and widespread adoption of these technologies.
+- Docker has indeed been instrumental in the creation of Open Standards and Open Contributions. The company behind Docker was a key contributor to the development of the OCI specification, which is an **open standard for container runtime environments**. Additionally, Docker's platform is built on top of several other open standards, including Linux kernel namespaces and `cgroups`.
+- The OCI Image Specification is an open standard that defines **how a filesystem bundle should be packaged into a container image**. It provides a set of rules and guidelines for creating container images that are compliant with the OCI format, ensuring that they can be used across different platforms and environments.
+- Docker Inc donate to Open Container Initiative `runc`, Docker’s underlying runtime software.
+
+  - `runc` was a critical component of the Docker platform at the time and provided the low-level functionality needed to create and manage containers.
+  - Docker donated `runc` to the OCI, Docker marked the first open standard for container runtime environments.
 
 - The Open Container Initiative (OCI) outlines the Runtime Specification, which defines how a filesystem bundle should be executed as a container runtime environment. The Runtime Specification provides a standardized interface for running containers, ensuring that different runtimes can execute containers in a consistent and predictable manner.
   - **Image Specification**: Standardizes how container images are created and packaged.
@@ -532,32 +609,33 @@ CNCF plays a pivotal role in nurturing and standardizing cloud-native technologi
 
 #### 1. **Container Network Interface (CNI)**
 
-    - A networking plugin specification for Kubernetes and other systems.
-    - Simplifies networking setup, supporting multiple implementations to avoid vendor lock-in.
-    - Examples: Auto-installed in Minikube, configurable in kubeadm setups.
-    - A CNI compatible implementation needs to be installed to transition the Kubernetes nodes from Not Ready to Ready.
-        - Minikube will do this during setup, and optionally you can override the choice of CNI.
-        - Kubeadm requires that you choose and install a compatible CNI layer as part of the installation process.
+- A networking plugin specification for Kubernetes and other systems.
+- Simplifies networking setup, supporting multiple implementations to avoid vendor lock-in.
+- Examples: Auto-installed in Minikube, configurable in kubeadm setups.
+- A CNI compatible implementation needs to be installed to transition the Kubernetes nodes from Not Ready to Ready.
+  - Minikube will do this during setup, and optionally you can override the choice of CNI.
+  - Kubeadm requires that you choose and install a compatible CNI layer as part of the installation process.
 
 #### 2. **Container Storage Interface (CSI)**
 
-    - Open standard for interfacing with storage solutions.
-        -  Provides a common interface for container orchestration systems, such as Kubernetes, to interact with different storage solutions. It allows storage vendors to write a single CSI plugin that can be used across multiple container orchestration systems.
-    - Examples: Rook (a CNCF project), Portworx (commercial solution).
+- Open standard for interfacing with storage solutions.
+  -  Provides a common interface for container orchestration systems, such as Kubernetes, to interact with different storage solutions. It allows storage vendors to write a single CSI plugin that can be used across multiple container orchestration systems.
+- Examples: Rook (a CNCF project), Portworx (commercial solution).
 
 #### 3. **Container Runtime Interface (CRI)**
 
-    - ![[Cloud-Native Architecture Fundamentals CRI.png]]
-    - Plugin interface allowing Kubelet to work with various container runtime engines.
-    - Examples: containerd, CRI-O, Firecracker.
-    - CRI is not exclusive to Kubelet. There are other projects that can make use of container runtime interfaces.
-    - Facilitates flexible runtime usage for Kubernetes pod management.
+![[Cloud-Native Architecture Fundamentals CRI.png]]
+
+- Plugin interface allowing Kubelet to work with various container runtime engines.
+- Examples: containerd, CRI-O, Firecracker.
+- CRI is not exclusive to Kubelet. There are other projects that can make use of container runtime interfaces.
+- Facilitates flexible runtime usage for Kubernetes pod management.
 
 #### 4. **Service Mesh Interface (SMI)**
 
-    - Standard specification for service mesh technologies.
-        - `https://smi-spec.io`
-    - Supports rapid growth in service mesh adoption by enabling interoperability.
+- Standard specification for service mesh technologies.
+  - `https://smi-spec.io`
+- Supports rapid growth in service mesh adoption by enabling interoperability.
 
 ---
 
