@@ -176,40 +176,40 @@ status: draft
 
 ## Failed Questions
 
+- When did Kubernetes join the Cloud Native Computing Foundation (CNCF)?
+	- 2016
+- How are SIG leaders elected in Kubernetes?
+	- They are appointed by a nomination and voting process within the SIG.
+- What is the role of Working Groups in the Kubernetes community?
+	- Come together to work on specific issues of the project
 - How do KEPs address the limitations of using GitHub issues for proposing changes?
 	- By enabling efficient management of proposed changes, by promoting transparency and collaboration, by providing a structured and well-defined process.
+- What is the purpose of a test plan in a KEP?
+	- To ensure that the proposed change is thoroughly tested before implementation
+- What is the purpose of a Kubernetes Enhancement Proposal (KEP)?
+	- To provide a structured process for proposing, evaluating, and implementing changes in Kubernetes
 - What is the Open Container Initiative (OCI) and what standards has it created for container images and runtimes?
 	- It is a group that focuses on creating open standards for container images, runtimes, and distributions. It has created the image spec, the runtime specification, and the distribution spec.
+- Which standard created by the OCI outlines how a file system bundle should be packaged into an image?
+	- Image spec
+- What is pod-based scaling in Kubernetes autoscaling?
+	- Adjusting the number of pods running in a deployment based on demand
 - Which of the following is NOT one of the autoscaling features offered by Kubernetes?
 	- Node Autoscaler
 - What is the purpose of Horizontal Pod Autoscaler in Kubernetes autoscaling?
 	- To adjust the number of pods running in a deployment based on demand
-- Which section of a KEP outlines the motivation and goals of a proposed change or feature?
-	- Goals and non-goals
-- What is the purpose of a test plan in a KEP?
-	- To ensure that the proposed change is thoroughly tested before implementation
-- What is pod-based scaling in Kubernetes autoscaling?
-	- Adjusting the number of pods running in a deployment based on demand
-- Which auto scaling feature of Kubernetes allows businesses to automatically resize the entire cluster to meet the demands of the application?
-	- Cluster Autoscaler
-- What is the role of Working Groups in the Kubernetes community?
-	- Come together to work on specific issues of the project
-- What is the purpose of a Kubernetes Enhancement Proposal (KEP)?
-	- To provide a structured process for proposing, evaluating, and implementing changes in Kubernetes
-- What is serverless computing?
-	- A computing model where the server is managed by a cloud provider
-- How are SIG leaders elected in Kubernetes?
-	- They are appointed by a nomination and voting process within the SIG.
-- When did Kubernetes join the Cloud Native Computing Foundation (CNCF)?
-	- 2016
-- Which standard created by the OCI outlines how a file system bundle should be packaged into an image?
-	- Image spec
-- Which auto scaling feature of Kubernetes allows businesses to adjust the resource allocation of individual pods based on demand?
-	- Vertical Pod Autoscaler
-- What is Function-as-a-Service (FaaS)?
-	- A model where the cloud provider manages the server infrastructure
 - Which auto scaling feature of Kubernetes allows businesses to adjust the number of pods running in a deployment based on demand?
 	- Horizontal Pod Autoscaler
+- Which auto scaling feature of Kubernetes allows businesses to adjust the resource allocation of individual pods based on demand?
+	- Vertical Pod Autoscaler
+- Which auto scaling feature of Kubernetes allows businesses to automatically resize the entire cluster to meet the demands of the application?
+	- Cluster Autoscaler
+- Which section of a KEP outlines the motivation and goals of a proposed change or feature?
+	- Goals and non-goals
+- What is serverless computing?
+	- A computing model where the server is managed by a cloud provider
+- What is Function-as-a-Service (FaaS)?
+	- A model where the cloud provider manages the server infrastructure
 - What flexibility does the Container Runtime Interface (CRI) provide in Kubernetes?
 	- It empowers users to select the optimal container runtime that suits their specific needs.
 - Which cloud providers offer FaaS?
