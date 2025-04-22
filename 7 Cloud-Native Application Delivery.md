@@ -24,6 +24,15 @@ summary: >
 ## Modern Application Deployment with Cloud-Native & GitOps
 
 - GitOps refers to application delivery with Git as a single source of truth.
+- The core principals are:
+	- Everything — infrastructure, configuration, and application state — is described **declaratively** (e.g., using YAML, Helm, Kustomize).
+	- These declarative definitions are stored in a **version-controlled** system like Git.
+		- Every change is **tracked** and **auditable**.
+	- A GitOps agent (like Argo CD, Flux) **continuously reconciles** the system state with what's in Git.
+		- If Git changes, the cluster updates.
+		- If the cluster drifts, the agent reverts it back to the Git-defined state.
+	- There’s an ongoing loop comparing:
+		- The system **self-heals** by correcting drift of "what is running" and "what should be running" — ensuring consistency.
 - Argo CD is a cloud-native tool for application delivery
 - **GitOps** + **Argo CD** = Automated, self-healing deployments based on declarative infrastructure
 - Ideal for Kubernetes environments to maintain **consistency**, **scalability**, and **reliability**
@@ -59,37 +68,43 @@ summary: >
 
 ##### 1. **Installation:**
 
-    - Create a namespace for Argo CD:  
-        `kubectl create namespace argocd`
-    - Install using YAML from Argo’s official repo:  
-        `kubectl apply -n argocd -f [ARGO_YAML_URL]`
+- Create a namespace for Argo CD:  
+	`kubectl create namespace argocd`
+- Install using YAML from Argo’s official repo:  
+	`kubectl apply -n argocd -f [ARGO_YAML_URL]`
 
 ##### 2. **Access Setup:**
 
-    - Patch components for HTTP (for simplicity in labs)
+- Patch components for HTTP (for simplicity in labs)
 
-        kubectl -n argocd patch configmap argocd-cmd-params-cm --type merge -p '{"data":{"server.insegure":"true"}}'
-        kubectl -n argocd rollout restart deployment/argocd-server
+```bash
+kubectl -n argocd patch configmap argocd-cmd-params-cm --type merge -p '{"data":{"server.insegure":"true"}}'
+kubectl -n argocd rollout restart deployment/argocd-server
+```
 
-    - Retrieve the admin password:
-        - The initial admin password in Argo CD can be retrieved by **querying the `argocd-initial-admin-secret using a kubectl`** get secret command. When Argo CD is installed, it generates an initial admin user with a random password, which is stored in a Kubernetes secret named `argocd-initial-admin-secret`.
+- Retrieve the admin password:
+	- The initial admin password in Argo CD can be retrieved by **querying the `argocd-initial-admin-secret using a kubectl`** get secret command. When Argo CD is installed, it generates an initial admin user with a random password, which is stored in a Kubernetes secret named `argocd-initial-admin-secret`.
 
-        kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d
+```bash
+kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d
+```
 
-    - Get the service IP and login via the web UI
+- Get the service IP and login via the web UI
 
-        kubectl get svc
+```bash
+kubectl get svc
+```
 
 ##### 3. **Deploy a Sample App (e.g., WordPress):**
 
-    - Create a new app in Argo CD with auto-sync, prune, and self-heal enabled
-    - Point to a GitHub repo as the source of truth
-    - Observe automatic deployment and synchronization
+- Create a new app in Argo CD with auto-sync, prune, and self-heal enabled
+- Point to a GitHub repo as the source of truth
+- Observe automatic deployment and synchronization
 
 ##### 4. **GitOps in Action:**
 
-    - Delete the app namespace
-    - Argo CD automatically reconciles and redeploys the app based on the Git repository
+- Delete the app namespace
+- Argo CD automatically reconciles and redeploys the app based on the Git repository
 
 ## Argo CD vs. Flux: GitOps Tools for Kubernetes
 
@@ -131,7 +146,7 @@ summary: >
 
 ### 🔥 Argo CD vs. Flux: Key Differences
 
-| Feature                   | **Argo CD**                              | **Flux**                                  |
+|                           | **Argo CD**                              | **Flux**                                  |
 | ------------------------- | ---------------------------------------- | ----------------------------------------- |
 | **Architecture**          | Centralized control                      | Decentralized, scalable across clusters   |
 | **Sync Approach**         | Manual or automatic sync                 | Always pull-based, continuous sync        |
@@ -153,3 +168,79 @@ summary: >
   - Flexibility through modular components (GitOps Toolkit)
 
 Understanding both tools is beneficial for the **KCNA exam** and practical Kubernetes deployments. Knowing when to use Argo CD or Flux can help optimize your GitOps strategy. 🚀
+
+---
+
+## Deployment types
+### Push-based Deployment
+
+![[7 Cloud-Native Application Delivery Push deployment.png]]
+
+- A CI/CD pipeline or a developer **pushes changes** directly to the cluster.
+- The pipeline executes commands (e.g., `kubectl apply`) to update the environment.
+- It is necessary to expose the cluster credentials
+#### ✅ Pros:
+- **Simple and familiar**: Easy to implement with Jenkins, GitLab CI, etc.
+- **Immediate control**: You know exactly when and what is being deployed.
+
+#### ❌ Cons:
+- **Security risk**: CI/CD system needs direct access to the cluster.
+- **Harder to track drift**: No continuous reconciliation.
+- **Less GitOpsy**: Git isn't the sole source of truth — the actual state may drift.
+### Pull-based Deployment
+
+![[7 Cloud-Native Application Delivery Pull-based deployment.png]]
+
+- A GitOps agent (like **Argo CD** or **Flux**) **runs inside the cluster**.
+- It **pulls changes** from the Git repo and applies them to the cluster.
+- The agent continuously reconciles the cluster state with the Git repo.
+
+#### ✅ Pros:
+- **Secure**: No need to expose the cluster externally.
+- **True GitOps**: Git is the source of truth.
+- **Automatic self-healing**: Detects and fixes drift.
+- **Auditability**: Every change is traceable in Git.
+
+#### ❌ Cons:
+- **Initial setup complexity**.
+- **Slight delay** in applying changes, depending on the sync frequency (usually seconds).
+
+| Feature                | Push-Based               | Pull-Based (GitOps)    |
+| ---------------------- | ------------------------ | ---------------------- |
+| Trigger                | CI/CD pipeline           | GitOps agent           |
+| Access to Cluster      | Required externally      | Internal only          |
+| Git as Source of Truth | Not guaranteed           | Yes                    |
+| Drift Detection        | Manual or none           | Automatic              |
+| Security               | Weaker (cluster exposed) | Stronger (agent pulls) |
+| Common Tools           | Jenkins, GitLab CI       | Argo CD, Flux          |
+
+### CI/CD with GitOps
+
+![[7 Cloud-Native Application Delivery Continuous monitoring.png]]
+- In GitOps, we use 2 repositories:
+	- Application code repository
+	- Kubernetes manifests repository
+- In the production cluster, the ArgoCD continuously monitors the Kubernetes repository looking for changes.
+
+## Failed Questions
+
+- What is the key advantage of using GitOps for managing infrastructure changes?
+	- Greater efficiency and accuracy
+- How does GitOps ensure that changes to Kubernetes objects are deployed to the live environment?
+	- By using a GitOps operator/tool like Flux or Argo CD
+- Which of the following GitOps tools is commonly used for automating the deployment process?
+	- Flux
+- What is the main advantage of using Git as the single source of truth for both infrastructure and application resources?
+	- It tracks changes to infrastructure and application resources as code.
+- How can a developer update the Kubernetes manifest repository after pushing a newly built image to the container registry?
+	- Modify the YAML files referencing the image and commit the changes
+- How can a pull-based approach support a multi-tenant model in Kubernetes?
+	- By distributing tools across namespaces with distinct access rights and corresponding git repositories
+- Which of the following is a benefit of a pull-based deployment approach?
+	- Reduced risk of unauthorized access or malicious attacks
+- Which GitOps tool covers the entire CI/CD process and is relatively simple to deploy?
+	- Jenkins X
+- What is FluxCD primarily focused on?
+	- Continuous delivery to a Kubernetes cluster
+- What is the main challenge faced by the software company in delivering new features to users before implementing a CI/CD process?
+	- Slow and error-prone deployment

@@ -65,7 +65,7 @@ Tools and platforms designed to simplify the deployment, management, and operati
 These tools automate steps in the software delivery process, such as initiating automatic builds, tests, and deployments to streamline the development lifecycle.
 
 - [**Jenkins**](https://www.jenkins.io/): A versatile open-source automation server, Jenkins facilitates building, testing, and deploying software, supporting a wide array of plugins for CI/CD purposes
-- [**Argo CD**](https://argo-cd.readthedocs.io/): Specialises in Kubernetes-native workflows, enabling continuous delivery and automating deployment pipelines directly from Git repositories
+- [**Argo CD**](https://argo-cd.readthedocs.io/): Specializes in Kubernetes-native workflows, enabling continuous delivery and automating deployment pipelines directly from Git repositories
 - [**Argo Workflows**](https://argoproj.github.io/workflows): An extension of Argo as a workflow engine for orchestrating parallel jobs on Kubernetes
 - [**Flux**](https://fluxcd.io/): Embraces GitOps principles by automatically applying changes from Git to Kubernetes, ensuring that the state of clusters matches the configuration stored in version control
 
