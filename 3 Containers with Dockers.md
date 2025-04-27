@@ -81,7 +81,7 @@ Docker was originally called **DotCloud**, which was a cloud platform-as-a-servi
      - accounting: monitoring and reporting of resource limits
      - control: ability to control processes within a cgroup (started, stopped, frozen, restarted)
 3. **Rise of Virtual Machines**
-   - ![[Containers with Dockers VMs.png]]
+   ![[Containers with Dockers VMs.png]]
    - Hypervisors (e.g., VMware ESXi) allowed isolated virtual machines to share physical hardware, providing an abstraction layer between physical resources and system guest.
      - Advantages: flexibility, advanced features (e.g., live migration of VMs between HW platforms, support for GPU, Cloud Computing and Virtual Desktop Infrastructure (VDI)).
      - Disadvantages: resource segmentation (the resources are segmented between different VMs), OS overhead, licensing costs.
@@ -107,7 +107,7 @@ Docker was originally called **DotCloud**, which was a cloud platform-as-a-servi
 
 - Containerization evolved from mainframe virtualization, Unix advancements, and Linux innovations.
 - Docker and Kubernetes made these technologies accessible and practical for modern applications.
-- Containers leverage isolation (namespaces) and resource control (cgroups) for lightweight, scalable, and efficient deployment.
+- Containers leverage isolation (`namespaces`) and resource control (`cgroups`) for lightweight, scalable, and efficient deployment.
 
 ## Docker installation
 
@@ -133,8 +133,8 @@ One of the primary benefits of using Docker Desktop is that it provides a highly
 
 - **Running Containers**:
   Example: `docker run -it ubuntu bash` to interact with a Ubuntu container.
-  - -i : keeps the container’s standard input open to enable interaction with the container
-  - -t: allocates TTY for the container to simulate a terminal interface, making the container behave as if a terminal was connected.
+  - `-i`: keeps the container’s standard input open to enable interaction with the container
+  - `-t`: allocates TTY for the container to simulate a terminal interface, making the container behave as if a terminal was connected.
 - **Managing Resources**:
   Adjust resource limits (Mac), though limited on Windows (WSL).
 - **Kubernetes Integration**:
@@ -201,7 +201,7 @@ A **container image** is a portable, self-contained bundle of software and its d
   - ![[Containers with Dockers docker pull with digest.png]]
 - The digest is the checksum taken from a container registry, and is created when an images is pushed to the registry, and it is used to verify the integrity and authenticity of the image.
   - The digest represents the hash of the image manifest, which contains critical information about the image.
-- The image ID is a checksum derived from the image json configuration file used by Docker for this image when building the container. The json configuration file contais the metadata of the image, including its layers, tags, and other details.
+- The image ID is a checksum derived from the image json configuration file used by Docker for this image when building the container. The json configuration file contains the metadata of the image, including its layers, tags, and other details.
 
 #### 6. **Saving and Viewing Images:**
 

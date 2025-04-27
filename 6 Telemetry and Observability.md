@@ -388,7 +388,7 @@ node_cpu_seconds_total{cpu="0",mode="idle"} 2567363
 - **KubeCost:**  
    A Kubernetes-specific tool for monitoring and managing costs. Available in both open-source and commercial versions.
 
-## Failed Questions
+## Questions
 
 - How can you expose custom application metrics to Prometheus for tracking?
   - Utilize Prometheus client libraries
@@ -410,3 +410,10 @@ node_cpu_seconds_total{cpu="0",mode="idle"} 2567363
   - Logs are historical records that capture information about specific events.
 - What are the essential components of a log entry in a system or application? (Select all that apply)
   - The timestamp of when the log occurred,A message containing information
+-  Given the following SLI and SLO examples, what does the SLO value represent?
+```ini
+SLI: Latency
+SLO: Latency < 100ms
+```
+	- The maximum allowed latency
+-

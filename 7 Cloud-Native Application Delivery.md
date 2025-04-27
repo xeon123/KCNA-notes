@@ -18,7 +18,6 @@ status: draft
 summary: >
   This note explores modern cloud-native application delivery practices, focusing on GitOps, Argo CD, and Flux. It covers declarative infrastructure, CI/CD pipelines, automation, and best practices for Kubernetes deployments.
 ---
-
 # Cloud-Native Application Delivery
 
 ## Modern Application Deployment with Cloud-Native & GitOps
@@ -194,6 +193,8 @@ Understanding both tools is beneficial for the **KCNA exam** and practical Kuber
 - A GitOps agent (like **Argo CD** or **Flux**) **runs inside the cluster**.
 - It **pulls changes** from the Git repo and applies them to the cluster.
 - The agent continuously reconciles the cluster state with the Git repo.
+- In a **pull-based model**, agents or components running inside each tenant’s namespace (or cluster) regularly **pull their own configuration** or workload definitions from a source of truth.
+	- **Multi-tenancy** in Kubernetes means allowing multiple users, teams, or customers (tenants) to share the same cluster (or infrastructure) **while being isolated from each other**, either logically or physically.
 
 #### ✅ Pros:
 - **Secure**: No need to expose the cluster externally.
@@ -222,7 +223,7 @@ Understanding both tools is beneficial for the **KCNA exam** and practical Kuber
 	- Kubernetes manifests repository
 - In the production cluster, the ArgoCD continuously monitors the Kubernetes repository looking for changes.
 
-## Failed Questions
+## Questions
 
 - What is the key advantage of using GitOps for managing infrastructure changes?
 	- Greater efficiency and accuracy

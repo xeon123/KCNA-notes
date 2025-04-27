@@ -84,7 +84,6 @@ flowchart TD
         R -->|Registers cloud nodes| H
     end
 ```
-
 #### 1. Container Runtime
 
 - **Low-level container runtime**: Directly interacts with Linux namespaces and `cgroups`.
@@ -96,7 +95,6 @@ flowchart TD
   - It pulls, stores, supervises, and executes containers using a low-level runtime.
 
 ---
-
 #### 2. Kubelet
 
 - Runs on both **control plane and worker nodes** (not just nodes).
@@ -107,7 +105,6 @@ flowchart TD
 - Passes requests to `containerd`.
 
 ---
-
 #### 3. etcd (Key-Value Store)
 
 - **Stores all cluster data** and maintains the cluster state.
@@ -118,7 +115,6 @@ flowchart TD
 - Runs as a **static pod**
 
 ---
-
 #### 4. Kube API Server
 
 - **Main access point** to the Kubernetes cluster.
@@ -128,7 +124,6 @@ flowchart TD
 - Runs as a **static pod**
 
 ---
-
 #### 5. Kube Scheduler
 
 - Determines **which node** a pod should run on.
@@ -138,24 +133,21 @@ flowchart TD
 - Runs as a **static pod** (defined in YAML files).
 
 ---
-
 #### 6. Kube Proxy
 
 - **Handles network connectivity** in Kubernetes.
 - Runs as a **DaemonSet** (on **every node**).
+	- Not a static pod, but a **regular pod managed by Kubernetes**.
 - Manages **TCP, UDP, SCTP** forwarding rules dynamically.
-- Not a static pod, but a **regular pod managed by Kubernetes**.
 
 ---
-
 #### 7. CoreDNS
 
 - **Provides cluster DNS resolution**.
 - Runs as a **Deployment** (unlike static pods).
 - Ensures service discovery using **DNS-based communication**.
 
----
-
+--
 #### 8. Controller Manager
 
 - Manages **controllers** (control loops that enforce the desired state).
@@ -164,7 +156,6 @@ flowchart TD
   - **Deployment controller**: Manages pod replicas.
 
 ---
-
 #### 9. Cloud Controller Manager (CCM)
 
 - **Bridges Kubernetes with cloud providers**.
@@ -174,7 +165,6 @@ flowchart TD
 - Typically used in **public cloud Kubernetes deployments (e.g., AWS, GCP, Azure).**
 
 ---
-
 ### High Availability (HA) Kubernetes Cluster
 
 - Uses **multiple control plane nodes** for fault tolerance.
@@ -183,7 +173,6 @@ flowchart TD
 - Nodes communicate with **any available control plane** for scheduling and API interactions.
 
 ---
-
 ### Kubernetes Cluster Workflow
 
 1. **User (`kubectl`) → API Server**
@@ -192,7 +181,7 @@ flowchart TD
    - Stores the request.
 3. **Scheduler → Assigns Node**
    - Picks a node for the pod.
-4. **Kubelet → Container Runtime (`containerd` → `runC`)**
+1. **Kubelet → Container Runtime (`containerd` → `runc`)**
    - Creates the pod on the assigned node.
 5. **Service Exposure (`kube-proxy`, `CoreDNS`)**
    - Ensures network connectivity for the pod.
@@ -244,9 +233,9 @@ flowchart TD
 
 - **Using a temporary curl pod** to test communication:
 
-  ```bash
-  kubectl run curl --image=curlimages/curl --rm -it --restart=Never -- curl <nginx-pod-IP>
-  ```
+```bash
+kubectl run curl --image=curlimages/curl --rm -it --restart=Never -- curl <nginx-pod-IP>
+```
 
 - **Using an Ubuntu pod** for interactive testing:
 
@@ -256,9 +245,9 @@ kubectl run ubuntu --image=ubuntu --command -- sleep infinity
 
 - Exec into the Ubuntu pod:
 
-  ```bash
-  kubectl exec -it ubuntu -- bash
-  ```
+```bash
+kubectl exec -it ubuntu -- bash
+```
 
 - Install `curl` and test access to nginx.
 
@@ -308,10 +297,10 @@ kubectl run ubuntu --image=ubuntu --command -- sleep infinity
   `kubectl run ubuntu --image=ubuntu --dry-run=client -o yaml | tee ubuntu.yaml`
 - Apply both YAML files:
 
-  ```bash
-  kubectl apply -f nginx.yaml
-  kubectl apply -f ubuntu.yaml
-  ```
+```bash
+kubectl apply -f nginx.yaml
+kubectl apply -f ubuntu.yaml
+```
 
 - Delete the created pods:
   `kubectl delete pod nginx ubuntu --now`
@@ -321,9 +310,9 @@ kubectl run ubuntu --image=ubuntu --command -- sleep infinity
 - Kubernetes allows multiple resources in a single YAML file, separated by `---`.
 - Merge `nginx.yaml` and `ubuntu.yaml` into one file:
 
-  ```bash
-  { cat nginx.yaml; echo "---"; cat ubuntu.yaml; } > combined.yaml
-  ```
+```bash
+{ cat nginx.yaml; echo "---"; cat ubuntu.yaml; } > combined.yaml
+```
 
 - Apply both resources with one command:
   `kubectl apply -f combined.yaml`
@@ -362,11 +351,9 @@ kubectl run ubuntu --image=ubuntu --command -- sleep infinity
 #### Deploying and Verifying the Pod
 
 - Apply the YAML:
-
   `kubectl apply -f my-pod.yaml`
 
 - Verify the running pod:
-
   `kubectl get pods`
 
   - **Ready column** shows `2/2`, meaning **two containers are running in one pod**.
@@ -375,30 +362,27 @@ kubectl run ubuntu --image=ubuntu --command -- sleep infinity
 #### Inspecting the Pod
 
 - Check pod details:
-
   `kubectl describe pod my-pod`
 
 - Access the **web server**:
-  `kubectl run -it --rm --image=curlimages/curl --restart=Never curl -- http://10.42.2.6`
+```bash
+kubectl run -it --rm --image=curlimages/curl --restart=Never curl -- http://10.42.2.6
+```
 
 - View **sidecar logs**:
-
   `kubectl logs my-pod -c sidecar`
 
 #### Simulating a Container Crash
 
 - Trigger a crash by creating `/tmp/crash` inside the **sidecar** container:
-
   `kubectl exec my-pod -c sidecar -- touch /tmp/crash`
 
 - Check pod status:
-
   `kubectl get pods`
 
   - Sidecar container **restarts** (restart count increases).
 
 - View logs **before the crash**:
-
   `kubectl logs my-pod -c sidecar -p`
 
 #### Cleanup Resources
@@ -435,9 +419,9 @@ kubectl run ubuntu --image=ubuntu --command -- sleep infinity
 
 ### Default kubernetes namespaces
 
-- default: automatically created when the cluster is setup.
-- kube-system: created at cluster setup and contains a set of pods and services for internal purpose.
-- kube-public: available to all users.
+- `default`: automatically created when the cluster is setup.
+- `kube-system`: created at cluster setup and contains a set of pods and services for internal purpose.
+- `kube-public`: available to all users.
 
 ---
 
@@ -502,7 +486,6 @@ kubectl run ubuntu --image=ubuntu --command -- sleep infinity
 ---
 
 ### Key Takeaways for Kubernetes
-
 - **Namespaces provide isolation** within a Kubernetes cluster.
 - **RBAC, resource quotas, and limit ranges** enhance security and efficiency.
 - **Commands like `-n` and `set-context`** allow easy namespace management.
@@ -550,7 +533,7 @@ spec:
 
 - Defined in a YAML file (`rc-definition.yaml`).
 - Uses `apiVersion: v1` and `kind: ReplicationController`.
-- Specifies `replicas`, a `template` for pod definition, and a container (e.g., nginx).
+- Specifies `replicas`, a `template` for pod definition, and a container (e.g., `nginx`).
 - Created using: `kubectl create -f rc-definition.yaml`
 - Check status with: `kubectl get replicationcontroller kubectl get pods`
 
@@ -604,8 +587,8 @@ kubectl scale --replicas=6 replicaset/myapp-replicaset
 ![[Kubernetes Fundamentals Daemonset.png]]
 
 - A DaemonSet ensures that one copy of a pod runs on each node in the Kubernetes cluster.
-  - When new nodes are added, the pod is scheduled there automatically.
-  - When nodes are removed, the corresponding pods are cleaned up.
+	- When new nodes are added, the pod is scheduled there automatically.
+	- When nodes are removed, the corresponding pods are cleaned up.
 - Similar to ReplicaSets, but with one pod per node rather than a specific number of replicas.
 - Use Cases of DaemonSets
   - Monitoring & Logging Agents
@@ -647,14 +630,14 @@ spec:
     - ✅ Yes. The kubelet can run in standalone mode using Static Pods.
 - What are Static Pods?
   - Static Pods are managed directly by the kubelet, not by the Kubernetes control plane.
-  - The kubelet watches a specific directory (e.g., /etc/kubernetes/manifests) for pod definition files (`*.yaml`).
+  - The kubelet watches a specific directory (e.g., `/etc/kubernetes/manifests`) for pod definition files (`*.yaml`).
     - When files are added/updated/removed:
       - The kubelet periodically checks this folder, read the files and create the pods.
       - ➕ New pod definition file: kubelet creates the pod.
       - ✏️ File is modified: kubelet recreates the pod with new config.
       - ❌ File is deleted: kubelet deletes the pod.
 - No cluster, no API server needed.
-  - Only Pod resources are supported (not Deployments, Services, etc.).
+	- Only Pod resources are supported (not Deployments, Services, etc.).
 - Kubelet ensures pod liveness and restarts containers if they crash.
 - Kubelet doesn't manage higher-level abstractions like ReplicaSets or Deployments.
 - You can check running static pods using `docker ps` or `crictl ps` and observe pod names prefixed with `k8s_`.
@@ -686,8 +669,8 @@ staticPodPath: /etc/kubernetes/manifests
 ### Kubelet in static pods
 
 - The kubelet creates pods from two sources:
-  - Static pod manifest files in a specified folder.
-  - Requests from the kube-apiserver via an HTTP API.
+	- Static pod manifest files in a specified folder.
+	- Requests from the kube-apiserver via an HTTP API.
 - For static pods, the kubelet creates mirror pods on the API server so they appear when you run kubectl get pods. These mirror pods are read-only representations—you can't modify or delete them via the API. To change or remove static pods, you must update the files in the node’s manifest folder.
 
 ### Use Case
@@ -1395,7 +1378,14 @@ kubectl run --image=ubuntu --dry-run=client --restart=Never -o yaml ubuntu --com
 
 ## Labels and Selectors in Kubernetes
 
-**Labels** in Kubernetes are key-value pairs used to tag and organize resources. They help categorize and manage Kubernetes objects efficiently by allowing **grouping, selection, and filtering** of resources.
+- **Labels** in Kubernetes are key-value pairs used to tag and organize resources. They help categorize and manage Kubernetes objects efficiently by allowing **grouping, selection, and filtering** of resources. **Labels = custom tags you add**.
+```bash
+kubectl get pods --selector app=nginx
+```
+- **Field selectors** are used to **select Kubernetes objects based on object fields** (properties like `metadata.name`, `status.phase`, etc.). **Fields = built-in object properties**.
+```bash
+kubectl get pods --field-selector status.phase=Running
+```
 
 Many Kubernetes components use labels to select the resources they should operate on. This includes but is not limited to:
 
@@ -1515,7 +1505,7 @@ For more complex environments—such as deploying multi-container pods, setting 
 - ✅ **`kubectl create`**: Good for one-time creation from files.
 - ✅ **`kubectl apply`**: Best for managing resources over time with YAML files.
 
-## Failed Questions
+## Questions
 
 - How can you limit resources in a namespace in Kubernetes?
   - Use the kubectl create -f quota-definition.yaml command and provide a definition file with the kind as ResourceQuota, namespace, and resource limits.
@@ -1565,5 +1555,17 @@ For more complex environments—such as deploying multi-container pods, setting 
   - The selector helps the ReplicaSet identify pods that were created before the ReplicaSet.
 - In which Kubernetes namespace are the resources created that should be made available to all users?
   - kube-public
+- In a service mesh architecture, what is the role of the control plane?
+	- It manages all the traffic into and out of services via proxies.
+- In a service mesh architecture, how do the proxies communicate with each other?
+	- Through the data plane
+- Which component in Istio is responsible for delivering configuration secrets to the Envoy proxies?
+	- Istio agent
+- How can different applications in a Kubernetes cluster communicate with each other?
+	- Through services
+- Which of the following is NOT a main topic covered by service discovery in a service mesh?
+	- Traffic Encryption
+- In Kubernetes, which component serves as the default Domain Name System (DNS) solution for service discovery and name resolution within the cluster?
+	- CoreDNS
 
 > #flashcards

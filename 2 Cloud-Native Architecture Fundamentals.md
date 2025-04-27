@@ -16,7 +16,6 @@ status: draft
 summary: >
   This note covers the fundamentals of cloud-native architecture, including its evolution, key practices, benefits, and challenges. It also explores CNCF governance, serverless computing, and open standards.
 ---
-
 # Cloud-Native Architecture Fundamentals
 
 ## Evolution of Cloud-Native Architecture
@@ -52,7 +51,7 @@ summary: >
   - Microservices have isolated networking, avoiding port conflicts.
   - Easier to maintain components independently.
 - **Data Layer Flexibility**:
-  - Microservices can interact with databases independently or use advanced features like replication, sharding, or distributed stores (e.g., etcd).
+  - Microservices can interact with databases independently or use advanced features like replication, sharding, or distributed stores (e.g., `etcd`).
 - **Enhanced Flexibility and Scalability**:
   - Components can be swapped or upgraded without impacting the entire system.
 
@@ -74,18 +73,17 @@ summary: >
 - In Kubernetes, replicas ensure that a specified number of pod instances are always running for a given deployment. If a pod fails or is terminated, the replica controller automatically creates a new one to maintain the desired state, providing self-healing capabilities.
 - Designed to withstand failures and recover quickly.
 - Uses patterns like redundancy, failover, graceful degradation, and self-healing.
-
 - Example: Kubernetes automatically replaces failed pods to maintain desired replicas.
 
 ### 2. **Agility**
 
-    - Enables rapid development, modification, and deployment of applications.
-    - Leverages practices like microservices, continuous delivery pipelines, and automation.
+- Enables rapid development, modification, and deployment of applications.
+- Leverages practices like microservices, continuous delivery pipelines, and automation.
 
 ### 3. **Operability**
 
-    - Focused on ease of deployment, management, and maintenance.
-    - Incorporates automation and Infrastructure as Code (e.g., Terraform) to minimize manual effort.
+- Focused on ease of deployment, management, and maintenance.
+- Incorporates automation and Infrastructure as Code (e.g., Terraform) to minimize manual effort.
 
 ### 4. **Observability**
 
@@ -99,13 +97,13 @@ summary: >
 ## Key Cloud-Native Practices
 
 These practices emphasize proactive design, automation, and scalability, ensuring applications are resilient, secure, and cost-efficient while leveraging cloud-native capabilities.
-**Self-healing** refers to the ability of a system or application to automatically detect and recover from failures or issues without human intervention. This includes restarting failed processes, reallocating resources, or rerouting traffic to maintain availability and performance without manual intervention.
 
 ### 1. **Resilience**
 
 - Design applications to anticipate failures, incorporating self-healing mechanisms.
 - Example: In a replica set, Kubernetes automatically maintains the desired number of replicas in deployments.
-  - If a pod is killed, kubernetes restarts a new replica (self-healing)
+- If a pod is killed, kubernetes restarts a new replica (self-healing)
+-  **Self-healing** refers to the ability of a system or application to automatically detect and recover from failures or issues without human intervention. This includes restarting failed processes, reallocating resources, or rerouting traffic to maintain availability and performance without manual intervention.
 
 ### 2. **Automation**
 
@@ -131,9 +129,9 @@ These practices emphasize proactive design, automation, and scalability, ensurin
 - "Secure by Default" means designing and configuring systems with security best practices from the outset.
 - This includes implementing secure configurations, access controls, and leveraging security tools and processes to ensure that the components are protected against threats without requiring additional adjustments.
 - Utilize secure inter-service communication (e.g., Kubernetes ensures secure component connections by default (from the start)).
-  - Follow security best practices like the **Zero Trust model** ("never trust, always verify identities and integrity").
-  - Implement **Least privilege access** to minimize risks from exploited components.
-    - The concept of **'Least Privilege'** is crucial for **Cloud Native security** as it helps to **minimize potential attack surfaces** and **limit the scope of damage** that can occur if a security breach or exploit happens.
+- Follow security best practices like the **Zero Trust model** ("never trust, always verify identities and integrity").
+- Implement **Least privilege access** to minimize risks from exploited components.
+	- The concept of **'Least Privilege'** is crucial for **Cloud Native security** as it helps to **minimize potential attack surfaces** and **limit the scope of damage** that can occur if a security breach or exploit happens.
 
 ### 5. **Speed, Efficiency, and Cost Optimization**
 
@@ -145,18 +143,18 @@ These practices emphasize proactive design, automation, and scalability, ensurin
 
 - Automate detection of services on a network, avoiding manual configurations.
 - Use cloud-native tools like Kubernetes' DNS service and environment variables for seamless service discovery.
-  - Environment Variables can automatically populate service-related information, and Kubernetes' built-in DNS server allows services to communicate using DNS names. These methods enable automatic service detection and routing within the cluster.
+	- Environment Variables can automatically populate service-related information, and Kubernetes' built-in DNS server allows services to communicate using DNS names. These methods enable automatic service detection and routing within the cluster.
 
 ## Key Pillars of Cloud-Native Architecture
 
-Cloud-native architecture, rooted in **Microservices, Containerisation, DevOps, and Continuous Delivery**, fosters **agility, resilience, and efficiency**. This strategic approach ensures modern technological practices for building robust applications.
+Cloud-native architecture, rooted in **Microservices, Containerization, DevOps, and Continuous Delivery**, fosters **agility, resilience, and efficiency**. This strategic approach ensures modern technological practices for building robust applications.
 
 ### 1. **Microservices Architecture**
 
 - Breaks applications into loosely coupled, independently deployable components.
 - Promotes agility, scalability, and resilience by enabling independent development and management.
 
-### 2. **Containerisation**
+### 2. **Containerization**
 
 - Encapsulates applications and dependencies into containers for consistent operation across environments.
 - Ensures isolation, efficiency, and ease of deployment and management.
@@ -174,13 +172,13 @@ Cloud-native architecture, rooted in **Microservices, Containerisation, DevOps, 
 ### Takeaway
 
 **Acronym to Remember:**  
-"Morning Coffee Delivers Caffeine Delight" = **Microservices, Containerisation, DevOps, Continuous Delivery**.
+"Morning Coffee Delivers Caffeine Delight" = **Microservices, Containerization, DevOps, Continuous Delivery**.
 
-## Autoscaling
+## Auto-scaling
 
 - **Auto Scaling** enable automatic scaling of infrastructure or application components based on specific metrics.
 - Auto refers to the automatic adjustment of the number of computing resources allocated to an application or service based on current workload and demand, ensuring optimal performance and cost efficiency.
-- This ensures that resources are adjusted according to workload demands, which is especially important in environments where unused resources incur costs.
+	- This ensures that resources are adjusted according to workload demands, which is especially important in environments where unused resources incur costs.
 
 Auto scaling plays a pivotal role in ensuring that resources are efficiently allocated, improving application availability and optimizing costs in cloud environments.
 
@@ -197,9 +195,9 @@ Auto scaling plays a pivotal role in ensuring that resources are efficiently all
 - **Vertical Scaling (Scale-Up)**: Involves increasing the resources (CPU, memory, etc.) of an existing server or virtual machine. While this is feasible with virtual machines, it may require downtime and has physical limitations. E.g., in VMware ESXi, scaling down may incur a power down or a reboot of the resource, depending on the strategy used.
   - The addition or removal of resources in relation to the physical resources.
 - VPA has three components
-  - VPA Recommender: monitors the pod resources from a metric server and Recommends increasing Mem/CPU requests/limits
-  - VPA Updater: checks the current status of the pod, and align current resources with the recommendations
-  - VPA Admission Controller: is a mutating admission webhook that intercepts pod creation requests and modifies the resource requests/limits (CPU and memory) based on recommendations from the VPA.
+  - **VPA Recommender**: monitors the pod resources from a metric server and Recommends increasing Mem/CPU requests/limits
+  - **VPA Updater**: checks the current status of the pod, and align current resources with the recommendations
+  - **VPA Admission Controller**: is a mutating admission webhook that intercepts pod creation requests and modifies the resource requests/limits (CPU and memory) based on recommendations from the VPA.
 - `VerticalPodAutoscaler` (VPA) automatically sets (or recommends) CPU and memory requests and limits for your pods based on observed usage over time.
 
 ```yaml
@@ -252,7 +250,7 @@ spec:
               cpu: 200m
 ```
 
-- Make sure to set resources.requests.cpu, or HPA won’t trigger!
+**NOTE:** Make sure to set `resources.requests.cpu`, or HPA won’t trigger!
 
 ```yaml
 apiVersion: autoscaling/v2
@@ -281,11 +279,11 @@ spec:
 
 - **Cluster Autoscaler**: Automatically adjusts the size of a Kubernetes cluster based on workload demand, adding or removing nodes as needed.
   - **Horizontal Pod Autoscaler (HPA)**: Automatically adjusts the number of pod replicas in a deployment based on resource usage (e.g., CPU or memory).
-    - The Horizontal Pod Autoscaler (HPA) in Kubernetes automatically scales the number of replicas of a pod based on observed metrics such as CPU utilization or custom metrics. This helps ensure that the application can handle varying loads efficiently by adjusting the number of pod instances dynamically.
+    - The Horizontal Pod Autoscaler (HPA) in Kubernetes automatically **scales the number of replicas of a pod** based on observed metrics such as CPU utilization or custom metrics. This helps ensure that the application can handle varying loads efficiently by adjusting the number of pod instances dynamically.
   - **Vertical Pod Autoscaler (VPA)**: Adjusts the resource requests and limits for individual pods based on their observed usage.
-    - Vertical Pod Autoscalers (VPA) automatically adjust the resource requests and limits (such as CPU and memory) for containers in a pod based on their usage patterns. This helps ensure that the pod has the appropriate amount of resources, improving performance and resource utilization.
+    - Vertical Pod Autoscalers (VPA) **automatically adjust the resource requests and limits** (such as CPU and memory) for containers in a pod based on their usage patterns. This helps ensure that the pod has the appropriate amount of resources, improving performance and resource utilization.
 - **KEDA (Kubernetes Event-Driven Autoscaling)**: A solution for event-driven applications that scales based on events, and can even scale to zero, which is useful for saving costs.
-  - It allows applications to scale based on external event sources, such as message queues or databases, using custom resources called ScaledObjects to define scaling criteria and behaviour.
+  - It allows applications to scale based on external event sources, such as message queues or databases, using custom resources called ScaledObjects to define scaling criteria and behavior.
 
 ### 4. **Considerations**
 
@@ -302,6 +300,39 @@ Serverless computing still involves servers, but are managed by a service provid
 A key characteristic of serverless architecture is that it runs in response to events. Functions or applications are executed only when certain events occur, such as API calls, database updates, or file uploads, making it a highly efficient and cost-effective model.
 
 One of the main challenges with serverless solutions is the potential for vendor lock-in. Each cloud provider has its own set of APIs, features, and service integrations, which can make it difficult to migrate applications from one provider to another or adopt a multi-cloud strategy.
+### Serverless Workload
+
+| Feature               | Fission   | Knative                    |
+| --------------------- | --------- | -------------------------- |
+| **Type**              | Pure FaaS | Serverless platform + FaaS |
+| **Focus**             | Functions | Functions _and_ containers |
+| **Autoscaling**       | Yes       | Yes (via Knative Serving)  |
+| **Scale to Zero**     | Yes       | Yes                        |
+| **Event-Driven**      | Yes       | Yes (via Knative Eventing) |
+| **Kubernetes-native** | Yes       | Yes                        |
+|                       |           |                            |
+A **serverless workload** refers to **any application or process** where the cloud provider **automatically manages the infrastructure**, such as:
+- Autoscaling
+- Load balancing
+- Zero idle cost
+- Event-driven execution
+
+#### Knative
+
+**Knative** is a **Kubernetes-based serverless platform** that provides building blocks for:
+1. **Serving** – Autoscaling (including to zero), traffic routing, revision management
+2. **Eventing** – Event-driven architecture (Kafka, HTTP, cron, etc.)
+3. **(Optional) Functions** – Can be used with Knative Functions or integrated with FaaS frameworks
+❗But — Knative is **more than just FaaS**:
+- It can also handle **longer-running microservices**, not just functions
+- It’s suitable for **container-based serverless apps**, not just pure functions
+
+#### Fission
+
+**Fission** is an open-source FaaS framework for Kubernetes that allows you to:
+- Write short-lived **functions** in multiple languages
+- Deploy them **without worrying about containers, YAML, or Kubernetes details**
+- Automatically handle **scaling, routing, and resource management**
 
 ### Core Features of Serverless
 
@@ -323,8 +354,9 @@ One of the main challenges with serverless solutions is the potential for vendor
 #### **Example: AWS Lambda**
 
 ![[Cloud-Native Architecture Fundamentals Serverless Overview.png]]
-AWS Lambda is a leading serverless offering, classified as **Function-as-a-Service** (FaaS). Users can upload code or container images, and Lambda automatically executes them in response to events.
-
+- AWS Lambda is a leading serverless offering, classified as **Function-as-a-Service** (FaaS).
+	- **Function-as-a-Service (FaaS)** is a **serverless computing model** where the **cloud provider manages the entire server infrastructure** for you.
+-  Users can upload code or container images, and Lambda automatically executes them in response to events.
 - Automatic response to requests at any scale.
 - Built-in concurrency management (**Provisioned Concurrency**)
   - Multiple number of instances can run simultaneously. It ensures that functions are pre-initialized and can serve requests with minimal latency, even under high demand.
@@ -337,8 +369,7 @@ AWS Lambda is a leading serverless offering, classified as **Function-as-a-Servi
 #### **Open Source Serverless Options**
 
 In the cloud-native ecosystem, platforms like **Knative** and **OpenFaaS** provide FaaS functionality on Kubernetes.
-
-- Knative provides a platform for building, deploying, and managing serverless workloads, while OpenFaaS allows functions to be deployed as services on Kubernetes.
+- Knative provides a **platform for building, deploying, and managing serverless workloads**, while OpenFaaS allows functions to be deployed as services on Kubernetes.
 - Applications can automatically scale pods based on usage.
 - Serverless applications can integrate load balancers and scale from zero based on demand.
 
@@ -588,10 +619,9 @@ CNCF plays a pivotal role in nurturing and standardizing cloud-native technologi
 - Docker has indeed been instrumental in the creation of Open Standards and Open Contributions. The company behind Docker was a key contributor to the development of the OCI specification, which is an **open standard for container runtime environments**. Additionally, Docker's platform is built on top of several other open standards, including Linux kernel namespaces and `cgroups`.
 - The OCI Image Specification is an open standard that defines **how a filesystem bundle should be packaged into a container image**. It provides a set of rules and guidelines for creating container images that are compliant with the OCI format, ensuring that they can be used across different platforms and environments.
 - Docker Inc donate to Open Container Initiative `runc`, Docker’s underlying runtime software.
-
-  - `runc` was a critical component of the Docker platform at the time and provided the low-level functionality needed to create and manage containers.
-  - Docker donated `runc` to the OCI, Docker marked the first open standard for container runtime environments.
-
+	- `runc` was a critical component of the Docker platform at the time and provided the low-level functionality needed to create and manage containers.
+	- Docker donated `runc` to the OCI, Docker marked the first open standard for container runtime environments.
+- LXC is a lightweight, low-level container runtime
 - The Open Container Initiative (OCI) outlines the Runtime Specification, which defines how a filesystem bundle should be executed as a container runtime environment. The Runtime Specification provides a standardized interface for running containers, ensuring that different runtimes can execute containers in a consistent and predictable manner.
   - **Image Specification**: Standardizes how container images are created and packaged.
     - It provides a set of rules and guidelines for creating container images that are compliant with the OCI format, ensuring that they can be used across different platforms and environments.
@@ -601,7 +631,7 @@ CNCF plays a pivotal role in nurturing and standardizing cloud-native technologi
     - The Open Container Initiative (OCI) outlines the Runtime Specification, which defines how a filesystem bundle should be executed as a container runtime environment. The Runtime Specification provides a standardized interface for running containers, ensuring that different runtimes can execute containers in a consistent and predictable manner.
     - Examples: Kata Containers, gVisor, Firecracker.
       - The reference implementation is runC.
-    - `runc` (“run contaires”) is an open-source command-line tool that serves as the reference implementation of the OCI runtime specification. It provides a minimalistic way to run containers according to the OCI runtime specification and serves as a testing ground for verifying compliance with the specification.
+    - `runc` (“run containers”) is an open-source command-line tool that serves as the reference implementation of the OCI runtime specification. It provides a minimalistic way to run containers according to the OCI runtime specification and serves as a testing ground for verifying compliance with the specification.
   - **Distribution Specification**: Standardizes API protocols for distributing container images between registries, repositories, and other systems.
     - Open standards and API protocols for distribution of content, built upon the Docker Registry HTTP API v2 Protocol
       - Provides common interface for pushing, pulling, and managing container images, ensuring that different systems can interoperate.

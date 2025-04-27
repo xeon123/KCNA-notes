@@ -293,15 +293,33 @@ my-service.my-namespace.svc.cluster.local
 | Performance   | Good             | Better (more efficient)         |
 | Extensibility | Limited          | Plugin-based, highly extensible |
 | Default since | Older clusters   | Kubernetes 1.11+                |
+### Flow of a DNS request from a pod
 
+#### 1. **Application in the Pod makes a DNS query**
+- For example, an app tries to reach `my-service`, so it tries to resolve the DNS name using standard `libc` functions (like `getaddrinfo()`).
+#### 2. **Pod’s `/etc/resolv.conf` is used**
+- Kubernetes injects a custom `/etc/resolv.conf` into the Pod, typically pointing to the **cluster DNS server**, often something like:
+```pgsql
+nameserver 10.96.0.10
+search default.svc.cluster.local svc.cluster.local cluster.local
+options ndots:5
+```
+#### 3. **Query goes to CoreDNS (or kube-dns)**
+- The Pod sends the DNS request (UDP or TCP on port 53) to the cluster DNS server (usually **CoreDNS**, running as a Deployment in the `kube-system` namespace).
+- The **cluster DNS IP** (e.g., `10.96.0.10`) is usually a **ClusterIP** service that points to the CoreDNS Pods.
+#### 4. **Kube-proxy handles the Service routing**
+- kube-proxy configures iptables or IPVS to route traffic to the CoreDNS Pods behind the ClusterIP service.
+#### 5. **CoreDNS processes the request**
+- CoreDNS looks up the service in the Kubernetes API (via its `kubernetes` plugin).
+	- For example, if resolving `my-service.default.svc.cluster.local`, it queries the Kubernetes API for the service named `my-service` in the `default` namespace.
 - **kube-dns receives the request**
   - `kube-dns` is a **Deployment** with a `kube-dns` **Service** pointing to its pods. It runs:
     - `dnsmasq` (a lightweight DNS server that does caching and forwarding)
     - `kubedns` (a Go program that talks to the Kubernetes API)
       - `sidecar` (for health checks and metrics)
-- **kubedns looks up the service**
-  - `kubedns` queries the **Kubernetes API** to check if `my-service` exists in `my-namespace`
-  - If yes, it gets the **ClusterIP** of that service
+#### 6. **CoreDNS looks up the service**
+- `kubedns` queries the **Kubernetes API** to check if `my-service` exists in `my-namespace`
+	- If yes, CoreDNS returns the **ClusterIP** of the service
 
 ## Ingress
 
@@ -353,7 +371,7 @@ my-service.my-namespace.svc.cluster.local
 - Once configured, all future **load balancing**, **authentication**, **SSL**, and **URL-based routing** are handled through the **Ingress Controller** and its associated **Ingress Resources**.
 - Without Ingress, you would manually deploy and configure **NGINX** as a **reverse proxy** inside your cluster to handle routing, SSL, etc.
 - With ingress, **NGINX** act as an **Ingress Controller**.
-  - You define **Ingress Resources** (YAML manifests with routing and SSL rules) as a Deployment.
+	- You define **Ingress Resources** (YAML manifests with routing and SSL rules) as a Deployment.
 
 ```yaml
 ---
@@ -453,7 +471,7 @@ metadata:
 ```
 
 - `--configmap=$(POD_NAMESPACE)/nginx-config`: links the controller to the `ConfigMap`.
-  - - `proxy-body-size: "4m"` limits request body size to 4MB.
+  - `proxy-body-size: "4m"` limits request body size to 4MB.
     - `enable-vts-status: "true"` is for monitoring via the NGINX VTS (Virtual Host Traffic Status) module.
 - You can add more settings like gzip, timeout, etc., to `nginx-config`.
 - You expose HTTP and HTTPS via `NodePort` to receive traffic (or `LoadBalancer` if you're in a cloud).
@@ -461,19 +479,19 @@ metadata:
 
 ⚠️ **Note**: Kubernetes does **not include an Ingress Controller by default**, so simply creating Ingress Resources won't work unless you’ve first deployed an Ingress Controller in your cluster.
 
-## Failed Questions
+## Questions
 
 - In a Kubernetes cluster, how can a pod reach a service using its service name?
   - Only if the pod and service are in the same namespace
 - Does Kubernetes currently provide a built-in solution for pod networking?
   - No, Kubernetes does not have a built-in solution for pod networking.
 - How should you refer to a service located in a separate namespace called "apps" from the default namespace in Kubernetes?
-  - By using the pattern: .apps
+  - By using the pattern: `.apps`
 - What are the two unique identifiers required for hosts in a network?
   - Unique hostname and MAC address
 - How are all the pods and services for a namespace grouped together within the DNS subdomain in Kubernetes?
   - They are grouped under the subdomain with the name of the namespace.
-- In a Container Network Interface (CNI) setup, where does the kubelet look to determine which plugin should be used?
+- In a Container Network Interface (CNI) setup, where does the `kubelet` look to determine which plugin should be used?
   - In the CNI config directory containing configuration files
 - In a Container Network Interface (CNI) plugin configuration file, what does the "type" field indicate when set to "host-local" under the IPAM section?
   - The type of IP address management used for pods
@@ -487,16 +505,4 @@ metadata:
   - Only if the pod and service are in the same namespace
 - Does Kubernetes currently provide a built-in solution for pod networking?
   - No, Kubernetes does not have a built-in solution for pod networking.
-- How should you refer to a service located in a separate namespace called "apps" from the default namespace in Kubernetes?
-  - By using the pattern: .apps
-- What are the two unique identifiers required for hosts in a network?
-  - Unique hostname and MAC address
-- How are all the pods and services for a namespace grouped together within the DNS subdomain in Kubernetes?
-  - They are grouped under the subdomain with the name of the namespace.
-- In a Container Network Interface (CNI) setup, where does the kubelet look to determine which plugin should be used?
-  - In the CNI config directory containing configuration files
-- In a Container Network Interface (CNI) plugin configuration file, what does the "type" field indicate when set to "host-local" under the IPAM section?
-  - The type of IP address management used for pods
-- How can a pod within a Kubernetes cluster reach a service?
-  - By using the service name
 

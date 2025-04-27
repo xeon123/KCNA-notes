@@ -35,7 +35,7 @@ status: draft
   - Achieve resilience, scalability, automation, and security. #resilience #scalability #automation #security
   - Progress beyond basic cloud hosting.
   - Built using **Infrastructure-as-Code** tools like Terraform for vendor-agnostic management. #IaC #Terraform
-  - Benefits:: Scalability, Resilience, Automation, Security, Infrastructure-as-Code (Terraform)
+  - **Benefits:** Scalability, Resilience, Automation, Security, Infrastructure-as-Code (Terraform)
 
 ### Misconceptions About Cloud Native
 
@@ -47,7 +47,7 @@ status: draft
 - **Automation**: Setup and delivery processes are automated. #automation
 - **Resilience**: Applications are designed to handle failures gracefully. #resilience
 - **Scalability**: Workloads adapt automatically to operational demands. #scalability
-- **Security by Default**: Applications ensure robust security measures. #security
+- **Security**: Applications ensure robust security measures. #security
 
 ### Challenges Addressed by Cloud Native
 
@@ -65,7 +65,7 @@ status: draft
 
 - **Cloud Native Computing Foundation (CNCF)**:
   - Founded in 2015 to promote cloud-native technologies. #CNCF
-  - In February 2015, Kubernetes reached its first major milestone with release 1.0. #Kubernetes
+	  - In February 2015, Kubernetes reached its first major milestone with release 1.0. #Kubernetes
   - Oversees hundreds of projects like **Kubernetes**.
   - Plays a critical role in the cloud-native ecosystem. #cloud-native
 
@@ -75,13 +75,13 @@ status: draft
 
 - Kubernetes Open Standard interface
 
-| Acronym | Full Name                   | Purpose                                                                                        | Example Implementations                         |
-| ------- | --------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| **CRI** | Container Runtime Interface | Allows Kubernetes to interact with **container runtimes**                                      | containerd, CRI-O, Docker (via shi              |
-| **CSI** | Container Storage Interface | Enables dynamic provisioning and management of **storage volumes**                             | Portworx, Ceph, AWS EBS, GCE                    |
-| **OCI** | Open Container Initiative   | Defines **container image & runtime standards**, ensuring compatibility                        | Docker, Podman, contai                          |
-| **SMI** | Service Mesh Interface      | Provides a standard interface for **service meshes** to work with K8s                          | Istio, Linkerd, C                               |
-| CNI     | Container Network Interface | **Specification and set of libraries** for configuring network interfaces in Linux contain Calico, Flannel, Cillium, Weave, Canal, Multus anal,  |
+| Acronym | Full Name                   | Purpose                                                                                                                                         | Example Implementations            |
+| ------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| **CRI** | Container Runtime Interface | Allows Kubernetes to interact with **container runtimes**                                                                                       | containerd, CRI-O, Docker (via shi |
+| **CSI** | Container Storage Interface | Enables dynamic provisioning and management of **storage volumes**                                                                              | Portworx, Ceph, AWS EBS, GCE       |
+| **OCI** | Open Container Initiative   | Defines **container image & runtime standards**, ensuring compatibility                                                                         | Docker, Podman, contai             |
+| **SMI** | Service Mesh Interface      | Provides a standard interface for **service meshes** to work with K8s                                                                           | Istio, Linkerd, C                  |
+| **CNI** | Container Network Interface | **Specification and set of libraries** for configuring network interfaces in Linux contain Calico, Flannel, Cillium, Weave, Canal, Multus anal, |                                    |
 ### 🔍 Details
 
 #### 🧩 **CRI – Container Runtime Interface**
@@ -117,6 +117,7 @@ status: draft
 #### 🔗 **SMI – Service Mesh Interface**
 
 - Standard API for **observability, traffic management, and policy** in service meshes. 
+- A **service mesh** is a **dedicated infrastructure layer** that handles **service-to-service communication** in a **microservices architecture**.
 - Simplifies working with different service mesh providers.
 - Still a **young and evolving spec**, not part of Kubernetes core.
 
@@ -141,7 +142,7 @@ status: draft
 ### Highlights of KCNA
 
 - Covers **Kubernetes** and diverse areas such as:
-  - **Security** (leading to the Certified Kubernetes Security Specialist or CKS). #security #CKS
+  - **Security** (leading to CKS). #security #CKS
   - **Telemetry and Observability** (a foundation for Prometheus certification). #observability #Prometheus
   - Other areas being developed into new qualifications.
 - Designed to create a strong foundation for more advanced certifications. #certification
@@ -174,7 +175,7 @@ status: draft
 - To reduce exam costs, wait for sales, attend events like **KubeCon/CloudNativeCon**, and check for discount codes on social media. #KubeCon
 - The GitHub repository under cncf/curriculum is the official source for the **KCNA** exam curriculum. It is regularly updated by the CNCF, making it the best place to find the latest information on exam topics, objectives, and changes. #KCNA
 
-## Failed Questions
+## Questions
 
 - When did Kubernetes join the Cloud Native Computing Foundation (CNCF)?
 	- 2016

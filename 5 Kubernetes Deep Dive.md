@@ -235,7 +235,7 @@ spec:
       name: kube apiserver
 ```
 
-- To authenticate using the basic credentials while accessing the API server, specify theuser and password in a curl command.
+- To authenticate using the basic credentials while accessing the API server, specify the user and password in a curl command.
 
 ```bash
 curl -v -k https://master-node-ip:6443/api/v1/pods -u "user1:password123"
@@ -359,7 +359,7 @@ The ABAC policy file in Kubernetes is typically in JSON format. It consists of a
 
   - Example: The user `system:admin` belongs to `system:masters`, which is bound to the **cluster-admin** role, granting full cluster-wide access.
     - All users that are part of `system:masters` group receives the same permission.
-    - The user does not need to be listed on the clusterrolebinding output
+    - The user does not need to be listed on the `clusterrolebinding` output
       - It is referenced in the signed CA certificate as a Common Name (CN). In this case, `CN: system:admin`
     - The clusterrolebinding of `cluster-admin` binds:
       - clusterrole `cluster-admin`
@@ -2134,6 +2134,7 @@ A **service mesh** introduces a dedicated **control plane** and **data plane** t
 
 - **Istiod** manages service discovery, security policies, and configuration.
 - **Envoy proxies** inside Pods handle all network traffic.
+	- Envoy is a high-performance, open-source edge and service proxy designed to manage microservices communication within a distributed system. 
 
 ---
 
@@ -2181,8 +2182,8 @@ In a regular **Kubernetes cluster (without a service mesh)**, the **data plane a
 | **Data Plane**    | Proxies network traffic between services       | Runs actual application workloads                              |
 | **Example**       | Istio (**Istiod** = control, **Envoy** = data) | Kubernetes (**API server** = control, **Worker nodes** = data) |
 | **Purpose**       | Service-to-service communication               | Running containerized applications                             |
-
-## Failed Questions
+|                   |                                                |                                                                |
+## Questions
 
 - Which statement accurately describes the behavior of a static pod in a Kubernetes cluster?
   - When a kubelet creates a static pod, it also creates a read-only mirror object in the Kube API server.
@@ -2286,3 +2287,20 @@ In a regular **Kubernetes cluster (without a service mesh)**, the **data plane a
   - To support multiple storage solutions to work with kubernetes
 - How can you specify a preferred volume driver plugin solution for Docker volumes?
   - Use the --volume-driver option with the docker run command.
+- Which significant achievement did the Envoy project accomplish in its timeline with the Cloud Native Computing Foundation (CNCF)?
+	- It reached graduation level in 2018.
+- Which of the following is true about a proxy service in an application architecture?
+	- It manages user authentication and retries failed requests
+	- In ensures connections through TLS encryption
+- Which component in Istio combines the three control plane components (Citadel, Pilot, and Galley) into a single daemon?
+	- Istiod
+- In Kubernetes, which storage API resource represents a distinct unit of storage in the cluster, provisioned either by an administrator or dynamically provisioned using storage classes, and can be mounted as volumes in pods?
+	- PV
+- In the context of containerized applications, which networking approach employs a Sidecar pattern, co-locating an auxiliary container with the primary container, to handle port mapping and traffic management tasks?
+	- Service Mesh
+- In the evolving landscape of Kubernetes, what is the recommended successor to PodSecurityPolicies (PSP) for enforcing fine-grained security policies?
+	- Admission Controllers
+- Which component in Kubernetes continuously monitors the state of the cluster, detects any deviations from the desired state, and initiates or requests changes to ensure the cluster remains in the desired state?
+	- Controller Manager
+- What is the purpose of the kubelet?
+	-  In a Kubernetes cluster, the kubelet is responsible for managing the state of worker nodes and ensuring their proper functioning. This contrasts with the controller manager, that runs controllers that watch the **cluster state** and try to move it toward the **desired state**.
