@@ -98,7 +98,9 @@ flowchart TD
 #### 2. Kubelet
 
 - Runs on both **control plane and worker nodes** (not just nodes).
-- **Role**: Ensures pods are running and healthy.
+- **Role**: 
+	- Ensures pods are running and healthy.
+	- Kubelet communicates with the API Server to receive instructions and report the status of the Node.
 - Reads pod specs from:
   - API calls.
   - YAML files in `/etc/kubernetes/manifests` (for **static pods**).

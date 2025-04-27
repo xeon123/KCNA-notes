@@ -1898,23 +1898,38 @@ spec:
 
 ### Key Points
 
-- **Deployments and ReplicaSets** are stateless. In deployments, all pods share the same persistent volume (if any) and can be replaced during rolling updates (set a new pod, and do the handover), meaning there is no stable identity or storage for each pod.
-- Each ReplicaSet has its own id
-- The pod names are randomised
-- Deployments can have a PV, but it will be shared by all pods
-- **StatefulSets** maintain **stable, unique identities** for each pod, including consistent network names and persistent storage for each instance (Pod).
-- Each pod maintains the same identity for each pod in the statefulset
-- StatefulSets provide a **sticky identity for each pod**, which means that each pod has a unique and persistent identity that is maintained even if the pod is restarted or rescheduled. This is particularly useful for stateful applications where the identity of the pod is important.
-- StatefulSets provide stable **network IDs** for each pod, which means that each pod in a StatefulSet has a **predictable DNS name and hostname**. This allows for stable communication between pods in the same StatefulSet, even if they are rescheduled or recreated.
-- SatefulSet pods are named **sequentially, starting from zero and prefixed with the StatefulSet name.** E.g., for "my-statefulset", the pod names would be "my-statefulset-0", "my-statefulset-1", etc...
-- Each pod in a StatefulSet has a **Persistent Volume Claim (PVC)** that corresponds to a unique **Persistent Volume (PV)**, ensuring each pod has its own dedicated storage.
-- This allows each pod to have its own persistent storage that is decoupled from the pod's lifecycle, ensuring that **data is preserved even if the pod is deleted or recreated**.
-- Use cases for StatefulSets:
-  - Applications requiring **stable, unique network identifiers**
-  - Applications needing **stable, persistent storage**
-  - Applications requiring **ordered deployments** and **graceful scaling**
-  - Automated rolling updates with stateful guarantees
-- The **serviceName** in a StatefulSet's configuration is used to define a headless service for network identity.
+- ### Deployments and ReplicaSets (Stateless)
+	- **Deployments** and **ReplicaSets** are **stateless** by design.
+	- In a Deployment, all pods are **interchangeable** and **share** any persistent storage (if configured).
+	- Pods can be **replaced at any time** during rolling updates (new pod comes up before the old pod is terminated), meaning **no stable identity** is guaranteed.
+	- Each **ReplicaSet** has its own identifier, but **pods** under a ReplicaSet have **randomized names**.
+	- Although Deployments can use **Persistent Volumes (PVs)**, the storage is typically **shared** across all pods rather than assigned uniquely.
+
+### StatefulSets (Stateful)
+
+- **StatefulSets** manage **stateful applications** by maintaining **stable, unique identities** for each pod.
+- Each pod gets:
+    - A **persistent, unique network identity** (DNS and hostname)
+    - A **dedicated Persistent Volume Claim (PVC)**, mapped to a unique Persistent Volume (PV)
+- Pods are named **sequentially**, starting from zero and prefixed by the StatefulSet name (e.g., `my-statefulset-0`, `my-statefulset-1`, etc.).
+- Pods retain their identity across **rescheduling and restarts** — identity is "sticky."
+- Persistent storage is **decoupled from pod lifecycle**: data survives even if a pod is deleted or recreated.
+
+### Networking: Headless Service
+
+- **StatefulSets require a `serviceName`** field pointing to a **headless Service** (a Service with `clusterIP: None`).
+- A **headless Service** provides **stable DNS entries** without a load-balancer IP, enabling direct pod-to-pod communication.
+- Example DNS for a StatefulSet pod:
+```pgsql
+<pod-name>.<service-name>.<namespace>.svc.cluster.local
+```
+
+### When to Use StatefulSets
+
+- Applications requiring **stable, unique network identities** (e.g., databases, messaging queues).
+- Applications needing **dedicated persistent storage** for each instance.
+- Applications needing **ordered deployment, scaling, and rolling updates** (e.g., master-slave databases).
+- Systems where **identity preservation** is critical for consistency and recovery.
 - A headless service is a special type of service that doesn't have an IP address or port associated with it. Instead, it provides a way to access the pods in the StatefulSet using DNS. By defining a serviceName, you can create a stable network identity for the StatefulSet, which allows other components in your application to communicate with it reliably.
 
 #### Steps to Use StatefulSets
@@ -2133,8 +2148,8 @@ A **service mesh** introduces a dedicated **control plane** and **data plane** t
 ```
 
 - **Istiod** manages service discovery, security policies, and configuration.
-- **Envoy proxies** inside Pods handle all network traffic.
-	- Envoy is a high-performance, open-source edge and service proxy designed to manage microservices communication within a distributed system. 
+- **Envoy** is a high-performance, open-source edge and service proxy designed to manage microservices communication within a distributed system. 
+	- **Envoy proxies** inside Pods handle all network traffic.
 
 ---
 
