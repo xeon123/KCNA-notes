@@ -1,1501 +1,597 @@
-# Flashcards (PT version)
+# Flashcards Nativos da Nuvem
 
----
-A solicitação não está autorizada porque as credenciais estão ausentes ou são inválidas.# Evolução da Arquitetura Nativa da Nuvem
-
-- **Quais são as origens da Arquitetura Nativa da Nuvem?**  
-?
-  Evoluiu a partir dos desafios com aplicações monolíticas legadas.  
-  #flashcard
-
-- **Qual é o foco da Arquitetura Nativa da Nuvem?**  
-?
-  Melhora a disponibilidade, gestão de custos, eficiência e confiabilidade por meio de padrões de design.  
-  #flashcard
-
-- **Quais são os benefícios da Arquitetura Nativa da Nuvem?**  
-?
-  Permite sistemas fracamente acoplados, resilientes, gerenciáveis e observáveis com automação robusta para mudanças de alto impacto.  
-  #flashcard
+Abaixo estão flashcards otimizados para Obsidian, cobrindo Kubernetes, arquitetura nativa da nuvem e conceitos relacionados. Cada flashcard usa um formato consistente Pergunta :: Resposta e inclui tags relevantes para filtragem.
 
 ---
 
-## Monolithic Applications: Issues and Challenges
-
-- **Qual é um problema chave com componentes fortemente acoplados em apps monolíticos?**
-?
-  Mudanças em uma área podem afetar todo o app, e atualizações de bibliotecas podem quebrar a compatibilidade.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **Como as aplicações monolíticas eram tradicionalmente instaladas?**  
-?
-  Diretamente no SO usando gerenciadores de pacotes como APT ou YUM, compartilhando recursos e aumentando a complexidade.  
-  #flashcard
-
-- **Por que a arquitetura de apps monolíticos é frágil?**  
-?
-  O forte acoplamento entre servidor web, lógica de negócios e interfaces de dados dificulta mudanças frequentes.  
-  #flashcard
-
----
-
-## Cloud-Native Approach: Advantages
-
-- **O que é a Arquitetura de Microsserviços na Nuvem Nativa?**
-?
-  Divide os apps em unidades menores e independentes para facilitar gerenciamento, implantação e atualizações independentes.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **Como o encapsulamento beneficia os apps Nativos da Nuvem?**
-?
-  Cada microsserviço inclui suas dependências, isolando recursos e reduzindo conflitos (ex.: /main vs /store).
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **Como a Nuvem Nativa melhora a rede?**
-?
-  Rede isolada para microsserviços evita conflitos de portas e simplifica a manutenção.
-  #flashcard
-<!--SR:!2025-03-28,1,230-->
-
-- **Que flexibilidade a camada de dados ganha na Nuvem Nativa?**
-?
-  Microsserviços podem interagir independentemente com bancos de dados ou usar replicação, fragmentação ou armazenamentos distribuídos (ex.: etcd).
-  #flashcard
-<!--SR:!2025-03-30,3,250-->
-
----
-
-## Key Benefits of Cloud-Native Design
-
-- **O que envolve a Arquitetura Nativa da Nuvem?**  
-?
-  Projetar apps com microsserviços, conteinerização e CI/CD para escalabilidade, resiliência e flexibilidade em ambientes de nuvem.  
-  #flashcard
-
-- **Como a Nuvem Nativa garante alta disponibilidade?**  
-?
-  Constrói sistemas com redundância, autorreparação e escalabilidade para lidar com falhas de componentes.  
-  #flashcard
-
-- **Quais benefícios práticos a Nuvem Nativa oferece?**  
-?
-  Manutenção, implantação, atualizações mais fáceis e mudanças frequentes e previsíveis com modularidade.  
-  #flashcard
-
----
-
-## Characteristics of Cloud-Native Applications
-
-- **Como funciona a resiliência em apps Nativos da Nuvem?**  
-?
-  Projetados para suportar falhas com redundância, failover e autorreparação (ex.: Kubernetes substitui pods com falha).  
-  #flashcard
-
-- **O que significa agilidade na Nuvem Nativa?**
-?
-  Desenvolvimento, modificação e implantação rápidos usando microsserviços, CI/CD e automação.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **O que é operabilidade em apps Nativos da Nuvem?**
-?
-  Foco em implantação e gerenciamento fáceis com automação e IaC (ex.: Terraform).
-  #flashcard
-<!--SR:!2025-03-31,4,270-->
-
-- **O que é observabilidade na Nuvem Nativa?**  
-?
-  Insight sobre o estado do sistema por meio de logs, métricas e rastreamentos para diagnóstico de problemas e desempenho.  
-  #flashcard
-
-- **Qual é um mnemônico para as características da Nuvem Nativa?**  
-?
-  RAOO - "Ratos Atentos Observam Obstáculos" (Resiliência, Agilidade, Operabilidade, Observabilidade).  
-  #flashcard
-
----
-
-## Key Cloud-Native Practices
-
-- **Como a resiliência se manifesta na Nuvem Nativa?**  
-?
-  Apps antecipam falhas com autorreparação (ex.: Kubernetes reinicia pods com falha em um conjunto de réplicas).  
-  #flashcard
-
-- **Qual é o papel da automação na Nuvem Nativa?**  
-?
-  Reduz esforço manual com ferramentas como Ansible e Terraform para implantações rápidas e consistentes.  
-  #flashcard
-
-- **Qual é a diferença entre CI, CDelivery e CDeployment?**  
-?
-  CI: commits frequentes com testes. CDelivery: preparação automatizada de lançamentos. CDeployment: lançamento totalmente automatizado para produção.  
-  #flashcard
-
-- **O que significa "Seguro por Padrão"?**  
-?
-  Sistemas são projetados com segurança desde o início (ex.: Zero Trust, acesso com privilégio mínimo).  
-  #flashcard
-
-- **Como a Nuvem Nativa otimiza velocidade, eficiência e custo?**
-?
-  Usa escalabilidade automática, arquiteturas serverless e design proativo para cargas dinâmicas.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **O que é descoberta de serviços na Nuvem Nativa?**  
-?
-  Automatiza a detecção de serviços com ferramentas como DNS do Kubernetes e variáveis de ambiente.  
-  #flashcard
-
----
-
-## Key Pillars of Cloud-Native Architecture
-
-- **Quais são os quatro pilares da Arquitetura Nativa da Nuvem?**  
-?
-  Microsserviços, Conteinerização, DevOps, Entrega Contínua.  
-  #flashcard
-
-- **Como a Conteinerização beneficia a Nuvem Nativa?**
-?
-  Encapsula apps e dependências para consistência, isolamento e implantação fácil.
-  #flashcard
-<!--SR:!2025-03-28,1,230-->
-
-- **O que é DevOps na Nuvem Nativa?**  
-?
-  Combina Dev e Ops para automação, monitoramento e colaboração.  
-  #flashcard
-
-- **Qual é um mnemônico para os pilares da Nuvem Nativa?**
-?
-  "Manhã com Café Dá Coragem Diária" (Microsserviços, Conteinerização, DevOps, CD).
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
----
-
-## Autoscaling
-
-- **O que é Escalabilidade Automática?**
-?
-  Ajusta recursos automaticamente com base na demanda de carga para desempenho e eficiência de custo.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **Quais são os três tipos de Escalabilidade Automática?**  
-?
-  Reativa (baseada em limites), Agendada (picos previsíveis), Preditiva (IA baseada em dados históricos).  
-  #flashcard
-
-- **Qual é a diferença entre Escalabilidade Vertical e Horizontal?**
-?
-  Vertical: aumenta recursos em um servidor. Horizontal: adiciona/remove instâncias (preferida na Nuvem Nativa).
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **Quais são as ferramentas de escalabilidade automática do Kubernetes?**
-?
-  Cluster Autoscaler (nós), HPA (réplicas de pods), VPA (recursos de pods), KEDA (baseado em eventos).
-  #flashcard
-
-- **Qual é uma consideração chave para escalabilidade automática?**
-?
-  Testes garantem desempenho sob carga; escalabilidade horizontal aumenta a complexidade de compartilhamento de dados.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
----
-
-## Serverless Computing
-
-- **O que é Computação Serverless?**
-?
-  Provedores gerenciam servidores; usuários implantam código que roda em resposta a eventos, escalando automaticamente.
-  #flashcard
-
-- **Quais são as características centrais do Serverless?**  
-?
-  Orientado a eventos, escalabilidade automática (até zero), gerenciamento de infraestrutura abstraído.  
-  #flashcard
-
-- **O que afeta os custos no Serverless?**  
-?
-  Execução de código (execuções e duração) e escalabilidade automática (recursos usados).  
-  #flashcard
-
-- **O que é AWS Lambda?**  
-?
-  Uma plataforma FaaS que executa código em resposta a eventos, escalando automaticamente com gerenciamento de concorrência.  
-  #flashcard
-
-- **Qual é um desafio no Serverless?**
-?
-  Dependência de fornecedor devido a APIs proprietárias; inicializações a frio causam latência após inatividade.
-  #flashcard
-<!--SR:!2025-03-28,1,230-->
-
-- **Quais são as opções Serverless de código aberto para Kubernetes?**
-?
-  Knative e OpenFaaS fornecem FaaS com escalabilidade a partir de zero.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
----
-
-## Community and Governance
-
-- **O que é o CNCF?**
-?
-  Uma organização neutra sob a Linux Foundation, hospedando projetos nativos da nuvem como o Kubernetes.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **Quais são os níveis de maturidade dos projetos do CNCF?**  
-?
-  Sandbox (estágio inicial), Incubating (adoção), Graduated (maduro, critérios rigorosos).  
-  #flashcard
-
-- **O que faz o Comitê de Supervisão Técnica (TOC)?**  
-?
-  Avalia a maturidade dos projetos com base em adoção, engajamento e qualidade.  
-  #flashcard
-
-- **Qual é o papel dos SIGs e TAGs no CNCF?**
-?
-  SIGs focam em áreas de projetos (ex.: segurança do Kubernetes); TAGs fornecem orientação de domínio (ex.: armazenamento).
-  #flashcard
-<!--SR:!2025-03-30,3,250-->
-
----
-
-## Cloud-Native Personas
-
-- **No que um Engenheiro DevOps se concentra?**
-?
-  Faz a ponte entre Dev e Ops com automação, scripts e práticas nativas da nuvem.
-  #flashcard
-<!--SR:!2025-03-30,3,250-->
-
-- **Qual é o papel de um Engenheiro de Confiabilidade de Site (SRE)?**
-?
-  Garante confiabilidade em escala com SLAs, SLOs e gerenciamento de incidentes.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **O que faz um Arquiteto de Nuvem?**  
-?
-  Projeta soluções de nuvem, otimizando custo, desempenho e interoperabilidade.  
-  #flashcard
-
-- **O que é único em um Engenheiro FinOps?**  
-?
-  Equilibra gastos na nuvem com velocidade e qualidade, colaborando entre TI e finanças.  
-  #flashcard
-
----
-
-## Open Standards
-
-- **O que são Padrões Abertos?**  
-?
-  Frameworks livremente adotáveis que promovem colaboração e interoperabilidade, evitando dependência de fornecedores.  
-  #flashcard
-
-- **O que é a Open Container Initiative (OCI)?**  
-?
-  Estabelecida em 2015, define especificações de imagens e runtime de contêineres (ex.: runc).  
-  #flashcard
-
-- **O que faz a Interface de Rede de Contêineres (CNI)?**
-?
-  Simplifica a configuração de redes para Kubernetes com compatibilidade de plugins.
-  #flashcard
-<!--SR:!2025-03-30,3,250-->
-
-- **Qual é o propósito da Interface de Armazenamento de Contêineres (CSI)?**  
-?
-  Padroniza a integração de armazenamento para orquestração de contêineres (ex.: Rook).  
-  #flashcard
-
----
-
-## What is Cloud Native?
-
-- **O que significa "Nativo da Nuvem"?**  
-?
-  Combina "nuvem" (ambientes públicos, privados, híbridos) e "nativo" (projetado para escalabilidade, resiliência, gerenciabilidade). É um conjunto de filosofias, não um estado binário.  
-  #flashcard
-
-- **Quais são as duas principais filosofias do CNCF?**  
-?
-  1. Arquitetura Nativa da Nuvem (melhores práticas para diversos ambientes de nuvem). 2. Cultura Nativa da Nuvem (mudanças organizacionais para design/implementação).  
-  #flashcard
-
----
-
-## Benefits of Cloud Native
-
-- **Quais são os principais benefícios das práticas Nativas da Nuvem?**  
-?
-  Uso eficaz da infraestrutura de nuvem, resiliência, escalabilidade, automação, segurança e progressão além da hospedagem básica na nuvem.  
-  #flashcard
-
-- **Como a Infraestrutura como Código (IaC) se relaciona com o Nativo da Nuvem?**  
-?
-  Ferramentas como Terraform permitem gerenciamento agnóstico de fornecedor, alinhado aos princípios da Nuvem Nativa.  
-  #flashcard
-
----
-
-## Misconceptions About Cloud Native
-
-- **Executar um app na nuvem o torna Nativo da Nuvem?**  
-?
-  Não, requer melhores práticas, não apenas hospedagem na nuvem.  
-  #flashcard
-
-- **Contêineres são suficientes para tornar um app Nativo da Nuvem?**
-?
-  Não, são um passo em direção a isso, mas as melhores práticas devem ser seguidas.
-  #flashcard
-<!--SR:!2025-03-28,1,230-->
-
----
-
-## Key Practices in Cloud Native Development
-
-- **Quais são as quatro práticas chave no desenvolvimento Nativo da Nuvem?**  
-?
-  1. Automação (configuração/entrega). 2. Resiliência (lidar com falhas). 3. Escalabilidade (adaptar à demanda). 4. Segurança por Padrão (medidas robustas).  
-  #flashcard
-
----
-
-## Challenges Addressed by Cloud Native
-
-- **Quais desafios o Nativo da Nuvem resolve?**  
-?
-  Erros em sistemas únicos, limitações de recursos do host e "vizinhos barulhentos" em ambientes compartilhados.  
-  #flashcard
-
----
-
-## Ecosystem and Governance
-
-- **Qual é o papel da Linux Foundation no Nativo da Nuvem?**
-?
-  Fundada em 2000, padroniza o Linux, patrocina projetos como Kubernetes e impulsiona o movimento de nuvem aberta.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **O que é a Cloud Native Computing Foundation (CNCF)?**  
-?
-  Fundada em 2015, promove tecnologia nativa da nuvem, supervisiona projetos como Kubernetes e molda o ecossistema.  
-  #flashcard
-
-- **Quando foi o primeiro marco importante do Kubernetes?**  
-?
-  Fevereiro de 2015, com o lançamento 1.0.  
-  #flashcard
-
----
-
-## KCNA Exam Overview
-
-- **O que é a certificação KCNA?**  
-?
-  Uma certificação de nível básico para ecossistemas Kubernetes e nativos da nuvem, um portal para CKA e CKAD.  
-  #flashcard
-
-- **Quais certificações avançadas seguem o KCNA?**  
-?
-  CKA (Certified Kubernetes Administrator) e CKAD (Certified Kubernetes Application Developer).  
-  #flashcard
-
----
-
-## Highlights of KCNA
-
-- **Quais tópicos o KCNA cobre?**  
-?
-  Kubernetes, segurança (leva ao CKS), telemetria/observabilidade (Prometheus) e mais.  
-  #flashcard
-
-- **Por que o KCNA é uma base sólida?**
-?
-  Prepara você para certificações avançadas com conhecimento prático alinhado à carreira.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
----
-
-## KCNA Exam Details
-
-- **Qual é o formato do exame KCNA?**
-?
-  Múltipla escolha, nível básico, teórico.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **Como você pode fazer o exame KCNA?**
-?
-  Presencialmente em centros de teste ou remotamente com monitoramento por proctor.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
----
-
-## Why Choose KCNA?
-
-- **Por que o KCNA é uma boa escolha?**
-?
-  Currículo diversificado, prepara para certificações avançadas, prático para papéis nativos da nuvem e acessível remotamente.
-  #flashcard
-<!--SR:!2025-03-31,4,270-->
-
-- **Onde você pode verificar atualizações do currículo do KCNA?**
-?
-  <https://github.com/cncf/curriculum> (inclui GitOps, Prometheus).
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
----
-
-## Pro Tips for KCNA
-
-- **Como você pode se manter atualizado sobre notícias do exame KCNA?**  
-?
-  Siga a Linux Foundation e o CNCF nas redes sociais para promoções, eventos e atualizações.  
-  #flashcard
-
-- **Onde você agenda o exame KCNA?**  
-?
-  [Kubernetes Cloud Native Associate (KCNA)](https://training.linuxfoundation.org/certification/kubernetes-cloud-native-associate). Use o código de desconto: DIVEINTO30.  
-  #flashcard
-
-- **Como você pode reduzir os custos do exame KCNA?**
-?
-  Espere por promoções (até 40-45% de desconto), participe do KubeCon/CloudNativeCon ou verifique códigos nas redes sociais.
-  #flashcard
-<!--SR:!2025-03-30,3,250-->
-
-- **No que você deve focar para o exame KCNA?**  
-?
-  Infraestrutura como Código (IaC), Velocidade, Eficiência e Custo em contextos Nativos da Nuvem.  
-  #flashcard
-
-- **Qual é a fonte oficial para informações do exame KCNA?**  
-?
-  O repositório GitHub cncf/curriculum, atualizado pelo CNCF.  
-  #flashcard
-
----
-
-## Introduction to Containers
-
-- **Como os contêineres transformaram a tecnologia?**
-?
-  Revolucionaram a infraestrutura, design de apps, desenvolvimento e operações, permitindo o gerenciamento eficiente de milhares de contêineres com ferramentas como Kubernetes.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **Qual é a base histórica da virtualização de mainframe (década de 1960)?**  
-?
-  O IBM CP/CMS permitiu que múltiplos usuários executassem instâncias de SO virtualizadas em um único mainframe, marcando o início das arquiteturas de VM.  
-  #flashcard
-
-- **O que é Chroot (1979) e suas limitações?**  
-?
-  Recurso Unix que isola processos alterando o diretório raiz; limitado por recursos compartilhados (ex.: hostname, IP) e incapacidade de executar processos de superusuário.  
-  #flashcard
-
-- **O que são FreeBSD Jails (2000)?**
-?
-  Virtualização leve que isola recursos do sistema no FreeBSD, semelhante ao Docker, mas complexo e menos adotado.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **O que são Solaris Zones e HP-UX Virtual Partitions (década de 2000)?**  
-?
-  Tecnologias de virtualização que isolam recursos computacionais; Solaris Zones dividiam o SO, HP-UX segmentava sistemas logicamente.  
-  #flashcard
-
-- **Quais são os ingredientes modernos que o Docker combinou?**  
-?
-  Namespaces do Linux (isolamento de processos) e cgroups (alocação de recursos) para conteinerização leve.  
-  #flashcard
-
-- **O que são Linux Namespaces (2002)?**
-?
-  Isolam processos, redes, montagens, hostnames, etc., com tipos como PID, NET, MNT, UTS, IPC, USER.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **O que são Control Groups (cgroups, 2006)?**  
-?
-  Limitam, priorizam, contabilizam e controlam recursos; desenvolvidos pelo Google, integrados ao Linux em 2008.  
-  #flashcard
-
-- **Como as Máquinas Virtuais se comparam aos contêineres?**
-?
-  VMs (ex.: VMware ESXi) usam hipervisores para isolamento, mas têm sobrecarga de SO e segmentação de recursos; contêineres compartilham o kernel do host.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **O que fez do Docker um divisor de águas em 2013?**  
-?
-  Combinou namespaces e cgroups em uma plataforma amigável, simplificando a conteinerização escalável.  
-  #flashcard
-
-- **Por que os contêineres são preferidos às VMs?**
-?
-  Leves, compartilham o kernel do SO host, reduzindo sobrecarga e maximizando o uso de recursos.
-  #flashcard
-<!--SR:!2025-03-31,4,270-->
-
----
-
-## Docker Installation
-
-- **Qual é a arquitetura tradicional do Docker?**  
-?
-  Hardware → SO → Runtime do Docker (containerd e runc); requer kernel Linux 3.1+.  
-  #flashcard
-
-- **O que o Docker Desktop oferece?**  
-?
-  Interface para Mac, Windows, Linux; executa uma VM/subsistema oculto para o runtime do Docker, com CLI, Kubernetes e Extensões.  
-  #flashcard
-
-- **Qual é um benefício chave do Docker Desktop?**
-?
-  Ambiente flexível e autocontido com reinicialização fácil para desenvolvimento e testes.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **Como você executa um contêiner com o Docker Desktop?**  
-?
-  `docker run -it ubuntu bash` abre um terminal interativo do Ubuntu.  
-  #flashcard
-
-- **Como você habilita o Kubernetes no Docker Desktop?**  
-?
-  Ative-o nas preferências para usar comandos `kubectl`.  
-  #flashcard
-
----
-
-## Container Images
-
-- **O que é uma imagem de contêiner?**
-?
-  Um pacote portátil, compatível com OCI, de software e dependências para execução consistente entre ambientes.
-  #flashcard
-
-- **Qual é a diferença entre uma imagem de contêiner e um contêiner?**  
-?
-  Imagem é o blueprint; contêiner é uma instância em execução (ex.: múltiplos contêineres nginx de uma imagem).  
-  #flashcard
-
-- **O que são tags em imagens de contêineres?**
-?
-  Rótulos para versões/variantes (ex.: latest, v1.0); `latest` é padrão, nem sempre o mais recente.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **Como as imagens de contêineres são estruturadas?**  
-?
-  Construídas em camadas; cada etapa do processo de build cria uma camada compartilhada e reutilizável, com uma camada gravável no topo.  
-  #flashcard
-
-- **Quais são as desvantagens de muitas camadas de imagem?**
-?
-  Tempo de build aumentado, tamanho maior, caching mais lento, complexidade e limites do sistema de arquivos.
-  #flashcard
-<!--SR:!2025-03-28,1,230-->
-
-- **O que é um Union File System no Docker?**  
-?
-  Mescla camadas de imagem em uma única visão; mudanças são armazenadas em uma camada gravável, otimizando espaço.  
-  #flashcard
-
-- **Qual é a diferença entre um digest e um ID de imagem?**
-?
-  Digest (SHA-256) identifica uma imagem em um registro; ID de imagem é um hash local da configuração JSON.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **Como você salva uma imagem de contêiner?**
-?
-  `docker save` exporta localmente, incluindo camadas e metadados JSON.
-  #flashcard
-<!--SR:!2025-03-28,1,230-->
-
----
-
-## Container Registry
-
-- **O que é um registro de contêineres?**  
-?
-  Um serviço que hospeda e distribui imagens de contêineres com armazenamento, versionamento e controle de acesso.  
-  #flashcard
-
----
-
-## Running Containers
-
-- **Como você valida uma instalação do Docker?**
-?
-  `docker version` mostra detalhes do cliente/servidor; usa containerd e runc.
-  #flashcard
-
-- **Para que serve a imagem Funbox?**  
-?
-  `docker pull wernight/funbox` e `docker run -it --rm wernight/funbox` para explorar recursos como Nyan Cat.  
-  #flashcard
-
-- **O que fazem `-i`, `-t` e `--rm` no comando Docker run?**
-?
-  `-i` mantém a entrada aberta, `-t` aloca um terminal, `--rm` remove automaticamente o contêiner ao sair.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **Como você vê os estados dos contêineres?**  
-?
-  `docker ps` para contêineres em execução; `docker ps -a` para todos, incluindo os encerrados.  
-  #flashcard
-
-- **Qual é uma prática recomendada de segurança para executar contêineres?**  
-?
-  Execute como usuários não-root para reduzir a superfície de ataque.  
-  #flashcard
-
----
-
-## Container Networking Service and Volumes
-
-- **Qual é a diferença entre `-P` e `-p` no comando Docker run?**  
-?
-  `-P` publica todas as portas expostas para portas aleatórias do host; `-p` mapeia portas específicas do host para o contêiner (ex.: `-p 12345:80`).  
-  #flashcard
-
-- **O que faz `-d` no comando Docker run?**
-?
-  Desanexa o contêiner para rodar em segundo plano.
-  #flashcard
-<!--SR:!2025-03-28,1,230-->
-
-- **Como você explora um contêiner em execução?**  
-?
-  `docker exec -it <container-id> bash` abre um terminal dentro dele.  
-  #flashcard
-
-- **Como você faz mudanças persistentes em um contêiner?**
-?
-  Use volumes com `-v /caminho/host:/caminho/contêiner` para montar um diretório do host (ex.: para conteúdo Nginx).
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
----
-
-## Container Orchestration
-
-- **O que é orquestração de contêineres?**  
-?
-  Automatiza tarefas como escalabilidade, alocação de recursos, atualizações, monitoramento e garantia de alta disponibilidade para contêineres.  
-  #flashcard
-
-- **Quais são os recursos chave da orquestração de contêineres?**
-?
-  Provisionamento, autorreparação, exposição de serviços, segurança, gerenciamento de armazenamento, escalabilidade automática e funcionalidades estendidas (ex.: CRDs).
-  #flashcard
-<!--SR:!2025-03-28,1,230-->
-
-- **Como a orquestração beneficia a implantação de apps complexos?**  
-?
-  Padroniza a implantação, integra redes/armazenamento/segurança, permitindo que os desenvolvedores foquem no código.  
-  #flashcard
-
-- **Quais são alguns orquestradores de contêineres?**  
-?
-  Nomad, OpenShift, Docker, Kubernetes (padrão ouro devido a recursos e adoção).  
-  #flashcard
-
-- **O que são CRDs no Kubernetes?**  
-?
-  Definições de Recursos Personalizados estendem o Kubernetes além dos recursos principais (ex.: gerenciamento de MySQL).  
-  #flashcard
-
----
-
-## Kubernetes Architecture
-
-- **Quais são as duas áreas principais da arquitetura do Kubernetes?**  
-?
-  Plano de Controle (gerencia o cluster) e Nós (executam cargas de trabalho).  
-  #flashcard
-
-- **Qual é o papel do runtime de contêineres?**  
-?
-  Nível baixo (ex.: runc) interage com namespaces/cgroups; nível alto (ex.: containerd) gerencia o ciclo de vida do contêiner.  
-  #flashcard
-
-- **O que faz o Kubelet?**  
-?
-  Executa em todos os nós, garante que os pods estejam saudáveis, lê especificações da API ou arquivos YAML estáticos.  
-  #flashcard
-
-- **O que é etcd?**  
-?
-  Armazenamento distribuído de chave-valor para dados do cluster, usa consenso Raft, requer backups.  
-  #flashcard
-
-- **O que é o Kube API Server?**
-?
-  Ponto principal de acesso ao cluster, expõe API RESTful, armazena dados no etcd, roda como pod estático.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **O que faz o Kube Scheduler?**  
-?
-  Atribui pods a nós com base em recursos e restrições, roda como pod estático.  
-  #flashcard
-
-- **Qual é o papel do Kube Proxy?**  
-?
-  Gerencia conectividade de rede (TCP/UDP/SCTP) em cada nó como um DaemonSet.  
-  #flashcard
-
-- **O que é CoreDNS?**
-?
-  Fornece resolução DNS no cluster, roda como um Deployment.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **O que o Controller Manager gerencia?**  
-?
-  Executa loops de controle (ex.: controladores de Nó e Deployment) para impor o estado desejado no cluster. Garante que o estado desejado é igual ao estado actual.
-  #flashcard
-
-- **O que é o Cloud Controller Manager (CCM)?**
-?
-  Faz a ponte entre Kubernetes e provedores de nuvem para balanceadores de carga e rotas.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **Como funciona um cluster de Alta Disponibilidade (HA)?**  
-?
-  Múltiplos planos de controle, etcd em cluster com Raft, API Server balanceada por carga.  
-  #flashcard
-
----
-
-## Pod Basics
-
-- **O que é um Pod no Kubernetes?**  
-?
-  Menor unidade implantável, contém um ou mais contêineres compartilhando rede/armazenamento.  
-  #flashcard
-
-- **Como os contêineres em um pod se comunicam?**
-?
-  Via localhost; cada pod recebe um IP único no cluster.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **Como você cria um pod nginx?**  
-?
-  `kubectl run nginx --image=nginx`.  
-  #flashcard
-
-- **Como você acessa um pod externamente?**
-?
-  Use redirecionamento de portas: `kubectl port-forward nginx 8080:80`.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **Como você testa a comunicação entre pods?**
-?
-  Execute um pod curl: `kubectl run curl --image=curlimages/curl --rm -it --restart=Never -- curl <nginx-pod-IP>`.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
----
-
-## Using YAML to Create Pods
-
-- **Qual é a diferença entre `kubectl create` e `apply`?**
-?
-  `create` falha se o recurso existir; `apply` atualiza recursos existentes.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **Como você gera YAML para um pod?**  
-?
-  `kubectl run nginx --image=nginx --dry-run=client -o yaml > nginx.yaml`.  
-  #flashcard
-
-- **Quais são as opções de restartPolicy?**
-?
-  Always (padrão), Never, OnFailure.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **Como você combina múltiplos YAMLs em um arquivo?**  
-?
-  Use o separador `---`: `{ cat nginx.yaml; echo "---"; cat ubuntu.yaml; } > combined.yaml`.  
-  #flashcard
-
-- **O que é um contêiner sidecar?**
-?
-  Um contêiner secundário em um pod que aprimora a funcionalidade do contêiner principal.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
----
-
-## Namespaces
-
-- **O que são namespaces no Kubernetes?**  
-?
-  Dividem recursos do cluster para isolamento (ex.: usuários, apps, projetos).  
-  #flashcard
-
-- **Por que usar namespaces?**  
-?
-  Multi-tenancy, cotas de recursos, limites de alcance, RBAC, organização.  
-  #flashcard
-
-- **Quais são os namespaces padrão comuns?**  
-?
-  kube-system, kube-public, kube-node-lease.  
-  #flashcard
-
-- **Como você cria um namespace?**  
-?
-  `kubectl create namespace meu-namespace`.  
-  #flashcard
-
-- **Como você define um namespace padrão?**  
-?
-  `kubectl config set-context --current --namespace=meu-namespace`.  
-  #flashcard
-
----
-
-## Deployments and ReplicaSets
-
-- **O que é um Deployment no Kubernetes?**  
-?
-  Gerencia atualizações de apps declarativamente com replicação, atualizações contínuas e reversões.  
-  #flashcard
-
-- **Como você escala um deployment?**  
-?
-  `kubectl scale deployment/nginx --replicas=10`.  
-  #flashcard
-
-- **Como você atualiza um deployment?**  
-?
-  `kubectl set image deployment/nginx nginx=nginx:stable`.  
-  #flashcard
-
-- **Como você reverte um deployment?**
-?
-  `kubectl rollout undo deployment/nginx`.
-  #flashcard
-<!--SR:!2025-03-31,4,270-->
-
-- **O que gerencia o ciclo de vida dos pods em um deployment?**  
-?
-  ReplicaSets garantem que o número desejado de pods esteja em execução.  
-  #flashcard
-
----
-
-## Services
-
-- **Quais são os quatro tipos principais de serviços no Kubernetes?**  
-?
-  ClusterIP (padrão), NodePort, LoadBalancer, ExternalName.  
-  #flashcard
-
-- **O que é um serviço ClusterIP?**  
-?
-  IP apenas interno para comunicação no cluster (ex.: nginx.default.svc.cluster.local).  
-  #flashcard
-
-- **O que é um serviço NodePort?**  
-?
-  Expõe uma porta estática em cada nó (30000-32767) para acesso externo.  
-  #flashcard
-
-- **O que é um serviço LoadBalancer?**  
-?
-  Usa um balanceador de carga do provedor de nuvem para acesso externo.  
-  #flashcard
-
-- **O que é um Serviço Headless?**  
-?
-  Sem IP de cluster, resolve diretamente para IPs de pods (clusterIP: None).  
-  #flashcard
-
----
-
-## Kubernetes Jobs
-
-- **O que é um Job no Kubernetes?**  
-?
-  Gerencia tarefas em lote, executa pods até a conclusão, tenta novamente em caso de falha.  
-  #flashcard
-
-- **Qual é um exemplo de caso de uso de um Job?**  
-?
-  Calcular Pi: `perl -Mbignum=bpi -wle "print bpi(2000)"`.  
-  #flashcard
-
-- **O que controlam `completions` e `parallelism`?**
-?
-  `completions`: total de pods a executar; `parallelism`: pods simultâneos.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
----
-
-## Kubernetes CronJobs
-
-- **O que é um CronJob no Kubernetes?**  
-?
-  Agenda Jobs em intervalos (ex.: `* * * * *` para cada minuto).  
-  #flashcard
-
-- **O que acontece quando um CronJob é deletado?**  
-?
-  Para de agendar, mas Jobs/pods existentes persistem a menos que sejam manualmente deletados.  
-  #flashcard
-
-- **Qual é a retenção padrão do histórico de jobs?**  
-?
-  3 bem-sucedidos, 1 falhado (successfulJobsHistoryLimit, failedJobsHistoryLimit).  
-  #flashcard
-
----
-
-## ConfigMaps
-
-- **O que são ConfigMaps?**  
-?
-  Armazenam dados de configuração não sensíveis (ex.: variáveis de ambiente) para pods.  
-  #flashcard
-
-- **Como você cria um ConfigMap?**  
-?
-  `kubectl create configmap color-configmap --from-literal=color=red`.  
-  #flashcard
-
-- **Como você usa um ConfigMap em um pod?**  
-?
-  Adicione `envFrom: - configMapRef: name: color-configmap` no YAML.  
-  #flashcard
-
-- **O que é um ConfigMap imutável?**
-?
-  Não pode ser modificado após a criação (immutable: true, Kubernetes 1.21+).
-  #flashcard
-<!--SR:!2025-03-30,3,250-->
-
----
-
-## Secrets in Kubernetes
-
-- **O que são Segredos no Kubernetes?**
-?
-  Armazenam dados sensíveis (ex.: senhas, chaves) codificados em Base64.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **Como os Segredos diferem dos ConfigMaps?**  
-?
-  Segredos são para dados sensíveis; ConfigMaps são para configuração não sensível.  
-  #flashcard
-
-- **Como você cria um Segredo?**
-?
-  `kubectl create secret generic color-secret --from-literal=color=red`.
-  #flashcard
-
-- **Os Segredos são criptografados?**
-?
-  Não, apenas codificados em Base64; armazenados no etcd, exigindo acesso seguro.
-  #flashcard
-
----
-
-## Labels in Kubernetes
-
-- **O que são Rótulos no Kubernetes?**  
-?
-  Pares chave-valor para marcar e organizar recursos para agrupamento/filtragem.  
-  #flashcard
-
-- **Por que usar Rótulos?**  
-?
-  Organizar recursos, automatizar CI/CD, habilitar descoberta de serviços, definir políticas de rede.  
-  #flashcard
-
-- **Como você cria um pod com rótulos?**  
-?
-  `kubectl run nginx --image=nginx --labels="app=web,env=prod"`.  
-  #flashcard
-
-- **Como você filtra por rótulos?**  
-?
-  `kubectl get pods --selector app=web` ou `-l env=prod`.  
-  #flashcard
-
----
-
-## Kubernetes API
-
-- **O que interage com a API do Kubernetes?**
-?
-  Usuários/ferramentas (kubectl, Helm), ferramentas de monitoramento, componentes internos (scheduler, kubelet, controller manager).
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **Qual é o fluxo de processamento de uma requisição da API?**  
-?
-  Chegada da Requisição → Correspondência de Rota → Autenticação → Autorização → Controlador de Admissão → Validação → Tratamento → Resposta.  
-  #flashcard
-
-- **O que faz o Controlador de Admissão no fluxo da API?**  
-?
-  Impõe políticas (ex.: cotas) e modifica recursos antes da aceitação.  
-  #flashcard
-
-- **O que são Definições de Recursos Personalizados (CRDs)?**  
-?
-  Estendem a API com novos tipos de recursos (ex.: gerenciamento de MySQL).  
-  #flashcard
-
-- **Como o `kubectl proxy` simplifica o acesso à API?**  
-?
-  Permite acesso HTTP local (localhost:8001) sem autenticação manual.  
-  #flashcard
-
-- **O que é a especificação OpenAPI no Kubernetes?**  
-?
-  Documenta endpoints da API, parâmetros e respostas (ex.: via localhost:8001/openapi/v2).  
-  #flashcard
-
----
-
-## Role-Based Access Control (RBAC)
-
-- **O que é RBAC no Kubernetes?**
-?
-  Gerencia acesso a recursos usando papéis atribuídos a usuários/grupos para controle refinado.
-  #flashcard
-
-- **O que contém um arquivo kubeconfig?**  
-?
-  Detalhes do cluster (URL do servidor API, dados CA) e informações do usuário (nome de usuário, certificados).  
-  #flashcard
-
-- **Como o Kubernetes autentica usuários?**  
-?
-  Via certificados externos (CN=Usuário, O=Grupo) assinados por uma CA, não gerenciados internamente.  
-  #flashcard
-
-- **O que é um ClusterRole vs. ClusterRoleBinding?**  
-?
-  ClusterRole define permissões em todo o cluster; ClusterRoleBinding as atribui a usuários/grupos.  
-  #flashcard
-
-- **Como você verifica permissões com kubectl?**  
-?
-  `kubectl auth can-i <verbo> <recurso>` (ex.: `kubectl auth can-i '*' '*'`).  
-  #flashcard
-
-- **Como você cria um grupo superusuário?**  
-?
-  Crie um ClusterRole (`--verb='*' --resource='*'`) e vincule-o a um grupo com ClusterRoleBinding.  
-  #flashcard
-
----
-
-## Scheduling Process
-
-- **O que faz o kube-scheduler?**  
-?
-  Atribui pods a nós com base em recursos, afinidade, manchas e tolerâncias.  
-  #flashcard
-
-- **Quais são as três etapas no agendamento?**  
-?
-  Filtragem (remove nós inadequados), Pontuação (classifica nós), Binding (atribui pod ao nó).  
-  #flashcard
-
-- **Como você ignora o scheduler?**  
-?
-  Defina `nodeName` na especificação do pod (ex.: `nodeName: worker-2`).  
-  #flashcard
-
-- **O que é um scheduler personalizado?**  
-?
-  Especificado via `schedulerName` na especificação do pod; pode usar lógica personalizada (ex.: seleção aleatória de nó).  
-  #flashcard
-
-- **Como funcionam os NodeSelectors?**  
-?
-  Usam rótulos (ex.: `kubernetes.io/hostname: worker-1`) para posicionamento direcionado de pods.  
-  #flashcard
-
----
-
-## Storage
-
-- **O que é armazenamento efêmero no Kubernetes?**
-?
-  Armazenamento temporário (ex.: emptyDir) que não persiste após reinícios de pods.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **O que é um volume emptyDir?**  
-?
-Volume **efémero** que é criado quando o Pod começa e é apagado quando o Pod é removido do nó.
-  #flashcard
-
-- **O que é armazenamento persistente no Kubernetes?**  
-?
-  Armazenamento que persiste além do ciclo de vida do pod (ex.: PVs, PVCs).  
-  #flashcard
-
-- **O que são Classes de Armazenamento, PVs e PVCs?**  
-?
-  Classes de Armazenamento definem tipos de armazenamento; PVs são armazenamento provisionado; PVCs são solicitações de usuários por armazenamento.  
-  #flashcard
-
-- **O que é provisionamento dinâmico?**  
-?
-Permite que persistent storage é criado automaticamento quando necessário, em vez de se criar manualmente PVs.
-  #flashcard
-
----
-
-## StatefulSets
-
-- **Para que servem os StatefulSets?**
-?
-  Gerenciam apps com estado (ex.: bancos de dados) com identidades estáveis e armazenamento persistente.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **Como os StatefulSets diferem dos Deployments?**  
-?
-  StatefulSets fornecem identidades únicas de pods e PVCs individuais; Deployments são sem estado.  
-  #flashcard
-
-- **O que é um serviço headless em StatefulSets?**
-?
-  Sem IP de cluster, fornece nomes DNS estáveis (ex.: nginx-0.nginx.svc.cluster.local).
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **Como os pods de um StatefulSet são nomeados?**
-?
-  Sequencialmente com o prefixo do nome do StatefulSet (ex.: nginx-0, nginx-1).
-  #flashcard
-<!--SR:!2025-03-28,1,230-->
-
-- **O que acontece com os PVCs quando um StatefulSet é deletado?**  
-?
-  PVCs e PVs persistem, reutilizáveis quando recriados.  
-  #flashcard
-
----
-
-## Network Policies
-
-- **O que fazem as Políticas de Rede?**  
-?
-  Controlam a comunicação de pods permitindo/negando tráfego com base em rótulos, portas, etc.  
-  #flashcard
-
-- **Qual é o papel do plugin CNI nas Políticas de Rede?**  
-?
-  Impõe políticas configurando regras de rede para controle de tráfego.  
-  #flashcard
-
-- **O que acontece sem Políticas de Rede?**  
-?
-  Pods podem enviar/receber tráfego de qualquer fonte por padrão.  
-
-- **Como múltiplas Políticas de Rede se combinam?**
-?
-  Efeitos são aditivos, criando regras de tráfego cumulativas.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
----
-
-## Pod Disruption Budgets (PDB)
-
-- **Qual é a diferença entre PDB e Replicas?**  
-?
-  Réplicas garantem pods em execução; PDBs limitam disrupções para manter disponibilidade.  
-  #flashcard
-
-- **O que são disrupções voluntárias?**  
-?
-  Ações planejadas (ex.: manutenção, atualizações) que podem terminar pods.  
-  #flashcard
-
-- **Como um PDB funciona durante o esvaziamento de um nó?**
-?
-  Impede despejo se isso reduzir abaixo do mínimo de pods disponíveis (ex.: 2).
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
----
-
-## Security
-
-- **O que são Contextos de Segurança no Kubernetes?**  
-?
-  Definem controle de acesso/privilégios para pods/contêineres (ex.: runAsUser, runAsGroup).  
-  #flashcard
-
-- **O que faz `allowPrivilegeEscalation: false`?**
-?
-  Impede que contêineres ganhem privilégios elevados.
-  #flashcard
-<!--SR:!2025-03-28,1,230-->
-
-- **O que substituiu as Políticas de Segurança de Pods no Kubernetes 1.25?**  
-?
-  Controladores de Admissão impõem segurança no nível do cluster.  
-  #flashcard
-
-- **O que são Kyverno e OPA Gatekeeper?**
-?
-  Ferramentas para imposição de políticas personalizadas via controladores de admissão.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **Quais são os 4C’s da Segurança Nativa da Nuvem?**
-?
-  Nuvem, Cluster, Contêiner, Código — camadas de segurança do amplo ao específico.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
----
-
-## Helm and Helm Charts
-
-- **O que é Helm no Kubernetes?**  
-?
-  Simplifica o gerenciamento de apps com Helm Charts (pacotes de recursos pré-configurados).  
-  #flashcard
-
-- **Como você cria um Helm Chart?**
-?
-  `helm create flappy-app`, personalize Chart.yaml e values.yaml.
-  #flashcard
-<!--SR:!2025-03-31,4,270-->
-
-- **Como você implanta um Helm Chart?**  
-?
-  `helm install flappy-app <arquivo-chart>.tgz`.  
-  #flashcard
-
-- **Qual é o benefício dos Helm Charts?**
-?
-  Implantação, atualizações e escalabilidade fáceis, como APT/YUM para Kubernetes.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
----
-
-## Service Meshes
-
-- **Qual é o papel de uma malha de serviço?**  
-?
-  Gerencia comunicação segura e confiável entre microsserviços em arquiteturas complexas.  
-  #flashcard
-
-- **Quais são as duas partes de uma malha de serviço?**  
-?
-  Plano de Dados (proxies para tráfego) e Plano de Controle (gerencia proxies).  
-  #flashcard
-
-- **O que é um proxy sidecar vs. proxy de nó host?**
-?
-  Sidecar anexa a cada serviço; proxy de nó host roda no nível do nó.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
-- **Quais são os principais benefícios das malhas de serviço?**  
-?
-  Segurança (TLS mútuo), controle de acesso, observabilidade, confiabilidade (limitação de taxa).  
-  #flashcard
-
-- **O que é a Interface de Malha de Serviço (SMI)?**  
-?
-  API unificada padrão para gerenciar tráfego, acesso e métricas entre malhas.  
-  #flashcard
-
----
-
-## Observability
-
-- **O que é observabilidade em sistemas nativos da nuvem?**
-?
-  Capacidade de determinar o estado do sistema via telemetria (logs, métricas, rastreamentos, alertas).
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-- **Quais são os três pilares da observabilidade?**  
-?
-  Logs (registros de eventos), Métricas (medidas quantitativas), Rastreamentos (acompanhamento de requisições).  
-  #flashcard
-
-- **O que fazem os alertas na observabilidade?**  
-?
-  Fornecem avisos antecipados de anomalias ou falhas para resolução proativa.  
-  #flashcard
-
-- **Qual é o papel do OpenTracing e OpenTelemetry?**  
-?
-  Operam na camada de app, fornecendo APIs/ferramentas para rastreamento e coleta de telemetria.  
-  #flashcard
-
-- **Como os logs ajudam na observabilidade?**  
-?
-  Registram eventos (erros, informações de depuração) para solução de problemas e análise de comportamento.  
-  #flashcard
-
-- **Quais são os tipos de métricas?**  
-?
-  Gauges (instantâneos), Contadores (cumulativos), Medidores (taxas de eventos), Histogramas (distribuições).  
-  #flashcard
-
-- **O que os rastreamentos fornecem em um sistema distribuído?**
-?
-  Visibilidade sobre latência de requisições, travessia de componentes e gargalos.
-  #flashcard
-<!--SR:!2025-03-27,1,230-->
-
----
-
-## Prometheus and Grafana
-
-**Q: O que é Prometheus?**  
-?
-Uma ferramenta de código aberto do CNCF para monitoramento/alerta com um modelo de dados multidimensional.
-  #flashcard
-
-**Q: Quais são os recursos chave do Prometheus?**  
-?
-Consultas PromQL, nós autônomos, coleta de dados push-pull, alertas integrados.
-  #flashcard
-
-**Q: O que é Grafana?**  
-?
-Uma plataforma de código aberto para visualizar métricas de fontes como Prometheus.
-  #flashcard
-
-**Q: Como Prometheus e Grafana aprimoram a observabilidade no Kubernetes?**  
-?
-Oferecem monitoramento, visualização e alertas para metas de tempo de atividade/desempenho.
-  #flashcard
-
-**Q: O que é o kube-prometheus-stack?**  
-?
-Um chart Helm que simplifica a configuração de Prometheus/Grafana no Kubernetes.
-  #flashcard
-
-**Q: Quais componentes são instalados com o kube-prometheus-stack?**  
-?
-Prometheus Operator, Alertmanager, Node Exporter, Kube-State-Metrics, Grafana.
-  #flashcard
-
-**Q: Como você acessa a interface do Prometheus após a instalação?**
-?
-`kubectl port-forward service/<serviço-prometheus> 9090:9090`.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-**Q: Qual é um exemplo de consulta PromQL para pods por namespace?**
-?
-`sum by (namespace) (kube_pod_ips)`.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
-**Q: Como você importa dashboards no Grafana?**
-?
-Use IDs (ex.: 15759 para Métricas de Nó) e selecione Prometheus como fonte de dados.
-  #flashcard
-<!--SR:!2025-03-29,3,250-->
-
----
-
-## Cost Management in Cloud-Native Solutions
-
-**Q: Qual é um princípio chave do gerenciamento de custos nativo da nuvem?**  
-?
-Flexibilidade para alocar recursos em nuvens públicas/híbridas/privadas.
-  #flashcard/cloudnative
-
-**Q: Como você pode otimizar o uso de recursos?**  
-?
-Revise o consumo, remova recursos não utilizados, projete para escalabilidade automática.
-  #flashcard/cloudnative
-
-**Q: O que são instâncias sob demanda?**  
-?
-Recursos provisionados conforme necessário; flexíveis, mas caros se não gerenciados.
-  #flashcard/cloudnative
-
-**Q: O que são instâncias reservadas?**  
-?
-Compromissos de longo prazo com recursos; custo-efetivo, mas menos flexível.
-  #flashcard/cloudnative
-
-**Q: O que são instâncias spot?**
-?
-Oferta por recursos não utilizados; baratos, mas podem ser terminados a qualquer momento.
-  #flashcard/cloudnative
-<!--SR:!2025-03-29,3,250-->
-
-**Q: Qual é o risco do lift-and-shift na migração para a nuvem?**  
-?
-Superprovisionamento de recursos sem reavaliar necessidades.
-  #flashcard/cloudnative
-
-**Q: Como a escalabilidade automática ajuda com custos?**
-?
-Ajusta recursos dinamicamente à demanda, reduzindo custos ociosos.
-  #flashcard/cloudnative
-<!--SR:!2025-03-27,1,230-->
-
-**Q: O que faz o KubeCost?**  
-?
-Monitora e gerencia custos específicos do Kubernetes (código aberto e comercial).
-  #flashcard/cloudnative
-
-**Q: Como a detecção de anomalias na nuvem ajuda no gerenciamento de custos?**  
-?
-Identifica padrões de uso incomuns para evitar excessos de custo.
-  #flashcard/cloudnative
+Quais são as origens da Arquitetura Nativa da Nuvem? :: Evoluiu a partir dos desafios com aplicações monolíticas legadas. #flashcard #nativodanuvem
+
+Qual é o foco da Arquitetura Nativa da Nuvem? :: Melhora a disponibilidade, gerenciamento de custos, eficiência e confiabilidade por meio de padrões de design. #flashcard #nativodanuvem
+
+Quais são os benefícios da Arquitetura Nativa da Nuvem? :: Permite sistemas fracamente acoplados, resilientes, gerenciáveis e observáveis com automação robusta. #flashcard #nativodanuvem
+
+No Kubernetes, qual framework sem servidor se destaca por velocidade e produtividade do desenvolvedor? :: Fission #flashcard #kubernetes #semservidor
+
+No Kubernetes, qual componente substituiu os ReplicationControllers? :: Deployments #flashcard #kubernetes
+
+Qual é a solução DNS padrão para descoberta de serviços no Kubernetes? :: CoreDNS #flashcard #kubernetes #rede
+
+Qual mecanismo do Kubernetes seleciona informações com base em campos como nome ou status? :: Seletores de Campo #flashcard #kubernetes
+
+Quais são os mecanismos de autorização suportados no Kubernetes? :: Todas as opções disponíveis estão corretas. #flashcard #kubernetes #segurança
+
+Qual projeto da CNCF fornece um framework unificado para logs, métricas e rastreamentos? :: OpenTelemetry #flashcard #cncf #observabilidade
+
+Qual componente do Kubernetes gerencia o estado dos nós de trabalho? :: kubelet #flashcard #kubernetes
+
+Qual componente do Kubernetes agenda tarefas com base em intervalos de tempo? :: CronJobs #flashcard #kubernetes #tarefas
+
+O que define os Grupos de Interesse Especial (SIGs) no Kubernetes? :: Equipes exclusivas focadas em áreas específicas do projeto. #flashcard #kubernetes #cncf
+
+Quais são os dois recursos do Kubernetes para expor aplicações ao tráfego externo? :: Serviço (IP/DNS estável) e Ingress (roteamento HTTP/SSL). #flashcard #kubernetes #rede
+
+Quais ferramentas nativas da nuvem sincronizam clusters Kubernetes com repositórios Git? :: Argo CD e Flux #flashcard #kubernetes #gitops
+
+Qual produto é construído usando o GitOps Toolkit para entrega contínua? :: Flux #flashcard #kubernetes #gitops
+
+Qual componente do Kubernetes gerencia principalmente um Nó? :: Kubelet #flashcard #kubernetes
+
+Qual recurso do Kubernetes garante nomes DNS consistentes para pods de StatefulSet? :: Serviço Headless #flashcard #kubernetes #statefulsets
+
+Qual ferramenta é um service mesh abrangente para microsserviços no Kubernetes? :: Istio #flashcard #kubernetes #servicemesh
+
+Por quanto tempo a API do Kubernetes é garantida como retrocompatível? :: Pelo menos 1 ano após um lançamento. #flashcard #kubernetes #api
+
+O que são CloudEvents na computação em nuvem? :: Padrões para descrever dados de eventos em um formato comum. #flashcard #nativodanuvem
+
+Qual ferramenta do Kubernetes orquestra fluxos de trabalho paralelos complexos? :: Argo Workflows #flashcard #kubernetes #tarefas
+
+O que é verdade sobre a comunicação Pod-para-Pod no mesmo nó no Kubernetes? :: Usa rede direta, sem NAT. #flashcard #kubernetes #rede
+
+Qual é a implementação de referência da especificação de runtime OCI? :: runc #flashcard #contêineres #padrõesabertos
+
+Quais são os três pilares da observabilidade em um sistema de software? :: Logs, Métricas, Rastreamentos #flashcard #observabilidade
+
+Qual é a importância do limite de 1,5MB no etcd para o Kubernetes? :: Tamanho máximo recomendado para valores individuais para manter o desempenho. #flashcard #kubernetes #etcd
+
+Na telemetria, o que registra o caminho de uma solicitação por meio de serviços em um sistema distribuído? :: Rastreamento #flashcard #observabilidade
+
+O que significa OIDC em autenticação e autorização? :: OpenID Connect #flashcard #segurança
+
+Qual é a função principal dos Perfis de Segurança do Kubernetes, como PSP e Kyverno? :: Aplicar configurações de segurança no nível do pod. #flashcard #kubernetes #segurança
+
+Qual software é usado como proxy leve para gerenciamento de tráfego no Kubernetes? :: Envoy #flashcard #kubernetes #servicemesh
+
+Qual é o fluxo de trabalho tradicional de um pipeline CI/CD? :: Construção, Testes, Lançamento, Implantação #flashcard #devops
+
+Qual objeto do Kubernetes gerencia tarefas que são executadas várias vezes em um processo em lote? :: CronJob #flashcard #kubernetes #tarefas
+
+Qual técnica reduz o tamanho das imagens de contêineres Docker em construções de múltiplos estágios? :: Descartar artefatos desnecessários usando vários estágios de construção. #flashcard #docker #contêineres
+
+O que é um serviço do Kubernetes sem um ClusterIP chamado? :: Serviço Headless #flashcard #kubernetes #rede
+
+Quais entidades do Kubernetes podem usar o atributo immutable:true? :: ConfigMaps e Secrets #flashcard #kubernetes #configmaps #secrets
+
+Como os dados podem ser compartilhados entre cronjobs no Kubernetes? :: Reivindicação de Volume Persistente (PVC) #flashcard #kubernetes #armazenamento
+
+Qual componente do Kubernetes faz parte da infraestrutura do nó, não do plano de controle? :: kube-proxy #flashcard #kubernetes
+
+Qual é a função principal do kube-state-metrics no Kubernetes? :: Gera e expõe dados de estado do cluster no formato Prometheus. #flashcard #kubernetes #observabilidade
+
+O que é verdade sobre o Ingress no Kubernetes para roteamento de tráfego? :: Roteia tráfego HTTP/HTTPS externo para serviços com base em regras. #flashcard #kubernetes #rede
+
+Qual ferramenta avalia a segurança do cluster Kubernetes conforme as diretrizes da NSA/CISA? :: KubeScape #flashcard #kubernetes #segurança
+
+Qual objeto do Kubernetes é melhor para aplicações sem estado? :: Deployment #flashcard #kubernetes #deployments
+
+Qual papel constrói e mantém a infraestrutura da plataforma em uma organização nativa da nuvem? :: Engenheiros de Plataforma #flashcard #nativodanuvem #personas
+
+Qual componente do Kubernetes roteia tráfego para serviços e gerencia regras de IP? :: Kube-Proxy #flashcard #kubernetes #rede
+
+Qual ferramenta monitora a segurança em tempo de execução em contêineres e pods do Kubernetes? :: Falco #flashcard #kubernetes #segurança
+
+Qual é a função principal dos Contextos de Segurança do Kubernetes? :: Definir configurações de segurança no nível do contêiner ou pod. #flashcard #kubernetes #segurança
+
+Qual é a relação entre Deployments e ReplicaSets no Kubernetes? :: Deployments criam ReplicaSets para gerenciar réplicas de pods. #flashcard #kubernetes #deployments
+
+Como os Contextos de Segurança diferem das Políticas de Segurança no Kubernetes? :: Contextos de Segurança aplicam-se a pods/contêineres individuais; Políticas de Segurança aplicam-se no nível de cluster/namespace. #flashcard #kubernetes #segurança
+
+Qual recurso do Kubernetes gerencia custos categorizando recursos? :: Rótulos #flashcard #kubernetes #gerenciamentodecustos
+
+Qual persona otimiza os custos da nuvem em ambientes nativos da nuvem? :: FinOps #flashcard #nativodanuvem #personas #gerenciamentodecustos
+
+Qual runtime de contêiner é projetado para o Kubernetes e conforme o CRI? :: CRI-O #flashcard #kubernetes #contêineres
+
+Qual runtime de contêiner é um runtime leve de baixo nível para contêineres Linux? :: LXC #flashcard #contêineres
+
+Qual é a diferença entre LXC e CRI-O? :: LXC é para contêineres Linux leves; CRI-O é construído para o CRI do Kubernetes. #flashcard #contêineres
+
+Qual abordagem gerencia ameaças de segurança e otimiza custos na computação em nuvem? :: Detecção de Anomalias na Nuvem #flashcard #nativodanuvem #segurança #gerenciamentodecustos
+
+Qual Conta de Serviço padrão é usada para um Pod sem uma especificada no Kubernetes? :: Conta de serviço padrão #flashcard #kubernetes #segurança
+
+O que significa SRE em operações de TI? :: Engenharia de Confiabilidade do Site #flashcard #nativodanuvem #personas
+
+Como as especificações de contêineres são semelhantes em Deployments e StatefulSets do Kubernetes? :: Ambos usam especificações de modelo de pod idênticas. #flashcard #kubernetes #deployments #statefulsets
+
+Qual é um problema chave com componentes fortemente acoplados em aplicativos monolíticos? :: Mudanças em uma área afetam todo o aplicativo; atualizações de bibliotecas podem quebrar a compatibilidade. #flashcard #monolítico
+
+Como os aplicativos monolíticos eram tradicionalmente instalados? :: Diretamente no SO por meio de gerenciadores de pacotes como APT/YUM, compartilhando recursos. #flashcard #monolítico
+
+Por que a arquitetura de aplicativos monolíticos é frágil? :: Acoplamento forte de servidor web, lógica de negócios e interfaces de dados complica mudanças. #flashcard #monolítico
+
+O que é a Arquitetura de Microsserviços na Nuvem Nativa? :: Divide aplicativos em unidades independentes menores para facilitar gerenciamento e atualizações. #flashcard #nativodanuvem #microsserviços
+
+Como o encapsulamento beneficia aplicativos Nativos da Nuvem? :: Isola dependências de microsserviços, reduzindo conflitos (por exemplo, /main vs /store). #flashcard #nativodanuvem #microsserviços
+
+Como a Nuvem Nativa melhora a rede? :: Rede isolada para microsserviços evita conflitos de porta e simplifica a manutenção. #flashcard #nativodanuvem #rede
+
+Que flexibilidade a camada de dados ganha na Nuvem Nativa? :: Microsserviços podem interagir independentemente com bancos de dados ou usar replicação/particionamento. #flashcard #nativodanuvem #microsserviços
+
+O que envolve a Arquitetura Nativa da Nuvem? :: Microsserviços, conteinerização, CI/CD para escalabilidade e resiliência. #flashcard #nativodanuvem
+
+Como a Nuvem Nativa garante alta disponibilidade? :: Usa redundância, autorreparação e escalabilidade para lidar com falhas. #flashcard #nativodanuvem
+
+Quais benefícios práticos a Nuvem Nativa oferece? :: Manutenção, implantação, atualizações e mudanças frequentes mais fáceis por meio da modularidade. #flashcard #nativodanuvem
+
+Como funciona a resiliência em aplicativos Nativos da Nuvem? :: Resiste a falhas por meio de redundância, failover e autorreparação (por exemplo, substituição de pods no Kubernetes). #flashcard #nativodanuvem
+
+O que significa agilidade na Nuvem Nativa? :: Desenvolvimento, modificação e implantação rápidos usando microsserviços e CI/CD. #flashcard #nativodanuvem
+
+O que é operabilidade em aplicativos Nativos da Nuvem? :: Implantação e gerenciamento fáceis com automação e IaC (por exemplo, Terraform). #flashcard #nativodanuvem
+
+O que é observabilidade na Nuvem Nativa? :: Visão do estado do sistema por meio de logs, métricas e rastreamentos para diagnósticos. #flashcard #nativodanuvem #observabilidade
+
+Qual é um mnemônico para as características da Nuvem Nativa? :: RAOO - "Guaxinins São Frequentemente Observadores" (Resiliência, Agilidade, Operabilidade, Observabilidade). #flashcard #nativodanuvem
+
+Como a resiliência se manifesta na Nuvem Nativa? :: Aplicativos antecipam falhas com autorreparação (por exemplo, o Kubernetes reinicia pods com falha). #flashcard #nativodanuvem
+
+Qual é o papel da automação na Nuvem Nativa? :: Reduz o esforço manual com ferramentas como Ansible/Terraform para implantações consistentes. #flashcard #nativodanuvem #devops
+
+Qual é a diferença entre CI, CDelivery e CDeployment? :: CI: commits/testes frequentes; CDelivery: preparação de lançamento automatizada; CDeployment: lançamento automatizado em produção. #flashcard #devops
+
+O que significa "Seguro por Padrão"? :: Sistemas projetados com segurança desde o início (por exemplo, Zero Trust, privilégio mínimo). #flashcard #nativodanuvem #segurança
+
+Como a Nuvem Nativa otimiza velocidade, eficiência e custo? :: Usa autoescalonamento, sem servidor e design proativo para cargas dinâmicas. #flashcard #nativodanuvem #gerenciamentodecustos
+
+O que é descoberta de serviços na Nuvem Nativa? :: Automatiza a detecção de serviços com ferramentas como o DNS do Kubernetes. #flashcard #nativodanuvem #rede
+
+Quais são os quatro pilares da Arquitetura Nativa da Nuvem? :: Microsserviços, Conteinerização, DevOps, Entrega Contínua #flashcard #nativodanuvem
+
+Como a Conteinerização beneficia a Nuvem Nativa? :: Encapsula aplicativos e dependências para consistência e isolamento. #flashcard #nativodanuvem #conteinerização
+
+O que é DevOps na Nuvem Nativa? :: Combina Dev e Ops para automação, monitoramento e colaboração. #flashcard #nativodanuvem #devops
+
+Qual é um mnemônico para os pilares da Nuvem Nativa? :: "Café da Manhã Entrega Cafeína Deliciosa" (Microsserviços, Conteinerização, DevOps, CD). #flashcard #nativodanuvem
+
+O que é Autoescalonamento? :: Ajusta automaticamente os recursos com base na carga para eficiência de desempenho/custo. #flashcard #nativodanuvem #autoescalonamento
+
+Quais são os três tipos de Autoescalonamento? :: Reativo (baseado em limiares), Agendado (picos previsíveis), Preditivo (baseado em IA). #flashcard #nativodanuvem #autoescalonamento
+
+Qual é a diferença entre Escalonamento Vertical e Horizontal? :: Vertical: aumenta recursos do servidor; Horizontal: adiciona/remove instâncias. #flashcard #nativodanuvem #autoescalonamento
+
+Quais são as ferramentas de autoescalonamento do Kubernetes? :: Cluster Autoscaler, HPA, VPA, KEDA (baseado em eventos). #flashcard #kubernetes #autoescalonamento
+
+Qual é uma consideração chave para o autoescalonamento? :: Testes garantem desempenho; escalonamento horizontal aumenta a complexidade de compartilhamento de dados. #flashcard #nativodanuvem #autoescalonamento
+
+O que é Computação Sem Servidor? :: Provedores gerenciam servidores; o código é executado em resposta a eventos, com autoescalonamento. #flashcard #nativodanuvem #semservidor
+
+Quais são as características principais do Sem Servidor? :: Orientado a eventos, autoescalonamento (até zero), infraestrutura abstraída. #flashcard #nativodanuvem #semservidor
+
+O que afeta os custos no Sem Servidor? :: Execução de código (execuções/duração) e autoescalonamento (recursos usados). #flashcard #nativodanuvem #semservidor #gerenciamentodecustos
+
+O que é AWS Lambda? :: Plataforma FaaS que executa código em resposta a eventos com autoescalonamento. #flashcard #nativodanuvem #semservidor
+
+Qual é um desafio no Sem Servidor? :: Dependência de fornecedor e latência de inicialização a frio após inatividade. #flashcard #nativodanuvem #semservidor
+
+Quais são as opções de Sem Servidor de código aberto para o Kubernetes? :: Knative e OpenFaaS #flashcard #kubernetes #semservidor
+
+O que é a CNCF? :: Organização neutra em relação a fornecedores sob a Linux Foundation, hospedando projetos nativos da nuvem. #flashcard #cncf
+
+Quais são os níveis de maturidade dos projetos da CNCF? :: Sandbox, Incubação, Graduado #flashcard #cncf
+
+O que faz o Comitê de Supervisão Técnica (TOC)? :: Avalia a maturidade do projeto com base na adoção e qualidade. #flashcard #cncf
+
+Qual é o papel dos SIGs e TAGs na CNCF? :: SIGs focam em áreas do projeto; TAGs fornecem orientação de domínio. #flashcard #cncf
+
+No que um Engenheiro DevOps se concentra? :: Faz a ponte entre Dev e Ops com automação e práticas nativas da nuvem. #flashcard #nativodanuvem #personas #devops
+
+Qual é o papel de um Engenheiro de Confiabilidade do Site (SRE)? :: Garante confiabilidade em escala com SLAs/SLOs e gerenciamento de incidentes. #flashcard #nativodanuvem #personas
+
+O que faz um Arquiteto de Nuvem? :: Projeta soluções em nuvem, otimizando custo e desempenho. #flashcard #nativodanuvem #personas
+
+O que é único em um Engenheiro FinOps? :: Equilibra gastos na nuvem com velocidade e qualidade. #flashcard #nativodanuvem #personas #gerenciamentodecustos
+
+O que são Padrões Abertos? :: Frameworks adotáveis livremente para colaboração e interoperabilidade. #flashcard #nativodanuvem #padrõesabertos
+
+O que é a Iniciativa de Contêineres Abertos (OCI)? :: Define especificações de imagem e runtime de contêineres (por exemplo, runc). #flashcard #nativodanuvem #padrõesabertos
+
+O que faz a Interface de Rede de Contêineres (CNI)? :: Simplifica a configuração de rede para o Kubernetes com plugins. #flashcard #kubernetes #rede #padrõesabertos
+
+Qual é o propósito da Interface de Armazenamento de Contêineres (CSI)? :: Padroniza a integração de armazenamento para orquestração de contêineres. #flashcard #kubernetes #armazenamento #padrõesabertos
+
+O que significa "Nativo da Nuvem"? :: Combina ambientes de nuvem e design nativo para escalabilidade e resiliência. #flashcard #nativodanuvem
+
+Quais são as duas principais filosofias da CNCF? :: Arquitetura Nativa da Nuvem (melhores práticas) e Cultura (mudanças organizacionais). #flashcard #nativodanuvem #cncf
+
+Quais são os principais benefícios das práticas Nativas da Nuvem? :: Resiliência, escalabilidade, automação, segurança e uso eficaz da nuvem. #flashcard #nativodanuvem
+
+Como a Infraestrutura como Código (IaC) se relaciona com a Nuvem Nativa? :: Permite gerenciamento agnóstico de fornecedores com ferramentas como Terraform. #flashcard #nativodanuvem #devops
+
+Executar um aplicativo na nuvem o torna Nativo da Nuvem? :: Não, requer melhores práticas, não apenas hospedagem na nuvem. #flashcard #nativodanuvem
+
+Os contêineres são suficientes para tornar um aplicativo Nativo da Nuvem? :: Não, são um passo, mas são necessárias melhores práticas. #flashcard #nativodanuvem #conteinerização
+
+Quais são as quatro práticas principais no desenvolvimento Nativo da Nuvem? :: Automação, Resiliência, Escalabilidade, Segurança por Padrão #flashcard #nativodanuvem
+
+Quais desafios a Nuvem Nativa resolve? :: Erros de sistema único, limitações de recursos e vizinhos ruidosos. #flashcard #nativodanuvem
+
+Qual é o papel da Linux Foundation na Nuvem Nativa? :: Padroniza o Linux, patrocina o Kubernetes, impulsiona o movimento de nuvem aberta. #flashcard #nativodanuvem #cncf
+
+O que é a Cloud Native Computing Foundation (CNCF)? :: Promove tecnologia nativa da nuvem, supervisiona o Kubernetes, molda o ecossistema. #flashcard #nativodanuvem #cncf
+
+Quando foi o primeiro grande marco do Kubernetes? :: Fevereiro de 2015, lançamento 1.0. #flashcard #kubernetes #cncf
+
+O que é a certificação KCNA? :: Certificação de nível de entrada para ecossistemas Kubernetes e nativos da nuvem. #flashcard #kcna
+
+Quais certificações avançadas seguem a KCNA? :: CKA (Administrador) e CKAD (Desenvolvedor de Aplicações). #flashcard #kcna
+
+Quais tópicos a KCNA cobre? :: Kubernetes, segurança, telemetria/observabilidade (por exemplo, Prometheus). #flashcard #kcna
+
+Por que a KCNA é uma base sólida? :: Prepara para certificações avançadas com conhecimento prático. #flashcard #kcna
+
+Qual é o formato do exame KCNA? :: Múltipla escolha, nível de entrada, teórico. #flashcard #kcna
+
+Como você pode fazer o exame KCNA? :: Presencial em centros de teste ou remotamente com supervisão. #flashcard #kcna
+
+Por que a KCNA é uma boa escolha? :: Currículo diversificado, prepara para certificações avançadas, amigável para remoto. #flashcard #kcna
+
+Onde você pode verificar atualizações do currículo KCNA? :: https://github.com/cncf/curriculum #flashcard #kcna
+
+Como você pode se manter atualizado sobre notícias do exame KCNA? :: Siga a Linux Foundation e a CNCF nas redes sociais. #flashcard #kcna
+
+Onde você agenda o exame KCNA? :: https://training.linuxfoundation.org/certification/kubernetes-cloud-native-associate #flashcard #kcna
+
+Como você pode reduzir os custos do exame KCNA? :: Aguarde promoções, participe da KubeCon ou verifique códigos nas redes sociais. #flashcard #kcna
+
+No que você deve focar para o exame KCNA? :: IaC, Velocidade, Eficiência e Custo em contextos Nativos da Nuvem. #flashcard #kcna
+
+Qual é a fonte oficial para informações do exame KCNA? :: Repositório GitHub cncf/curriculum #flashcard #kcna
+
+Como os contêineres transformaram a tecnologia? :: Revolucionaram infraestrutura, design de aplicativos e operações com ferramentas como o Kubernetes. #flashcard #contêineres
+
+Qual é a base histórica da virtualização de mainframe (década de 1960)? :: IBM CP/CMS permitia múltiplas instâncias de SO virtualizadas em um mainframe. #flashcard #contêineres
+
+O que é Chroot (1979) e suas limitações? :: Recurso Unix que isola processos; limitado por recursos compartilhados e sem processos de superusuário. #flashcard #contêineres
+
+O que são FreeBSD Jails (2000)? :: Virtualização leve que isola recursos no FreeBSD. #flashcard #contêineres
+
+O que são Solaris Zones e Partições Virtuais HP-UX (2000s)? :: Virtualização que isola recursos computacionais em Solaris e HP-UX. #flashcard #contêineres
+
+Quais ingredientes modernos o Docker combinou? :: Namespaces Linux (isolamento) e cgroups (alocação de recursos). #flashcard #docker #contêineres
+
+O que são Namespaces Linux (2002)? :: Isolam processos, redes, montagens, etc. (por exemplo, PID, NET, MNT). #flashcard #contêineres
+
+O que são Grupos de Controle (cgroups, 2006)? :: Limitam, priorizam e controlam recursos; desenvolvidos pelo Google. #flashcard #contêineres
+
+Como as Máquinas Virtuais se comparam aos contêineres? :: VMs usam hipervisores com sobrecarga de SO; contêineres compartilham o kernel do host. #flashcard #contêineres
+
+O que tornou o Docker um divisor de águas em 2013? :: Combinou namespaces e cgroups em uma plataforma amigável. #flashcard #docker #contêineres
+
+Por que os contêineres são preferidos às VMs? :: Leves, compartilham o kernel do SO host, reduzem a sobrecarga. #flashcard #contêineres
+
+Qual é a arquitetura tradicional do Docker? :: Hardware → SO → Runtime Docker (containerd, runc). #flashcard #docker
+
+O que o Docker Desktop fornece? :: Interface para Mac/Windows/Linux com CLI, Kubernetes e Extensões. #flashcard #docker
+
+Qual é um benefício chave do Docker Desktop? :: Ambiente flexível e autocontido com redefinição fácil. #flashcard #docker
+
+Como você executa um contêiner com o Docker Desktop? :: docker run -it ubuntu bash #flashcard #docker
+
+Como você habilita o Kubernetes no Docker Desktop? :: Ative nas preferências para usar kubectl. #flashcard #docker #kubernetes
+
+O que é uma imagem de contêiner? :: Pacote portátil, compatível com OCI, de software e dependências. #flashcard #contêineres
+
+Qual é a diferença entre uma imagem de contêiner e um contêiner? :: Imagem é o blueprint; contêiner é uma instância em execução. #flashcard #contêineres
+
+O que são tags em imagens de contêineres? :: Rótulos para versões/variantes (por exemplo, latest, v1.0). #flashcard #contêineres
+
+Como as imagens de contêineres são estruturadas? :: Construídas como camadas; cada etapa cria uma camada reutilizável. #flashcard #contêineres
+
+Quais são as desvantagens de muitas camadas de imagem? :: Aumento do tempo de construção, tamanho e complexidade. #flashcard #contêineres
+
+O que é um Sistema de Arquivos Union no Docker? :: Mescla camadas de imagem em uma única visão com uma camada gravável. #flashcard #docker #contêineres
+
+Qual é a diferença entre um digest e um ID de imagem? :: Digest identifica imagens de registro; ID de imagem é um hash de configuração local. #flashcard #contêineres
+
+Como você salva uma imagem de contêiner? :: docker save exporta localmente com camadas e metadados. #flashcard #docker #contêineres
+
+O que é um registro de contêineres? :: Serviço que hospeda/distribui imagens de contêineres com versionamento. #flashcard #contêineres
+
+Como você valida uma instalação do Docker? :: docker version mostra detalhes do cliente/servidor. #flashcard #docker
+
+Para que serve a imagem Funbox? :: Explore recursos como Nyan Cat com docker run -it --rm wernight/funbox. #flashcard #docker
+
+O que fazem -i, -t e --rm no comando Docker run? :: -i: mantém a entrada aberta; -t: aloca terminal; --rm: remove automaticamente o contêiner. #flashcard #docker
+
+Como você visualiza os estados dos contêineres? :: docker ps para em execução; docker ps -a para todos. #flashcard #docker
+
+Qual é uma prática recomendada de segurança para executar contêineres? :: Executar como usuários não-root para reduzir a superfície de ataque. #flashcard #docker #segurança
+
+Qual é a diferença entre -P e -p no comando Docker run? :: -P: publica todas as portas expostas aleatoriamente; -p: mapeia portas específicas. #flashcard #docker #rede
+
+O que faz -d no comando Docker run? :: Desacopla o contêiner para rodar em segundo plano. #flashcard #docker
+
+Como você explora um contêiner em execução? :: docker exec -it <container-id> bash #flashcard #docker
+
+Como você faz alterações persistentes em um contêiner? :: Use volumes com -v /host/path:/container/path. #flashcard #docker #armazenamento
+
+O que é orquestração de contêineres? :: Automatiza escalonamento, atualizações e disponibilidade para contêineres. #flashcard #orquestração
+
+Quais são as características principais da orquestração de contêineres? :: Provisionamento, autorreparação, segurança, autoescalonamento. #flashcard #orquestração
+
+Como a orquestração beneficia a implantação de aplicativos complexos? :: Padroniza a implantação, integra rede/armazenamento. #flashcard #orquestração
+
+Quais são alguns orquestradores de contêineres? :: Nomad, OpenShift, Docker, Kubernetes #flashcard #orquestração
+
+O que são CRDs no Kubernetes? :: Definições de Recursos Personalizados estendem a funcionalidade do Kubernetes. #flashcard #kubernetes #api
+
+Quais são as duas áreas principais da arquitetura do Kubernetes? :: Plano de Controle (gerencia o cluster) e Nós (executam cargas de trabalho). #flashcard #kubernetes
+
+Qual é o papel do runtime de contêiner? :: Baixo nível (runc) interage com namespaces; alto nível (containerd) gerencia o ciclo de vida. #flashcard #kubernetes #contêineres
+
+O que faz o Kubelet? :: Executa nos nós, garante a saúde dos pods, lê especificações da API/YAML. #flashcard #kubernetes
+
+O que é etcd? :: Armazenamento chave-valor distribuído para dados do cluster com consenso Raft. #flashcard #kubernetes #etcd
+
+O que é o Servidor de API Kube? :: Ponto de acesso principal do cluster, expõe API RESTful, armazena dados no etcd. #flashcard #kubernetes #api
+
+O que faz o Kube Scheduler? :: Atribui pods aos nós com base em recursos/restrições. #flashcard #kubernetes #agendamento
+
+Qual é o papel do Kube Proxy? :: Gerencia a conectividade de rede (TCP/UDP/SCTP) nos nós. #flashcard #kubernetes #rede
+
+O que é CoreDNS? :: Fornece resolução de DNS do cluster, executa como um Deployment. #flashcard #kubernetes #rede
+
+O que o", "O que o Controller Manager lida? :: Executa loops de controle para impor o estado desejado. #flashcard #kubernetes
+
+O que é o Cloud Controller Manager (CCM)? :: Faz a ponte entre o Kubernetes e provedores de nuvem para balanceadores de carga. #flashcard #kubernetes
+
+Como funciona um cluster de Alta Disponibilidade (HA)? :: Múltiplos planos de controle, etcd em cluster, API Server balanceada por carga. #flashcard #kubernetes
+
+O que é um Pod no Kubernetes? :: Unidade implantável menor com um ou mais contêineres. #flashcard #kubernetes #pods
+
+Como os contêineres em um pod se comunicam? :: Via localhost; cada pod recebe um IP de cluster único. #flashcard #kubernetes #pods #rede
+
+Como você cria um pod nginx? :: kubectl run nginx --image=nginx #flashcard #kubernetes #pods
+
+Como você acessa um pod externamente? :: kubectl port-forward nginx 8080:80 #flashcard #kubernetes #pods #rede
+
+Como você testa a comunicação entre pods? :: kubectl run curl --image=curlimages/curl --rm -it --restart=Never -- curl <nginx-pod-IP> #flashcard #kubernetes #pods #rede
+
+Qual é a diferença entre kubectl create e apply? :: create falha se o recurso existe; apply atualiza recursos existentes. #flashcard #kubernetes #api
+
+Como você gera YAML para um pod? :: kubectl run nginx --image=nginx --dry-run=client -o yaml > nginx.yaml #flashcard #kubernetes #pods
+
+Quais são as opções de restartPolicy? :: Always, Never, OnFailure #flashcard #kubernetes #pods
+
+Como você combina múltiplos YAMLs em um arquivo? :: Use o separador --- #flashcard #kubernetes #api
+
+O que é um contêiner sidecar? :: Contêiner secundário que melhora a funcionalidade do contêiner principal. #flashcard #kubernetes #pods
+
+O que são namespaces do Kubernetes? :: Dividem os recursos do cluster para isolamento. #flashcard #kubernetes #namespaces
+
+Por que usar namespaces? :: Multi-tenância, cotas, RBAC, organização. #flashcard #kubernetes #namespaces
+
+Quais são os namespaces padrão comuns? :: kube-system, kube-public, kube-node-lease #flashcard #kubernetes #namespaces
+
+Como você cria um namespace? :: kubectl create namespace my-namespace #flashcard #kubernetes #namespaces
+
+Como você define um namespace padrão? :: kubectl config set-context --current --namespace=my-namespace #flashcard #kubernetes #namespaces
+
+O que é um Deployment do Kubernetes? :: Gerencia atualizações de aplicativos com replicação e reversões. #flashcard #kubernetes #deployments
+
+Como você escala um deployment? :: kubectl scale deployment/nginx --replicas=10 #flashcard #kubernetes #deployments
+
+Como você atualiza um deployment? :: kubectl set image deployment/nginx nginx=nginx:stable #flashcard #kubernetes #deployments
+
+Como você reverte um deployment? :: kubectl rollout undo deployment/nginx #flashcard #kubernetes #deployments
+
+O que gerencia os ciclos de vida dos pods em um deployment? :: ReplicaSets #flashcard #kubernetes #deployments
+
+Quais são os quatro principais tipos de serviço do Kubernetes? :: ClusterIP, NodePort, LoadBalancer, ExternalName #flashcard #kubernetes #serviços
+
+O que é um serviço ClusterIP? :: IP apenas interno para comunicação no cluster. #flashcard #kubernetes #serviços #rede
+
+O que é um serviço NodePort? :: Expõe uma porta estática em cada nó para acesso externo. #flashcard #kubernetes #serviços #rede
+
+O que é um serviço LoadBalancer? :: Usa um balanceador de carga do provedor de nuvem para acesso externo. #flashcard #kubernetes #serviços #rede
+
+O que é um Serviço Headless? :: Sem IP de cluster, resolve para IPs de pods. #flashcard #kubernetes #serviços #rede
+
+O que é um Job do Kubernetes? :: Gerencia tarefas em lote, executa pods até a conclusão. #flashcard #kubernetes #tarefas
+
+Qual é um exemplo de caso de uso de um Job? :: Calcular Pi com perl -Mbignum=bpi -wle "print bpi(2000)". #flashcard #kubernetes #tarefas
+
+O que controlam completions e parallelism? :: completions: total de pods; parallelism: pods concorrentes. #flashcard #kubernetes #tarefas
+
+O que é um CronJob do Kubernetes? :: Agenda Jobs em intervalos (por exemplo, * * * * *). #flashcard #kubernetes #cronjobs
+
+O que acontece quando um CronJob é deletado? :: Para de agendar; Jobs/pods existentes persistem. #flashcard #kubernetes #cronjobs
+
+Qual é a retenção padrão do histórico de jobs? :: 3 bem-sucedidos, 1 falhado #flashcard #kubernetes #cronjobs
+
+O que são ConfigMaps? :: Armazenam dados de configuração não sensíveis para pods. #flashcard #kubernetes #configmaps
+
+Como você cria um ConfigMap? :: kubectl create configmap color-configmap --from-literal=color=red #flashcard #kubernetes #configmaps
+
+Como você usa um ConfigMap em um pod? :: envFrom: - configMapRef: name: color-configmap em YAML #flashcard #kubernetes #configmaps
+
+O que é um ConfigMap imutável? :: Não pode ser modificado após a criação (immutable: true). #flashcard #kubernetes #configmaps
+
+O que são Secrets do Kubernetes? :: Armazenam dados sensíveis (por exemplo, senhas) codificados em Base64. #flashcard #kubernetes #secrets
+
+Como os Secrets diferem dos ConfigMaps? :: Secrets para dados sensíveis; ConfigMaps para não sensíveis. #flashcard #kubernetes #secrets #configmaps
+
+Como você cria um Secret? :: kubectl create secret generic color-secret --from-literal=color=red #flashcard #kubernetes #secrets
+
+Os Secrets são criptografados? :: Não, apenas codificados em Base64; armazenados no etcd. #flashcard #kubernetes #secrets #segurança
+
+O que são Rótulos do Kubernetes? :: Pares chave-valor para marcar e organizar recursos. #flashcard #kubernetes #rótulos
+
+Por que usar Rótulos? :: Organizar recursos, automatizar CI/CD, habilitar descoberta de serviços. #flashcard #kubernetes #rótulos
+
+Como você cria um pod com rótulos? :: kubectl run nginx --image=nginx --labels="app=web,env=prod" #flashcard #kubernetes #rótulos #pods
+
+Como você filtra por rótulos? :: kubectl get pods --selector app=web #flashcard #kubernetes #rótulos
+
+O que interage com a API do Kubernetes? :: Usuários/ferramentas, monitoramento, componentes internos (scheduler, kubelet). #flashcard #kubernetes #api
+
+Qual é o fluxo de processamento de uma solicitação de API? :: Solicitação → Roteamento → Autenticação → Autorização → Admissão → Validação → Manipulação → Resposta #flashcard #kubernetes #api
+
+O que faz o Controlador de Admissão no fluxo da API? :: Impõe políticas e modifica recursos. #flashcard #kubernetes #api
+
+O que são Definições de Recursos Personalizados (CRDs)? :: Estendem a API com novos tipos de recursos. #flashcard #kubernetes #api
+
+Como o kubectl proxy simplifica o acesso à API? :: Permite acesso HTTP local sem autenticação manual. #flashcard #kubernetes #api
+
+O que é a especificação OpenAPI no Kubernetes? :: Documenta endpoints e parâmetros da API. #flashcard #kubernetes #api
+
+O que é RBAC no Kubernetes? :: Gerencia acesso usando papéis atribuídos a usuários/grupos. #flashcard #kubernetes #rbac #segurança
+
+O que está em um arquivo kubeconfig? :: Detalhes do cluster e informações do usuário (por exemplo, certificados). #flashcard #kubernetes #rbac #segurança
+
+Como o Kubernetes autentica usuários? :: Via certificados externos assinados por uma CA. #flashcard #kubernetes #rbac #segurança
+
+O que é ClusterRole vs. ClusterRoleBinding? :: ClusterRole define permissões; ClusterRoleBinding as atribui. #flashcard #kubernetes #rbac #segurança
+
+Como você verifica permissões com kubectl? :: kubectl auth can-i <verb> <resource> #flashcard #kubernetes #rbac #segurança
+
+Como você cria um grupo de superusuários? :: Crie ClusterRole com todas as permissões e vincule ao grupo. #flashcard #kubernetes #rbac #segurança
+
+O que faz o kube-scheduler? :: Atribui pods aos nós com base em recursos e restrições. #flashcard #kubernetes #agendamento
+
+Quais são as três etapas no agendamento? :: Filtragem, Pontuação, Vinculação #flashcard #kubernetes #agendamento
+
+Como você ignora o scheduler? :: Defina nodeName na especificação do pod. #flashcard #kubernetes #agendamento
+
+O que é um scheduler personalizado? :: Usa lógica personalizada via schedulerName na especificação do pod. #flashcard #kubernetes #agendamento
+
+Como funcionam os NodeSelectors? :: Usam rótulos para posicionamento de pods direcionado. #flashcard #kubernetes #agendamento
+
+O que é armazenamento efêmero no Kubernetes? :: Armazenamento temporário que não persiste após reinicializações de pods. #flashcard #kubernetes #armazenamento
+
+O que é um volume emptyDir? :: Criado vazio; persiste em falhas de contêineres, mas não em exclusões de pods. #flashcard #kubernetes #armazenamento
+
+O que é armazenamento persistente no Kubernetes? :: Armazenamento que persiste além do ciclo de vida do pod (por exemplo, PVs, PVCs). #flashcard #kubernetes #armazenamento
+
+O que são Classes de Armazenamento, PVs e PVCs? :: Classes de Armazenamento definem tipos; PVs são provisionados; PVCs solicitam armazenamento. #flashcard #kubernetes #armazenamento
+
+O que é provisionamento dinâmico? :: PVC cria automaticamente PV contra uma Classe de Armazenamento. #flashcard #kubernetes #armazenamento
+
+Para que são usados os StatefulSets? :: Gerenciam aplicativos stateful com identidades e armazenamento estáveis. #flashcard #kubernetes #statefulsets
+
+Como os StatefulSets diferem dos Deployments? :: StatefulSets fornecem identidades de pod únicas e PVCs. #flashcard #kubernetes #statefulsets #deployments
+
+O que é um serviço headless em StatefulSets? :: Sem IP de cluster, fornece nomes DNS estáveis. #flashcard #kubernetes #statefulsets #serviços
+
+Como os pods de StatefulSet são nomeados? :: Sequencialmente com o prefixo do nome do StatefulSet. #flashcard #kubernetes #statefulsets
+
+O que acontece com os PVCs quando um StatefulSet é deletado? :: PVCs e PVs persistem, reutilizáveis quando recriados. #flashcard #kubernetes #statefulsets #armazenamento
+
+O que fazem as Políticas de Rede? :: Controlam a comunicação de pods permitindo/negando tráfego. #flashcard #kubernetes #rede
+
+Qual é o papel do plugin CNI nas Políticas de Rede? :: Impõe regras de rede para controle de tráfego. #flashcard #kubernetes #rede #padrõesabertos
+
+O que acontece sem Políticas de Rede? :: Pods podem enviar/receber tráfego de qualquer fonte. #flashcard #kubernetes #rede
+
+Como várias Políticas de Rede se combinam? :: Efeitos são aditivos, criando regras cumulativas. #flashcard #kubernetes #rede
+
+Qual é a diferença entre PDB e Replicas? :: Replicas garantem pods em execução; PDBs limitam interrupções. #flashcard #kubernetes #pdb
+
+O que são interrupções voluntárias? :: Ações planejadas (por exemplo, manutenção) que podem encerrar pods. #flashcard #kubernetes #pdb
+
+Como funciona um PDB durante o esvaziamento de um nó? :: Impede a expulsão abaixo do mínimo de pods disponíveis. #flashcard #kubernetes #pdb
+
+O que são Contextos de Segurança no Kubernetes? :: Definem controle de acesso/privilégios para pods/contêineres. #flashcard #kubernetes #segurança
+
+O que faz allowPrivilegeEscalation: false? :: Impede que contêineres obtenham privilégios elevados. #flashcard #kubernetes #segurança
+
+O que substituiu as Políticas de Segurança de Pod no Kubernetes 1.25? :: Controladores de Admissão #flashcard #kubernetes #segurança
+
+O que são Kyverno e OPA Gatekeeper? :: Ferramentas para aplicação de políticas personalizadas via controladores de admissão. #flashcard #kubernetes #segurança
+
+Quais são os 4C’s da Segurança Nativa da Nuvem? :: Nuvem, Cluster, Contêiner, Código #flashcard #nativodanuvem #segurança
+
+O que é Helm no Kubernetes? :: Simplifica o gerenciamento de aplicativos com Helm Charts. #flashcard #kubernetes #helm
+
+Como você cria um Helm Chart? :: helm create flappy-app #flashcard #kubernetes #helm
+
+Como você implanta um Helm Chart? :: helm install flappy-app <chart-file>.tgz #flashcard #kubernetes #helm
+
+Qual é o benefício dos Helm Charts? :: Implantação, atualizações e escalonamento fáceis. #flashcard #kubernetes #helm
+
+Qual é o papel de um service mesh? :: Gerencia a comunicação segura e confiável de microsserviços. #flashcard #nativodanuvem #servicemesh
+
+Quais são as duas partes de um service mesh? :: Plano de Dados (proxies) e Plano de Controle (gerencia proxies). #flashcard #nativodanuvem #servicemesh
+
+O que é um proxy sidecar vs. proxy de nó host? :: Sidecar se conecta a serviços; proxy de nó host executa no nível do nó. #flashcard #nativodanuvem #servicemesh
+
+Quais são os benefícios principais dos service meshes? :: Segurança, controle de acesso, observabilidade, confiabilidade. #flashcard #nativodanuvem #servicemesh
+
+O que é a Interface de Service Mesh (SMI)? :: API unificada para gerenciamento de tráfego e métricas. #flashcard #nativodanuvem #servicemesh #padrõesabertos
+
+O que é observabilidade em sistemas nativos da nuvem? :: Determina o estado do sistema via telemetria (logs, métricas, rastreamentos). #flashcard #nativodanuvem #observabilidade
+
+Quais são os três pilares da observabilidade? :: Logs, Métricas, Rastreamentos #flashcard #nativodanuvem #observabilidade
+
+O que fazem os alertas na observabilidade? :: Fornecem avisos antecipados de anomalias ou falhas. #flashcard #nativodanuvem #observabilidade
+
+Qual é o papel do OpenTracing e OpenTelemetry? :: Fornecem APIs/ferramentas para rastreamento e telemetria. #flashcard #nativodanuvem #observabilidade
+
+Como os logs ajudam na observabilidade? :: Registram eventos para solução de problemas e análise. #flashcard #nativodanuvem #observabilidade
+
+Quais são os tipos de métricas? :: Medidores, Contadores, Medidas, Histogramas #flashcard #nativodanuvem #observabilidade
+
+O que os rastreamentos fornecem em um sistema distribuído? :: Visibilidade na latência de solicitações e gargalos. #flashcard #nativodanuvem #observabilidade
+
+O que é Prometheus? :: Ferramenta CNCF de código aberto para monitoramento/alertas com PromQL. #flashcard #prometheus #observabilidade
+
+Quais são as características principais do Prometheus? :: PromQL, nós autônomos, coleta de dados push-pull. #flashcard #prometheus #observabilidade
+
+O que é Grafana? :: Plataforma para visualização de métricas do Prometheus e outras fontes. #flashcard #grafana #observabilidade
+
+Como o Prometheus e o Grafana melhoram a observabilidade do Kubernetes? :: Oferecem monitoramento, visualização e alertas. #flashcard #kubernetes #prometheus #grafana #observabilidade
+
+O que é o kube-prometheus-stack? :: Helm chart para configuração de Prometheus/Grafana no Kubernetes. #flashcard #kubernetes #prometheus #helm
+
+Quais componentes são instalados com o kube-prometheus-stack? :: Prometheus Operator, Alertmanager, Node Exporter, Kube-State-Metrics, Grafana #flashcard #kubernetes #prometheus
+
+Como você acessa a interface do Prometheus após a instalação? :: kubectl port-forward service/<prometheus-service> 9090:9090 #flashcard #kubernetes #prometheus
+
+Qual é um exemplo de consulta PromQL para pods por namespace? :: sum by (namespace) (kube_pod_ips) #flashcard #prometheus #observabilidade
+
+Como você importa painéis no Grafana? :: Use IDs (por exemplo, 15759) e selecione a fonte de dados Prometheus. #flashcard #grafana #observabilidade
+
+Qual é um princípio chave do gerenciamento de custos nativo da nuvem? :: Flexibilidade para alocar recursos em várias nuvens. #flashcard #nativodanuvem #gerenciamentodecustos
+
+Como você pode otimizar o uso de recursos? :: Revise o consumo, remova recursos não utilizados, projete para autoescalonamento. #flashcard #nativodanuvem #gerenciamentodecustos
+
+O que são instâncias sob demanda? :: Recursos provisionados conforme necessário; flexíveis, mas caros. #flashcard #nativodanuvem #gerenciamentodecustos
+
+O que são instâncias reservadas? :: Compromissos de longo prazo; econômicas, mas menos flexíveis. #flashcard #nativodanuvem #gerenciamentodecustos
+
+O que são instâncias spot? :: Lance por recursos não utilizados; baratos, mas termináveis. #flashcard #nativodanuvem #gerenciamentodecustos
+
+Qual é o risco da migração lift-and-shift para a nuvem? :: Provisionamento excessivo sem reavaliar as necessidades. #flashcard #nativodanuvem #gerenciamentodecustos
+
+Como o autoescalonamento ajuda com os custos? :: Ajusta recursos à demanda, reduzindo custos ociosos. #flashcard #nativodanuvem #gerenciamentodecustos #autoescalonamento
+
+O que faz o KubeCost? :: Monitora e gerencia custos específicos do Kubernetes. #flashcard #kubernetes #gerenciamentodecustos
+
+Como a detecção de anomalias na nuvem ajuda no gerenciamento de custos? :: Identifica uso incomum para evitar excessos. #flashcard #nativodanuvem #gerenciamentodecustos
 
 ---
 
 ## Tags
 
- #flashcards #nuvemnativa #monolitico #microsservicos #conteinerizacao #devops #entregacontinua #escalabilidadeautomatica #serverless #cncf #kubernetes #observabilidade #prometheus #grafana #gerenciamentodecustos #docker #seguranca #helm #malhadeservico #kcna #rede #armazenamento #rbac #agendamento #pods #deployments #servicos #jobs #cronjobs #configmaps #segredos #rotulos #api #orquestracao #namespaces #pdb #statefulsets #padroesabertos #personas:w
+#flashcard #nativodanuvem #monolítico #microsserviços #conteinerização #devops #entregacontínua #autoescalonamento #semservidor #cncf #kubernetes #observabilidade #prometheus #grafana #gerenciamentodecustos #docker #segurança #helm #servicemesh #kcna #rede #armazenamento #rbac #agendamento #pods #deployments #serviços #tarefas #cronjobs #configmaps #secrets #rótulos #api #orquestração #namespaces #pdb #statefulsets #padrõesabertos #personas

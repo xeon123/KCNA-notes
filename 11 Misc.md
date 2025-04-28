@@ -16,8 +16,6 @@
 	- OpenTelemetry
 - Which component in a Kubernetes cluster is responsible for managing the state of worker nodes and ensuring their proper functioning?
 	- kubelet
-- Which of the following container runtimes is a lightweight, low-level runtime designed specifically for running containers in Linux?
-	- LXC
 - Which Kubernetes component enables developers to schedule jobs based on user-defined time intervals?
 	- CronJobs
 - Within the collaborative landscape of Kubernetes, what defines Special Interest Groups (SIGs)?
@@ -78,4 +76,40 @@
 	- Kube-state-metrics is a service that generates and exposes cluster state data in Prometheus format. It does this by scraping the Kubernetes API server to gather information about the current state of the cluster, including metrics on deployments, pods, nodes, and more.
 - Which statement is true about Ingress in Kubernetes in relation to the routing of traffic?
 	- Ingress in Kubernetes provides a way to route external HTTP and HTTPS traffic to services within the cluster. It acts as an entry point for incoming requests and can be configured to direct traffic based on various rules, including URL paths, hostnames, and more.
+- Which open-source tool is specifically designed for assessing the security posture of Kubernetes clusters according to NSA and CISA guidelines?
+	- KubeScape is an open-source tool that is specifically designed to assess the security posture of Kubernetes clusters based on guidelines from the National Security Agency (NSA) and Cybersecurity and Infrastructure Security Agency (CISA). It provides a comprehensive risk assessment and identifies potential vulnerabilities in the cluster configuration.
+- In Kubernetes, which object is most suitable for deploying stateless applications?
+	- A Deployment is an object that manages a set of replicas of a Pod, which makes it suitable for deploying stateless applications. Deployments provide features like rolling updates and self-healing, making them ideal for managing multiple instances of a stateless application.
+- In a cloud-native organisation, which role is primarily responsible for building and maintaining the underlying platform infrastructure, enabling application developers to deploy and run their services efficiently?
+	- Platform Engineers
+- In a Kubernetes cluster, which component is responsible for routing traffic for services and managing IP rules?
+	- Kube-Proxy is a network proxy that runs on each node in a Kubernetes cluster and is responsible for routing traffic for services and managing IP rules. It ensures that incoming requests are directed to the correct pod, even if the pod is running on a different node.
+- In Kubernetes, which security-focused tool is commonly used for runtime security monitoring and detection of anomalous activities within containers and pods?
+	- Falco is a cloud-native, open-source security tool that provides runtime security monitoring and detection of anomalous activities within containers and pods in Kubernetes environments. It uses system calls to monitor container activity and can detect unusual behavior such as privilege escalation or unauthorized access.
+- Which function is primarily associated with Kubernetes Security Contexts?
+	- Kubernetes Security Contexts are primarily associated with defining container or pod level security settings. A Security Context defines the security settings for a container or pod, such as running a container as a specific user, setting file system permissions, and configuring SELinux labels. These settings can be applied to a single container or to all containers in a pod.
+- In Kubernetes, what is the relationship between Deployments and ReplicaSets?
+	- In Kubernetes, when you create a Deployment, it automatically creates a ReplicaSet to manage the desired number of pod replicas. The ReplicaSet ensures that the specified number of replicas are running and available, while the Deployment manages the rollout of new versions of the application.
+- In Kubernetes security, what differentiates Security Contexts from Security Policies (Like PodSecurityPolicies or Kyverno) in terms of their scope and focus? 
+	- Security Contexts are settings defined inside a pod or container spec. Scope: single pod or container.
+	- Security Policies are cluster-level or namespace-level enforcement tools. Scope: all pods in a cluster or namespace.
+- In Kubernetes, which feature is effective for managing costs by allowing for the categorisation and organisation of resources?
+	- Labels are key-value pairs attached to objects, such as pods or services, and provide a flexible way to categorize and organize resources. By using labels, you can select and manage groups of resources based on specific criteria, making it easier to manage costs by allocating resources to specific teams, projects, or environments.
+- In the context of cloud native environments, which persona primarily focuses on optimizing cloud costs and financial management?
+	- FinOps (Financial Operations) is a relatively new persona that has emerged in cloud native environments. They are primarily responsible for optimizing cloud costs, managing financial resources, and ensuring that the organization gets the best possible return on investment from its cloud spending. FinOps teams work closely with other stakeholders to identify areas of cost optimization, implement cost-saving measures, and develop strategies for financial management.
+- Which of the following is a lightweight container runtime specifically designed for Kubernetes, conforming to the Container Runtime Interface (CRI)?
+	- CRI-O is a lightweight container runtime that's specifically designed for Kubernetes and conforms to the Container Runtime Interface (CRI). It provides a minimalistic approach to running containers in a Kubernetes environment, making it an ideal choice for this ecosystem. It is not LXC, because LXC is a userspace interface for the Linux kernel containment features. While LXC does provide containerization capabilities, it's not specifically designed for Kubernetes or conforming to CRI.
+- Which of the following container runtimes is a lightweight, low-level runtime designed specifically for running containers in Linux?
+	- LXC
+- What is the difference between LXC and CRI-O?
+	- LXC is a lightweight virtualization technology for running multiple isolated Linux systems (containers) on a single control host. CRI-O is a container runtime specifically built for Kubernetes.
+- In cloud computing, which approach is best suited for simultaneously managing security threats and optimising costs by identifying unusual activities?
+	- Cloud Anomaly Detection is a approach that involves monitoring and analyzing cloud-based systems to identify unusual patterns of activity that could indicate potential security threats. By detecting anomalies, organizations can take proactive measures to mitigate risks and optimize costs associated with managing security threats.
+- When a Pod is created in Kubernetes without specifying a Service Account, which default Service Account is used?
+	- default service account
+- In the field of IT operations and software development, SRE stands for a discipline that emphasizes automation, continuous improvement, and a balanced approach to system reliability and features. What does SRE stand for?
+	- Site reliability engineering
+- In Kubernetes, how are the container specifications in Deployments and StatefulSets similar?
+	- Both Deployments and StatefulSets use the same container specification within their pod templates. The key difference between these two resources is in how they manage the lifecycle and ordering of pods, but the container specification within the pod template remains consistent for all replicas in both cases. 
+
 
