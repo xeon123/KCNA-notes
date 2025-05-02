@@ -113,6 +113,93 @@ summary: This note covers Kubernetes fundamentals, including container orchestra
 - Ideal for **cloud-based production clusters**.
 
 ---
+
+#### Installing Local Kubernetes Cluster
+
+##### Minikube Overview
+
+✅ **What is Minikube?**
+
+- A simple, flexible tool to run a **local Kubernetes cluster** on **Linux, macOS, or Windows**.
+- Ideal for **learning, development, and testing**.
+
+✅ **How it works:**
+
+- Uses a **Type-2 Hypervisor** (e.g., VirtualBox, HyperKit) or a **Container Runtime** (e.g., Docker) for **isolated infrastructure**.
+- This ensures no permanent changes to the host OS—Minikube can be cleanly removed.
+
+✅ **Isolation options:**
+
+1. Run directly with hypervisor/container runtime (`--driver` option specifies this).
+2. Install Minikube **inside a VM** for an extra layer of isolation.
+3. Install **bare-metal** (not recommended—may affect host config).
+
+✅ **Features:**
+
+- Supports **single-node and multi-node clusters**.
+- Built on **libmachine** (originally from Docker).
+- Automates infrastructure provisioning & cluster bootstrapping (uses `kubeadm` under the hood).
+
+✅ **Resource requirements (recommended minimum):**
+
+- **2 CPU cores**
+- **2 GB RAM** (4–8 GB recommended)
+- **20+ GB disk space**
+- Internet access required for image downloads and updates.
+
+Minikube’s flexibility makes it great for **local, isolated Kubernetes experiments** without impacting your main system.
+
+---
+
+##### **Minikube Advanced Features (Part 1)**
+
+✅ **Profiles and Custom Clusters:**
+
+- By default, `minikube start` creates a **single-node cluster** using a default driver (e.g., VirtualBox) and Kubernetes version.
+- Minikube uses **profiles** to store cluster configurations, making them **reusable and manageable**.
+
+Example profile listing:
+
+| Profile  | Driver     | Runtime | IP             | Version | Status  | Nodes |
+| -------- | ---------- | ------- | -------------- | ------- | ------- | ----- |
+| minikube | virtualbox | docker  | 192.168.59.100 | v1.28.3 | Running | 1     |
+
+---
+
+✅ **Managing profiles:**
+
+- Use `minikube profile list` to view clusters.
+- Switch target cluster (context) with `minikube profile <profile-name>`.
+
+---
+
+✅ **Creating custom clusters:**
+
+- You can customize:
+    - **Kubernetes version**
+    - **Driver** (Docker, Podman, VirtualBox…)
+    - **Container runtime** (Docker, containerd, cri-o)
+    - **Number of nodes**
+    - **CPUs, memory, disk size**
+    - **CNI plugin** (e.g., Calico)
+
+Example commands:
+
+```bash
+minikube start --driver=docker --nodes=2 --profile=doubledocker
+minikube start --driver=virtualbox --nodes=3 --cpus=2 --memory=6g --cni=calico --container-runtime=cri-o --profile=multivbox
+```
+
+---
+
+✅ **Profiles allow:**
+
+- Running **multiple clusters side-by-side**.
+- Switching easily between them.
+
+In short, Minikube’s **profiles** and customization flags enable creating and managing **multiple, tailored Kubernetes clusters** on the same machine.
+
+---
 ## Kubernetes Architecture
 
 ![[Kubernetes API Architecture3.png]]
