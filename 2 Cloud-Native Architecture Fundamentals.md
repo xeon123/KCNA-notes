@@ -674,3 +674,4 @@ CNCF plays a pivotal role in nurturing and standardizing cloud-native technologi
 - Open standards provide flexibility, interoperability, and innovation across cloud-native tools.
 - They allow seamless integration and prevent vendor lock-in, enabling widespread collaboration.
 - Prominent examples like OCI, CNI, CSI, CRI, and SMI illustrate their influence in Kubernetes and beyond.
+

@@ -26,6 +26,93 @@ summary: This note covers Kubernetes fundamentals, including container orchestra
 
 # Kubernetes Fundamentals
 
+## Kubernetes
+
+- Inspired by Google’s internal **Borg** system, used for container and workload orchestration.
+- **Open-source project**, written in **Go** and licensed under **Apache License 2.0**.
+- Initially developed by **Google** and donated to the **Cloud Native Computing Foundation (CNCF)** in **July 2015**.
+- Releases new versions every **4 months**.
+- The **current stable version is 1.29** (as of December 2023).
+
+### Features
+
+- **Automatic bin packing**: Schedules containers based on resource needs to optimize utilization without sacrificing availability.
+- **Designed for extensibility**: Can be extended with custom features without modifying upstream source code.
+- **Self-healing**: Replaces/reschedules failed containers; restarts unresponsive containers; stops routing traffic to unhealthy containers.
+- **Horizontal scaling**: Scales applications manually or automatically based on CPU or custom metrics.
+- **Service discovery & load balancing**: Assigns IPs and DNS names to balance traffic across containers.
+- **Automated rollouts & rollbacks**: Updates applications/configurations while monitoring health to avoid downtime.
+- **Secret & configuration management**: Manages sensitive data separately from container images to avoid rebuilds; keeps secrets confidential.
+- **Storage orchestration**: Automatically mounts storage from local, cloud, distributed, or network sources.
+- **Batch execution**: Supports batch jobs, long-running jobs, and replacement of failed containers.
+- **IPv4/IPv6 dual-stack**: Supports both IPv4 and IPv6 addresses.
+
+✅ Kubernetes also supports **PaaS-like features** (deployment, scaling, load balancing) while allowing integration of custom monitoring, logging, and alerting tools.
+
+ℹ️ Some features started as **alpha/beta** (e.g., **RBAC stable since v1.8**, **CronJobs stable since v1.21**) and become more valuable as they mature.
+
+---
+
+### Installing Kubernetes
+
+#### Kubernetes Configuration
+
+- **All-in-One Single-Node Installation**  
+    In this setup, all the control plane and worker components are installed and running on a single-node. While it is useful for learning, development, and testing, it is not recommended for production purposes.
+- **Single-Control Plane and Multi-Worker Installation**  
+    In this setup, we have a single-control plane node running a stacked etcd instance. Multiple worker nodes can be managed by the control plane node.
+- **Single-Control Plane with Single-Node etcd, and Multi-Worker Installation**  
+    In this setup, we have a single-control plane node with an external etcd instance. Multiple worker nodes can be managed by the control plane node.
+- **Multi-Control Plane and Multi-Worker Installation**  
+    In this setup, we have multiple control plane nodes configured for High-Availability (HA), with each control plane node running a stacked etcd instance. The etcd instances are also configured in an HA etcd cluster and multiple worker nodes can be managed by the HA control plane.
+- **Multi-Control Plane with Multi-Node etcd, and Multi-Worker Installation**  
+    In this setup, we have multiple control plane nodes configured in HA mode, with each control plane node paired with an external etcd instance. The external etcd instances are also configured in an HA etcd cluster, and multiple worker nodes can be managed by the HA control plane. This is the most advanced cluster configuration recommended for production environments.
+
+---
+#### Local Learning Clusters
+
+- [Minikube](https://minikube.sigs.k8s.io/docs/)  
+    Single- and multi-node local Kubernetes cluster, recommended for a learning environment deployed on a single host.
+- [Kind](https://kind.sigs.k8s.io/)  
+    Multi-node Kubernetes cluster deployed in Docker containers acting as Kubernetes nodes, recommended for a learning environment.
+- [Docker Desktop](https://www.docker.com/products/docker-desktop)  
+    Including a local Kubernetes cluster for Docker users.
+- [Podman Desktop](https://podman-desktop.io/)  
+    Including Kubernetes integration for Podman users.
+- [MicroK8s](https://microk8s.io/)  
+    Local and cloud Kubernetes cluster for developers and production, from Canonical.
+- [K3S](https://k3s.io/)  
+    Lightweight Kubernetes cluster for local, cloud, edge, IoT deployments, originally from Rancher, currently a CNCF project.
+
+---
+
+#### Deployments Tools
+
+✅ **1. kubeadm**
+
+- Official Kubernetes tool to **bootstrap a production-ready cluster**.
+- Supports **multi-node** and **Highly Available (HA)** clusters (on-premises or cloud).
+- Does **not provision infrastructure**—you must manually create the servers.
+- Flexible and extendable for custom setups.
+
+---
+
+✅ **2. kubespray**
+
+- Based on **Ansible**: automates installation of **HA Kubernetes clusters**.
+- Supports **AWS, GCP, Azure, OpenStack, vSphere, bare metal**.
+- Good for **multi-platform deployments** and customization.
+
+---
+
+✅ **3. kops**
+
+- CLI tool to **create, upgrade, manage Kubernetes clusters**.
+- **Provisions infrastructure + installs Kubernetes** (all-in-one).
+- Officially supports **AWS, GCE**; beta for DigitalOcean/OpenStack; alpha for Azure.
+- Ideal for **cloud-based production clusters**.
+
+---
 ## Kubernetes Architecture
 
 ![[Kubernetes API Architecture3.png]]
@@ -198,6 +285,138 @@ flowchart TD
 - **Kubernetes automates scheduling, networking, and scaling** for containers.
 - Static pods (API Server, etcd, scheduler)
 
+### Contro-Plane Components
+
+#### **API Server**
+
+- Central control plane component coordinating all administrative tasks.
+- Handles **RESTful calls** from users, admins, operators, and external agents.
+- Reads current cluster state from **etcd** and persists changes back to etcd.
+- Acts as the **only component** communicating directly with etcd.
+- Supports **horizontal scaling** and **custom secondary API Servers** for routing REST calls.
+
+---
+
+#### **Scheduler (kube-scheduler)**
+
+- Assigns **pods/workloads** to nodes based on cluster state and workload requirements.
+- Uses info from API Server & etcd to filter and prioritize nodes.
+- Considers **constraints** (e.g., node labels), **QoS**, **affinity/anti-affinity**, **taints/tolerations**.
+- Highly **configurable** with policies, plugins, profiles.
+- Supports **custom schedulers** (selectable via object config).
+- Essential for multi-node clusters; simpler role in single-node clusters.
+
+---
+
+#### **Controller Managers**
+
+- Run continuous **watch-loops** to reconcile desired vs. current cluster state.
+- **kube-controller-manager** handles node availability, pod counts, endpoints, service accounts, API tokens.
+- **cloud-controller-manager** manages cloud infrastructure (nodes, storage, load balancing, routing).
+- Automatically triggers corrective actions to match desired state.
+
+---
+
+#### **Key-Value Data Store (etcd)**
+
+![[4 Kubernetes Fundamentals external etcd tipology.png]]
+- Distributed, strongly consistent **key-value store** for persisting cluster state.
+- Only **API Server** communicates with etcd.
+- Uses **append-only writes**; periodically **compacts** obsolete data.
+- Supports **snapshot backup & restore** via `etcdctl`.
+- Deployment topologies:
+    - **Stacked etcd**: etcd runs on same node as control plane components.
+    - **External etcd**: etcd runs on dedicated nodes, isolated from control plane.
+- Both topologies support **high availability (HA)** using the **Raft Consensus Algorithm**.
+- Written in **Go**; also stores configs like **ConfigMaps, Secrets, subnets**.
+
+---
+### Worker Nodes Components
+
+#### **Container Runtime**
+
+- Kubernetes needs an external **container runtime** to run containers on each node (control plane & workers).
+- Supported runtimes:
+    - **CRI-O**: lightweight, OCI-compliant, supports Quay/Docker Hub registries.
+    - **containerd**: simple, robust, used by Docker internally.
+    - **Docker Engine**: uses containerd; deprecated direct integration.
+    - **Mirantis Container Runtime**: previously Docker Enterprise.
+
+---
+
+#### **Node Agent – kubelet**
+
+- **Agent on every node** (control plane & workers).
+- Communicates with the API Server to receive Pod specs.
+- Talks to the container runtime to **create/manage containers**.
+- Monitors **Pod health & resource usage**.
+- Uses **Container Runtime Interface (CRI)** for runtime interaction, supporting interchangeable runtimes via **CRI shims**.
+
+---
+
+#### **CRI Shims**
+
+![[4 Kubernetes Fundamentals cri containerd.png]]
+![[4 Kubernetes Fundamentals crio.png]]
+![[4 Kubernetes Fundamentals dockershim to cri-dockerd.png]]
+- Act as **adapters** between kubelet and different container runtimes.
+- Examples:
+    - **cri-containerd**: connects kubelet with containerd.
+    - **CRI-O**: connects kubelet with any OCI runtime (e.g., runC).
+    - **dockershim (deprecated in v1.24)** → replaced by **cri-dockerd** for Docker Engine support.
+
+---
+
+#### **Network Agent – kube-proxy**
+
+- Runs on each node (control plane & workers).
+- Manages **networking rules** and **traffic forwarding** for Pods.
+- Handles TCP, UDP, SCTP traffic using **iptables** (Linux firewall utility).
+- Supports **load balancing** across Pod backends via Service objects.
+
+---
+
+#### **Add-ons**
+
+Optional features implemented via 3rd-party plugins/services:
+
+- **DNS**: internal DNS records for cluster objects.
+- **Dashboard**: web-based cluster management UI.
+- **Monitoring**: collects metrics and stores centrally.
+- **Logging**: gathers logs to a central log store.
+- **Device Plugins**: advertises hardware (GPU, FPGA, NIC) to Pods.
+
+---
+
+### Networking Challenges
+
+### **1. Container-to-Container Communication (within a Pod)**
+
+- Each container runs in an **isolated network namespace** (via kernel features like namespaces in Linux).
+- Kubernetes uses a **Pause container** to create a **shared network namespace** for all containers in a Pod.
+- Containers in the same Pod can communicate via **localhost (127.0.0.1)**.
+
+---
+
+### **2. Pod-to-Pod Communication (across nodes)**
+
+![[4 Kubernetes Fundamentals CNI Core plugins.png]]
+
+- Pods must communicate **across nodes without NAT**—a **core Kubernetes networking requirement**.
+- Kubernetes uses an **"IP-per-Pod"** model: each Pod gets a unique IP, like a VM with its own NIC.
+- **Container Network Interface (CNI)** plugins configure networking for Pods and integrate with the container runtime to assign IPs.
+    - Examples: **Flannel, Weave, Calico, Cilium**.
+- Containers within a Pod share the Pod’s IP and coordinate port usage internally.
+
+---
+
+### **3. External-to-Pod Communication**
+
+- External access to Pods is managed by **Kubernetes Services**.
+- Services define **network routing rules** (stored in **iptables**) and exposed via **kube-proxy**.
+- Applications are exposed externally via a **virtual IP + dedicated port** configured by Services.
+
+---
 ## Cluster Info
 
 - `kubectl cluster-info` - view information about the cluster

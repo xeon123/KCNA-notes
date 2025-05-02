@@ -10,7 +10,7 @@ Qual é o foco da Arquitetura Nativa da Nuvem? :: Melhora a disponibilidade, ger
 
 Quais são os benefícios da Arquitetura Nativa da Nuvem? :: Permite sistemas fracamente acoplados, resilientes, gerenciáveis e observáveis com automação robusta. #flashcard #nativodanuvem
 
-No Kubernetes, qual framework sem servidor se destaca por velocidade e produtividade do desenvolvedor? :: Fission #flashcard #kubernetes #semservidor
+No Kubernetes, qual framework serverless se destaca por velocidade e produtividade do desenvolvedor? :: Fission #flashcard #kubernetes #semservidor
 
 No Kubernetes, qual componente substituiu os ReplicationControllers? :: Deployments #flashcard #kubernetes
 
@@ -152,7 +152,7 @@ Qual é a diferença entre CI, CDelivery e CDeployment? :: CI: commits/testes fr
 
 O que significa "Seguro por Padrão"? :: Sistemas projetados com segurança desde o início (por exemplo, Zero Trust, privilégio mínimo). #flashcard #nativodanuvem #segurança
 
-Como a Nuvem Nativa otimiza velocidade, eficiência e custo? :: Usa autoescalonamento, sem servidor e design proativo para cargas dinâmicas. #flashcard #nativodanuvem #gerenciamentodecustos
+Como a Nuvem Nativa otimiza velocidade, eficiência e custo? :: Usa autoescalonamento, serverless e design proativo para cargas dinâmicas. #flashcard #nativodanuvem #gerenciamentodecustos
 
 O que é descoberta de serviços na Nuvem Nativa? :: Automatiza a detecção de serviços com ferramentas como o DNS do Kubernetes. #flashcard #nativodanuvem #rede
 
@@ -174,17 +174,17 @@ Quais são as ferramentas de autoescalonamento do Kubernetes? :: Cluster Autosca
 
 Qual é uma consideração chave para o autoescalonamento? :: Testes garantem desempenho; escalonamento horizontal aumenta a complexidade de compartilhamento de dados. #flashcard #nativodanuvem #autoescalonamento
 
-O que é Computação Sem Servidor? :: Provedores gerenciam servidores; o código é executado em resposta a eventos, com autoescalonamento. #flashcard #nativodanuvem #semservidor
+O que é Computação serverless? :: Provedores gerenciam servidores; o código é executado em resposta a eventos, com autoescalonamento. #flashcard #nativodanuvem #semservidor
 
-Quais são as características principais do Sem Servidor? :: Orientado a eventos, autoescalonamento (até zero), infraestrutura abstraída. #flashcard #nativodanuvem #semservidor
+Quais são as características principais do serverless? :: Orientado a eventos, autoescalonamento (até zero), infraestrutura abstraída. #flashcard #nativodanuvem #semservidor
 
-O que afeta os custos no Sem Servidor? :: Execução de código (execuções/duração) e autoescalonamento (recursos usados). #flashcard #nativodanuvem #semservidor #gerenciamentodecustos
+O que afeta os custos no serverless? :: Execução de código (execuções/duração) e autoescalonamento (recursos usados). #flashcard #nativodanuvem #semservidor #gerenciamentodecustos
 
 O que é AWS Lambda? :: Plataforma FaaS que executa código em resposta a eventos com autoescalonamento. #flashcard #nativodanuvem #semservidor
 
-Qual é um desafio no Sem Servidor? :: Dependência de fornecedor e latência de inicialização a frio após inatividade. #flashcard #nativodanuvem #semservidor
+Qual é um desafio no serverless? :: Dependência de fornecedor e latência de inicialização a frio após inatividade. #flashcard #nativodanuvem #semservidor
 
-Quais são as opções de Sem Servidor de código aberto para o Kubernetes? :: Knative e OpenFaaS #flashcard #kubernetes #semservidor
+Quais são as opções de serverless de código aberto para o Kubernetes? :: Knative e OpenFaaS #flashcard #kubernetes #semservidor
 
 O que é a CNCF? :: Organização neutra em relação a fornecedores sob a Linux Foundation, hospedando projetos nativos da nuvem. #flashcard #cncf
 
