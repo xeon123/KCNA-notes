@@ -166,19 +166,31 @@ curl --location 'http://localhost:8001/api/v1/nodes' --header 'Accept: applicati
 
 ### Understanding Kubernetes Access
 
-![[Kubernetes Deep Dive config view.png]]
+![[5 Kubernetes Deep Dive Controlling Access API.png]]
 
-- Access to a Kubernetes cluster is typically managed via a **kubeconfig** file, which specifies authentication details.
-- The `kubectl config view` command shows the current configuration, including cluster details, users, and certificates.
-- `context` entry references a single cluster and user also named **default**.
-- when the cluster was created, a CA was set up. There is an entry for the CA in base64
-- `cluster` entry has a reference to the API server and port.
-- A **Certificate Authority (CA)** ensures secure communication with the API server, preventing man-in-the-middle attacks.
-- kubeconfig file reference the public key of the CA.
-- Open Policy Agent (OPA) is a policy engine that allows you to enforce fine-grained, context-aware policies in Kubernetes and other systems.
-  - It helps with admission control and authorization by making API calls to decide whether a user should be permitted access based on their access requirements.
+#### ✅ **Kubernetes user types:**
 
-#### Authentication mechanisms
+1. **Normal Users** → managed **outside** the cluster (e.g., via certificates, password files, Google accounts).
+2. **Service Accounts** → managed **inside** the cluster, used by in-cluster processes to interact with the API server.
+    - Tied to a **specific Namespace**
+    - Credentials are mounted into Pods as **Secrets**
+    - Created automatically or manually
+- The authentication sequence is: Authentication -> Authorization -> Admission Control
+
+#### ✅ **Kubernetes authentication methods:**
+
+- Supports **Normal Users, Service Accounts, anonymous requests**, and **user impersonation** (for admin troubleshooting).
+- Authentication modules:
+    1. **X.509 Client Certificates** – validated by certificate authorities passed to API server.
+    2. **Static Token File** – predefined bearer tokens in a file (requires API server restart to change).
+    3. **Bootstrap Tokens** – used for cluster bootstrapping.
+    4. **Service Account Tokens** – signed tokens automatically attached to Pods for API server communication.
+    5. **OpenID Connect Tokens** – integrates external OAuth2 providers (e.g., Google, Microsoft Entra ID).
+    6. **Webhook Token Authentication** – delegates token verification to a remote service.
+    7. **Authenticating Proxy** – enables custom authentication logic.
+- To ensure successful user authentication, we should enable at least two methods: the service account tokens authenticator and one of the user authenticators.
+
+##### Authentication mechanisms
 
 Kubernetes supports several ways to authenticate users accessing the API server:
 
@@ -201,7 +213,8 @@ Kubernetes supports several ways to authenticate users accessing the API server:
     - OIDC (OpenID Connect)
     - Webhook token authentication
 
-##### Example: kube-apiserver Configuration (Partial)
+
+###### Example: kube-apiserver Configuration (Partial)
 
 ```bash
 ExecStart=/usr/local/bin/kube-apiserver \
@@ -241,7 +254,7 @@ spec:
 curl -v -k https://master-node-ip:6443/api/v1/pods -u "user1:password123"
 ```
 
-##### Kubeconfig
+###### kubeconfig
 
 - The kubeconfig file is how kubectl (or any Kubernetes client) knows how to connect to a Kubernetes cluster and authenticate the user. Think of it as a configuration file that tells your CLI:
   - Which cluster to connect to (address of the API server)
@@ -249,7 +262,20 @@ curl -v -k https://master-node-ip:6443/api/v1/pods -u "user1:password123"
   - What namespace to use by default
   - Which context to operate under (a combo of user + cluster + namespace)
 
-###### Anatomy of kubeconfig (~/.kube/config)
+![[Kubernetes Deep Dive config view.png]]
+
+- Access to a Kubernetes cluster is typically managed via a **kubeconfig** file, which specifies authentication details.
+- The **kubeconfig only tells `kubectl` how to connect and authenticate to the cluster; it doesn't create users or permissions in Kubernetes itself**.
+- The `kubectl config view` command shows the current configuration, including cluster details, users, and certificates.
+- `context` entry references a single cluster and user also named **default**.
+- When the cluster was created, a CA was set up. There is an entry for the CA in base64
+- `cluster` entry has a reference to the API server and port.
+- A **Certificate Authority (CA)** ensures secure communication with the API server, preventing man-in-the-middle attacks.
+- `kubeconfig` file reference the public key of the CA.
+- Open Policy Agent (OPA) is a policy engine that allows you to enforce fine-grained, context-aware policies in Kubernetes and other systems.
+  - It helps with admission control and authorization by making API calls to decide whether a user should be permitted access based on their access requirements.
+
+**Anatomy of kubeconfig (~/.kube/config)**
 
 ```yaml
 apiVersion: v1
@@ -280,6 +306,383 @@ current-context: my-context
     - name, a client certificate, and key for authentication
   - Contexts: Link a specific user to a specific cluster. Example: Admin@Production uses the admin user to access the Prod cluster.
     - Each context links a user to a cluster. e.g., my-user@my-cluster
+
+#### ✅ **Kubernetes authorization methods:**
+
+- After authentication, users can send API requests to Kubernetes.
+- Kubernetes authorizes these requests using different authorization modules.
+- Authorization evaluates attributes like:
+    - User
+    - Group
+    - Resource
+    - Namespace
+    - API group
+- These attributes are checked against policies to allow or deny the request.
+- Kubernetes supports multiple authorization modules (authorizers) per cluster.
+- Authorizers are checked in sequence.
+- The first authorizer to allow or deny the request returns the decision immediately.
+
+##### Authorization modes:
+
+###### ✅ **Node Authorization**
+
+- Special-purpose authorization for **kubelet API requests**.
+- Authorizes:
+    - **Read**: services, endpoints, nodes.
+    - **Write**: nodes, pods, events.
+- Enabled automatically for kubelets.
+
+###### ✅ **Attribute-Based Access Control (ABAC)**
+
+- Grants access based on **policies + attributes** (user, namespace, resource, etc.).
+- Example: user `bob` can only **read pods** in namespace `lfs158`.
+```yaml
+{
+  "apiVersion": "abac.authorization.kubernetes.io/v1beta1",
+  "kind": "Policy",
+  "spec": {
+    "user": "bob",
+    "namespace": "lfs158",
+    "resource": "pods",
+    "readonly": true
+  }
+}
+```
+- Enabled by starting API server with:
+    - `--authorization-mode=ABAC`
+    - `--authorization-policy-file=PolicyFile.json`
+
+###### ✅ **Webhook Authorization**
+
+- Delegates authorization to an **external service** via HTTP.
+- External service returns **true (allow)** or **false (deny)**.
+- Enabled by starting API server with:
+    - `--authorization-webhook-config-file=SOME_FILENAME`
+
+###### ✅ **Role-Based Access Control (RBAC)**
+
+- Grants access based on **roles assigned to subjects** (users, service accounts).
+- Roles define **allowed verbs (get, list, create, etc.)** for resources.
+- Two types of roles:
+    - **Role**: namespace-scoped.
+    - **ClusterRole**: cluster-wide scope.
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: lfs158
+  name: pod-reader
+rules:
+- apiGroups: [""] # "" indicates the core API group**  
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+```
+- `pod-reader` allows `get`, `watch`, `list` pods in namespace `lfs158`.
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-admin
+rules:
+- apiGroups:
+  - '*' # All API groups
+  resources:
+  - '*' # All resources
+  verbs:
+  - '*' # All operations
+- nonResourceURLs:
+  - '*' # All non resource URLs, such as "/healthz"
+  verbs:
+  - '*' # All operations
+```
+- ClusterRole `cluster-admin` allows **all actions on all resources**.
+- When role is created, we can bind it to users with `RoleBinding` object.
+
+- Roles are bound to users via:
+    - **RoleBinding**: binds Role (or ClusterRole) to user **within a namespace**.
+    - **ClusterRoleBinding**: binds ClusterRole to user **cluster-wide**.
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-read-access
+  namespace: lfs158
+subjects:
+- kind: User
+  name: bob
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+```
+- RoleBinding binds `bob` to `pod-reader` in namespace `lfs158`.
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: Group
+  name: system:admins
+```
+- The manifest defines a bind between the **cluster-admin** ClusterRole and all users of the group **system:admins**.
+- To enable the RBAC mode, we start the API server with the `--authorization-mode=RBAC` option, allowing us to dynamically configure policies. For more details, please review the [RBAC mode](https://kubernetes.io/docs/reference/access-authn-authz/rbac/).
+
+#### Authentication and Authorization in Minikube
+
+-  View the content of the **kubectl** client's configuration manifest, observing the only context **minikube** and the only user **minikube**, created by default (the output has been redacted for readability):
+```yaml
+$ kubectl config view
+
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /home/student/.minikube/ca.crt
+    server: ht‌tps://192.168.99.100:8443
+  name: minikube
+contexts:
+- context:
+    cluster: minikube
+    namespace: default
+    user: minikube
+  name: minikube
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: minikube
+  user:
+    client-certificate: /home/student/.minikube/profiles/minikube/client.crt
+    client-key: /home/student/.minikube/profiles/minikube/client.key
+```
+
+Create **lfs158** namespace:
+
+```bash
+$ kubectl create namespace lfs158
+
+namespace/lfs158 created
+```
+
+Create the **rbac** directory and **cd** into it:
+
+```yaml
+$ mkdir rbac
+$ cd rbac/
+```
+
+Create a new user **bob** on your workstation, and set **bob**'s password as well (the system will prompt you to enter the password twice) :
+
+```yaml
+~/rbac$ sudo useradd -s /bin/bash bob
+~/rbac$ sudo passwd bob
+```
+
+Create a **private key** for the new user **bob** with the **openssl** tool, then create a **certificate signing request** for **bob** with the same **openssl** tool:
+
+```yaml
+~/rbac$ openssl genrsa -out bob.key 2048
+
+Generating RSA private key, 2048 bit long modulus (2 primes)
+.................................................+++++
+.........................+++++
+e is 65537 (0x010001)
+
+~/rbac$ openssl req -new -key bob.key \
+  -out bob.csr -subj "/CN=bob/O=learner"
+```
+
+Create a YAML definition manifest for a **certificate signing request** object, and save it with a blank value for the **request** field: 
+
+```yaml
+~/rbac$ vim signing-request.yaml
+
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: bob-csr
+spec:
+  groups:
+  - system:authenticated
+  request: <assign encoded value from next cat command>
+  signerName: kubernetes.io/kube-apiserver-client  
+  usages:
+  - digital signature
+  - key encipherment
+  - client auth
+```
+
+View the **certificate**, encode it in **base64**, and assign it to the **request** field in the **signing-request.yaml** file:
+
+```yaml
+~/rbac$ cat bob.csr | base64 | tr -d '\n','%'
+LS0tLS1CRUd...1QtLS0tLQo=
+
+~/rbac$ vim signing-request.yaml
+
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: bob-csr
+spec:
+  groups:
+  - system:authenticated
+  request: LS0tLS1CRUd...1QtLS0tLQo=
+  signerName: kubernetes.io/kube-apiserver-client
+  usages:
+  - digital signature
+  - key encipherment
+  - client auth
+```
+
+
+Create the **certificate signing request** object, then list the certificate signing request objects. It shows a **pending** state:
+
+```yaml
+~/rbac$ kubectl create -f signing-request.yaml
+
+certificatesigningrequest.certificates.k8s.io/bob-csr created
+
+~/rbac$ kubectl get csr
+
+NAME      AGE   SIGNERNAME                            REQUESTOR       CONDITION
+bob-csr   12s   kubernetes.io/kube-apiserver-client   minikube-user   Pending
+```
+
+Approve the **certificate signing request** object, then list the certificate signing request objects again. It shows both **approved** and **issued** states:
+
+```yaml
+~/rbac$ kubectl certificate approve bob-csr
+
+certificatesigningrequest.certificates.k8s.io/bob-csr approved
+
+~/rbac$ kubectl get csr
+
+NAME      AGE   SIGNERNAME                            REQUESTOR       CONDITION
+bob-csr   57s   kubernetes.io/kube-apiserver-client   minikube-user   Approved,Issued
+```
+
+Extract the approved certificate from the certificate signing request, decode it with base64 and save it as a certificate file. Then view the certificate in the newly created certificate file:
+
+```yaml
+~/rbac$ kubectl get csr bob-csr \
+  -o jsonpath='{.status.certificate}' | \
+  base64 -d > bob.crt
+
+~/rbac$ cat bob.crt
+
+-----BEGIN CERTIFICATE-----
+MIIDGzCCA...
+...
+...NOZRRZBVunTjK7A==
+-----END CERTIFICATE-----
+```
+
+Configure the kubectl client's configuration manifest with user bob's credentials by assigning his key and certificate: 
+
+```yaml
+~/rbac$ kubectl config set-credentials bob \
+  --client-certificate=bob.crt --client-key=bob.key
+```
+
+User "bob" set.
+
+Create a new context entry in the kubectl client's configuration manifest for user bob, associated with the lfs158 namespace in the minikube cluster:
+
+```yaml
+~/rbac$ kubectl config set-context bob-context \
+  --cluster=minikube --namespace=lfs158 --user=bob
+```
+
+Context "bob-context" created.
+
+View the contents of the kubectl client's configuration manifest again, observing the new context entry bob-context, and the new user entry bob (the output is redacted for readability):
+
+```yaml
+~/rbac$ kubectl config view
+
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /home/student/.minikube/ca.crt
+    ...
+    server: ht‌tps://192.168.99.100:8443
+  name: minikube
+contexts:
+- context:
+    cluster: minikube
+    ...
+    user: minikube
+  name: minikube
+- context:
+    cluster: minikube
+    namespace: lfs158
+    user: bob
+  name: bob-context
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: minikube
+  user:
+    client-certificate: /home/student/.minikube/profiles/minikube/client.crt
+    client-key: /home/student/.minikube/profiles/minikube/client.key
+- name: bob
+  user:
+    client-certificate: /home/student/rbac/bob.crt
+    client-key: /home/student/rbac/bob.key
+```
+
+While in the default **minikube context**, create a new **deployment** in the **lfs158** namespace:
+
+```yaml
+~/rbac$ kubectl -n lfs158 create deployment nginx --image=nginx:alpine
+
+deployment.apps/nginx created
+```
+
+From the new **context bob-context** try to list pods. The attempt fails because user **bob** has no permissions configured for the **bob-context**:
+
+```yaml
+~/rbac$ kubectl --context=bob-context get pods
+
+Error from server (Forbidden): pods is forbidden: User "bob" cannot list resource "pods" in API group "" in the namespace "lfs158"
+```
+
+The following steps will assign a limited set of permissions to user **bob** in the **bob-context**. 
+
+Create a YAML configuration manifest for a **pod-reader** Role object, which allows only **get**, **watch**, **list** actions/verbs in the **lfs158** namespace against **pod** resources. Then create the **role** object and list it from the default **minikube context**, but from the **lfs158** namespace:
+
+```yaml
+~/rbac$ vim role.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-reader
+  namespace: lfs158
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+
+~/rbac$ kubectl create -f role.yaml
+
+role.rbac.authorization.k8s.io/pod-reader created
+
+~/rbac$ kubectl -n lfs158 get roles
+
+NAME         CREATED AT
+pod-reader   2022-04-11T03:47:45Z
+```
 
 #### Authorization mechanisms
 
@@ -730,6 +1133,40 @@ Even when Kubernetes authenticates users via external certificates, the **kubeco
   - `CN=system:admin` references to the username.
 - In kubernetes, we don't create users or groups. We have certificates that relates users to the groups, and then we permission those users and groups with RBAC.
 - ![[Kubernetes Deep Dive rbac certificates.png]]
+
+#### Admission Controller
+
+✅ **Admission controllers** in Kubernetes enforce policies **after authentication and authorization**, but **before objects are persisted** in etcd.
+- They control actions like **restricting privileged containers**, **enforcing resource quotas**, and **setting default storage classes**.
+- Admission controllers can be:
+    - **Mutating** → modify incoming requests
+    - **Validating** → reject or allow requests
+    - (some are both)
+
+👉 To use them, the API server must be started with `--enable-admission-plugins` listing the desired controllers.
+
+##### 🔐 Built-in Admission Controllers
+
+Below is a list of commonly used admission controllers in Kubernetes:
+
+- **NamespaceLifecycle**: Ensures that operations are not performed on namespaces that are undergoing termination.
+- **LimitRanger**: Enforces constraints on resource usage per namespace, such as CPU and memory limits.
+- **ServiceAccount**: Automates the assignment of service accounts to pods.
+- **DefaultStorageClass**: Assigns a default storage class to PersistentVolumeClaims that do not specify one.
+- **DefaultTolerationSeconds**: Adds default tolerations to pods, allowing them to tolerate node taints for a specified duration.
+- **MutatingAdmissionWebhook**: Invokes external webhooks to modify (mutate) incoming requests before they are persisted.
+- **ValidatingAdmissionWebhook**: Invokes external webhooks to validate incoming requests without modifying them.
+- **Priority**: Assigns priority classes to pods, influencing the order in which pods are scheduled and evicted.
+- **ResourceQuota**: Enforces resource quotas defined per namespace, preventing resource overconsumption.
+- **PodSecurity**: Enforces Pod Security Standards at the namespace level, replacing the deprecated PodSecurityPolicy.
+
+These controllers are executed in a specific order: mutating admission controllers run first, followed by validating admission controllers. If any controller rejects a request, the entire request is denied immediately.
+
+##### 🧩 Dynamic Admission Control
+
+In addition to the built-in controllers, Kubernetes supports dynamic admission control through external webhooks:
+- **MutatingAdmissionWebhook**: Allows custom logic to modify requests before they are persisted.
+- **ValidatingAdmissionWebhook**: Allows custom logic to validate requests without modifying them.
 
 #### API Groups
 

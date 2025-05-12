@@ -372,7 +372,26 @@ flowchart TD
 - **Kubernetes automates scheduling, networking, and scaling** for containers.
 - Static pods (API Server, etcd, scheduler)
 
-### Contro-Plane Components
+### Nodes
+
+**Nodes in Kubernetes** represent the physical or virtual machines in the cluster, uniquely identified for **resource accounting and workload management**.
+
+- Each node runs:
+    - **kubelet** → manages containers and reports status to API server
+    - **kube-proxy** → handles network routing
+    - **container runtime** → runs the containers (e.g., Docker, containerd)
+
+### 🏗️ **Node types:**
+
+1. **Control Plane Node** → runs **control plane components**: API Server, Scheduler, Controller Manager, etcd (plus kubelet, kube-proxy, runtime, networking add-ons).
+2. **Worker Node** → runs **workloads** (containers, pods) with kubelet, kube-proxy, runtime, and add-ons.
+
+👉 Clusters can have:
+
+- Multiple control plane nodes (for high availability)
+- Multiple worker nodes (for resource redundancy)
+- Or a **single-node cluster** (control plane + workloads together, like in Minikube)
+### Control-Plane Components
 
 #### **API Server**
 
@@ -727,9 +746,10 @@ kubectl run -it --rm --image=curlimages/curl --restart=Never curl -- http://10.4
 
 ### Default kubernetes namespaces
 
-- `default`: automatically created when the cluster is setup.
-- `kube-system`: created at cluster setup and contains a set of pods and services for internal purpose.
-- `kube-public`: available to all users.
+- `default`: user-created objects (used if no namespace is specified).
+- `kube-system`: created at cluster setup and contains a set of pods and services for internal purpose. System objects (control plane components).
+- `kube-public`: public, readable by anyone (for sharing non-sensitive cluster info).
+- `kube-node-lease`: holds node lease objects for node heartbeats (improves scalability).
 
 ---
 
@@ -807,6 +827,7 @@ ReplicaSets ensure high availability and load balancing by maintaining a specifi
 
 - Helps to run multiple instances of a single pod.
 - Create multiple pods to share the load across them.
+- Deprecated
 
 ### ReplicationController vs. ReplicaSet
 
@@ -814,36 +835,6 @@ ReplicaSets ensure high availability and load balancing by maintaining a specifi
 - **ReplicaSet**: Newer and preferred, with additional capabilities like selector-based pod adoption.
 
 ### ReplicaSet Practical Usage
-
-#### Creating a ReplicationController
-
-```yaml
-apiVersion: v1
-kind: ReplicationController
-metadata:
-  name: myapp-rc
-  labels:
-    app: myapp
-    type: front-end
-spec:
-  replicas: 3
-  template:
-    metadata:
-      name: myapp-pod
-      labels:
-        app: myapp
-        type: front-end
-    spec:
-      containers:
-        - name: nginx-container
-          image: nginx
-```
-
-- Defined in a YAML file (`rc-definition.yaml`).
-- Uses `apiVersion: v1` and `kind: ReplicationController`.
-- Specifies `replicas`, a `template` for pod definition, and a container (e.g., `nginx`).
-- Created using: `kubectl create -f rc-definition.yaml`
-- Check status with: `kubectl get replicationcontroller kubectl get pods`
 
 #### Creating a ReplicaSet
 
@@ -931,6 +922,24 @@ spec:
 
 ---
 
+| **Feature**             | **DaemonSet**                                        | **ReplicaSet**                                | **Deployment**                              |
+| ----------------------- | ---------------------------------------------------- | --------------------------------------------- | ------------------------------------------- |
+| **Purpose**             | Run **one pod on every node** (or selected nodes)    | Ensure a specified **number of pod replicas** | Manage **ReplicaSets + rolling updates**    |
+| **Use case**            | Node-level apps: logs, monitoring, networking agents | Maintain **N identical pods** at all times    | Automate pod updates, rollbacks, scaling    |
+| **Self-healing**        | Recreates pods on new nodes                          | Recreates pods if they crash                  | Recreates pods via ReplicaSet               |
+| **Rolling updates?**    | ❌ (manual redeploy needed for updates)               | ❌ (needs manual replacement of pods)          | ✅ (built-in rolling updates)                |
+| **Manages ReplicaSet?** | ❌                                                    | ✅ (is a ReplicaSet)                           | ✅ (creates & manages ReplicaSets)           |
+| **Scaling**             | One pod per node (scales with nodes)                 | Manually set number of replicas               | Declarative scaling (via spec or `kubectl`) |
+
+### 🔍 **When to use each:**
+
+- ✅ **DaemonSet** → for **node-specific agents** (e.g., log collectors, monitoring daemons).
+- ✅ **ReplicaSet** → if you just want to ensure **X identical pods are always running** (rarely used directly since Deployment uses it under the hood).
+- ✅ **Deployment** → for **most applications**, since it adds **versioning, updates, rollbacks** on top of ReplicaSet.
+
+👉 In practice, **you almost never create ReplicaSets directly**—you use Deployments to manage them automatically.
+
+---
 ## Static Pods
 
 - What happens if there's no Kubernetes control plane?
@@ -1260,12 +1269,32 @@ kubectl delete deployment/nginx
 - **Rolling updates and rollbacks** prevent application downtime.
 - Deployment strategies like **MaxSurge** and **MaxUnavailable** control update behavior.
 
+### Comparison between Deployments, StatefulSets, and ReplicaSets
+
+Here's a comparison between **Deployments**, **StatefulSets**, and **ReplicaSets**, the most commonly used Kubernetes controllers:
+
+| Feature / Aspect       | **Deployment**                             | **StatefulSet**                                                | **ReplicaSet**                           |
+| ---------------------- | ------------------------------------------ | -------------------------------------------------------------- | ---------------------------------------- |
+| **Purpose**            | Manage stateless applications              | Manage stateful applications                                   | Ensure specified number of pods          |
+| **Pod Identity**       | All pods are identical and interchangeable | Each pod has a unique, stable identity                         | All pods are identical                   |
+| **Persistent Storage** | Typically not used with persistent volumes | Supports stable, persistent volumes                            | Does not manage storage                  |
+| **Pod Names**          | Random pod names                           | Predictable and ordered pod names (e.g., `myapp-0`, `myapp-1`) | Random pod names                         |
+| **Ordered Deployment** | No                                         | Yes (create, delete, scale in order)                           | No                                       |
+| **Rolling Updates**    | Yes (native support)                       | Limited (can be done, but with constraints)                    | No (requires manual handling)            |
+| **Used By**            | Web apps, APIs, stateless services         | Databases, queues, stateful apps                               | Typically used internally by Deployments |
+
+### Summary:
+
+- **Deployment**: Best for **stateless** workloads.
+- **StatefulSet**: Best for **stateful** workloads requiring stable network identity and persistent storage.
+- **ReplicaSet**: Underlying mechanism for **Deployments**, rarely used directly unless for custom controllers.
 ## Services
 
 ### Kubernetes Service Types Explained
 
-Kubernetes services expose applications running on pods to the network.
-There are **four primary service types**, plus one additional variant:
+- Services expose applications running on pods to the network.
+- This mechanism is called a Service, and it is the recommended method to expose any containerized application to the Kubernetes network.
+- There are **four primary service types**, plus one additional variant:
 
 #### 1. **ClusterIP (Default)** – Provides an internal IP reachable only within the cluster
 
@@ -1799,10 +1828,10 @@ For more complex environments—such as deploying multi-container pods, setting 
 | -------------------- | ---------------------------------------- | ------------------------------------------ | ----------------------------------------------------- |
 | Purpose              | Quickly run a pod/container (imperative) | Create resource from manifest (imperative) | Create or update resource from manifest (declarative) |
 | Input                | CLI args                                 | YAML/JSON manifest                         | YAML/JSON manifest                                    |
-| Idempotent           | ❌ No                                    | ❌ No                                      | ✅ Yes                                                |
-| Creates new resource | ✅ Yes                                   | ✅ Yes                                     | ✅ Yes                                                |
-| Updates existing     | ❌ No                                    | ❌ No                                      | ✅ Yes                                                |
-| Error if exists      | ✅ Yes (if same pod name)                | ✅ Yes                                     | ❌ No (it updates)                                    |
+| Idempotent           | ❌ No                                     | ❌ No                                       | ✅ Yes                                                 |
+| Creates new resource | ✅ Yes                                    | ✅ Yes                                      | ✅ Yes                                                 |
+| Updates existing     | ❌ No                                     | ❌ No                                       | ✅ Yes                                                 |
+| Error if exists      | ✅ Yes (if same pod name)                 | ✅ Yes                                      | ❌ No (it updates)                                     |
 | Ideal for            | Testing/debugging                        | First-time deployment from manifest        | Full config management & GitOps workflows             |
 
 ---
@@ -1812,6 +1841,73 @@ For more complex environments—such as deploying multi-container pods, setting 
 - ✅ **`kubectl run`**: Great for quick testing.
 - ✅ **`kubectl create`**: Good for one-time creation from files.
 - ✅ **`kubectl apply`**: Best for managing resources over time with YAML files.
+
+### Kubernetes Object Model – Key Points
+
+✅ **Purpose of the object model:**
+
+- Represents **persistent entities** in a Kubernetes cluster, including:
+    - **What apps are running**
+    - **Where they run (nodes)**
+    - **Resource usage**
+    - **Attached policies** (restart, upgrade, access control, etc.)
+
+---
+
+✅ **Object structure:**  
+Every Kubernetes object includes:
+
+1. `apiVersion` – API version used
+2. `kind` – Type of object (e.g., Pod, Deployment)
+3. `metadata` – Identifiers like name, namespace, labels
+4. `spec` – **Desired state** (declared by the user)
+5. `status` – **Actual state** (managed by Kubernetes)
+
+➡️ Kubernetes continuously reconciles the **actual state** to match the **desired state**.
+
+---
+
+✅ **Other object fields:**
+
+- Some objects use `data` or `stringData` fields instead of `spec` (e.g., in Secrets, ConfigMaps).
+
+---
+
+✅ **Examples of Kubernetes objects:**
+
+- **Pods**, **Nodes**, **Namespaces**, **ReplicaSets**, **Deployments**, **DaemonSets**, etc.
+
+```yaml
+apiVersion: apps/v1             # API version
+kind: Deployment                # Object type
+metadata:                       # Metadata (name, labels)
+  name: my-nginx-deployment
+  labels:
+    app: nginx
+spec:                           # Desired state
+  replicas: 3                   # Number of pod replicas
+  selector:                     # How to find matching pods
+    matchLabels:
+      app: nginx
+  template:                     # Template for the pods
+    metadata:
+      labels:
+        app: nginx
+    spec:                       # Pod specification
+      containers:
+      - name: nginx
+        image: nginx:1.25.1
+        ports:
+        - containerPort: 80
+```
+
+---
+
+✅ **How objects are created:**
+
+- You submit the object’s configuration (usually in **YAML**).
+- `kubectl` sends it to the API server as JSON.
+
 
 ## Questions
 
