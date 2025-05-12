@@ -57,18 +57,302 @@ flowchart LR
 2. **Route Matching**: API server determines request type (GET, POST, PUT, DELETE, etc.).
 3. **Authentication**: Verifies identity via API keys or tokens to validate the requests.
 4. **Authorization**: Checks permissions based on RBAC, Webhooks, etc. Are these permissions allowed (relates to the `--authorization-mode api-server` parameter). If the parameter is not set, it will default to `AlwaysAllow` - **allow all requests without any restrictions**.
-5. **Admission Controller**: Applies policies (e.g., resource limits).
-   1. Enforce policies and validate requests before they are accepted by the API server.
-   2. In this case, enforcing a policy that a certain namespace doesn't exceed a given memory threshold is a potential use case for an Admission Controller. This would involve writing a custom admission controller that checks the total memory usage of all pods in a namespace against a predefined limit.
-6. **Validation**: Ensures request data is well-formed.
-7. **Request Handling**: Executes the operation (e.g., persisting data in `etcd`).
-8. **Response Generation & Sending**: Returns HTTP status and response body.
+5. **Admission Controller**: Applies policies to validate user requests (e.g., resource limits).
+   * Enforce policies and validate requests before they are accepted by the API server.
+   * In this case, enforcing a policy that a certain namespace doesn't exceed a given memory threshold is a potential use case for an Admission Controller. This would involve writing a custom admission controller that checks the total memory usage of all pods in a namespace against a predefined limit.
+1. **Validation**: Ensures request data is well-formed.
+2. **Request Handling**: Executes the operation (e.g., persisting data in `etcd`).
+3. **Response Generation & Sending**: Returns HTTP status and response body.
 
 The path of API routing is
 
 1. Authentication: Such as an API key and token
 2. Authorization: Are these parameters allowed
 3. Admission Controller
+
+### Authentication
+
+Kubernetes does not store user objects or usernames internally, but it still supports **authentication** using usernames. There are two types of users:
+
+- **Normal Users**: Managed externally (e.g., via certificates, password files, or OAuth).
+- **Service Accounts**: In-cluster identities for processes, tied to namespaces, with credentials stored in Secrets.
+
+Kubernetes supports **anonymous access**, **user impersonation**, and several **authentication methods**, including:
+
+1. **X.509 Client Certificates** – Verified via CA file.
+2. **Static Token File** – Predefined tokens passed via a file.
+3. **Bootstrap Tokens** – For setting up new clusters.
+4. **Service Account Tokens** – Automatically managed, used by pods.
+5. **OpenID Connect Tokens** – Integrates with external OAuth2 providers.
+6. **Webhook Token Authentication** – Auth offloaded to a remote service.
+7. **Authenticating Proxy** – Adds custom authentication logic.
+
+#### Create new user
+
+Create **lfs158** namespace:
+
+```bash
+$ kubectl create namespace lfs158
+```
+
+Create the **rbac** directory and **cd** into it:
+
+```bash
+$ mkdir rbac
+$ cd rbac/
+```
+
+Create a new user **bob** on your workstation, and set **bob**'s password as well (the system will prompt you to enter the password twice) :
+
+```bash
+~/rbac$ sudo useradd -s /bin/bash bob
+~/rbac$ sudo passwd bob
+```
+
+Create a **private key** for the new user **bob** with the **openssl** tool, then create a **certificate signing request** for **bob** with the same **openssl** tool:
+
+```bash
+~/rbac$ openssl genrsa -out bob.key 2048
+
+Generating RSA private key, 2048 bit long modulus (2 primes)
+.................................................+++++
+.........................+++++
+e is 65537 (0x010001)
+
+~/rbac$ openssl req -new -key bob.key \  
+  -out bob.csr -subj "/CN=bob/O=learner"
+```
+
+Create a YAML definition manifest for a **certificate signing request** object, and save it with a blank value for the **request** field: 
+
+```bash
+~/rbac$ vim signing-request.yaml
+
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: bob-csr
+spec:
+  groups:
+  - system:authenticated
+  request: <assign encoded value from next cat command>
+  signerName: kubernetes.io/kube-apiserver-client  
+  **usages:
+  - digital signature
+  - key encipherment
+  - client auth
+```
+
+View the **certificate**, encode it in **base64**, and assign it to the **request** field in the **signing-request.yaml** file:
+
+```bash
+~/rbac$ cat bob.csr | base64 | tr -d '\n','%'
+LS0tLS1CRUd...1QtLS0tLQo=
+
+~/rbac$ vim signing-request.yaml
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: bob-csr
+spec:
+  groups:
+  - system:authenticated
+  request:** **LS0tLS1CRUd...1QtLS0tLQo=
+  signerName: kubernetes.io/kube-apiserver-client
+  usages:
+  - digital signature
+  - key encipherment
+  - client auth
+```
+
+Create the **certificate signing request** object, then list the certificate signing request objects. It shows a **pending** state:
+
+```bash
+~/rbac$ kubectl create -f signing-request.yaml
+certificatesigningrequest.certificates.k8s.io/bob-csr created
+
+~/rbac$ kubectl get csr
+NAME      AGE   SIGNERNAME                            REQUESTOR       CONDITION
+bob-csr   12s   kubernetes.io/kube-apiserver-client   minikube-user   Pending
+```
+
+Approve the **certificate signing request** object, then list the certificate signing request objects again. It shows both **approved** and **issued** states:
+
+```bash
+~/rbac$ kubectl certificate approve bob-csr
+certificatesigningrequest.certificates.k8s.io/bob-csr approved
+~/rbac$ kubectl get csr
+NAME      AGE   SIGNERNAME                            REQUESTOR       CONDITION
+bob-csr   57s   kubernetes.io/kube-apiserver-client   minikube-user   Approved,Issued
+```
+
+Extract the approved certificate from the certificate signing request, decode it with base64 and save it as a certificate file. Then view the certificate in the newly created certificate file:
+
+```bash
+~/rbac$ kubectl get csr bob-csr \
+  -o jsonpath='{.status.certificate}' | \
+  base64 -d > bob.crt
+
+~/rbac$ cat bob.crt
+-----BEGIN CERTIFICATE-----
+MIIDGzCCA...
+...
+...NOZRRZBVunTjK7A==
+-----END CERTIFICATE-----
+```
+
+Configure the kubectl client's configuration manifest with user bob's credentials by assigning his key and certificate: 
+
+```bash
+~/rbac$ kubectl config set-credentials bob \
+  --client-certificate=bob.crt --client-key=bob.key
+```
+
+User "bob" set.
+
+Create a new context entry in the kubectl client's configuration manifest for user bob, associated with the lfs158 namespace in the minikube cluster:
+
+```bash
+~/rbac$ kubectl config set-context bob-context \
+  --cluster=minikube --namespace=lfs158 --user=bob
+Context "bob-context" created.
+```
+
+View the contents of the kubectl client's configuration manifest again, observing the new context entry bob-context, and the new user entry bob (the output is redacted for readability):
+
+```bash
+~/rbac$ kubectl config view
+
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /home/student/.minikube/ca.crt
+    ...
+    server: ht‌tps://192.168.99.100:8443
+  name: minikube
+contexts:
+- context:
+    cluster: minikube
+    ...
+    user: minikube
+  name: minikube
+- context:
+    cluster: minikube
+    namespace: lfs158
+    user: bob
+  name: bob-context
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: minikube
+  user:
+    client-certificate: /home/student/.minikube/profiles/minikube/client.crt
+    client-key: /home/student/.minikube/profiles/minikube/client.key
+- name: bob
+  user:
+    client-certificate: /home/student/rbac/bob.crt
+    client-key: /home/student/rbac/bob.key
+```
+
+### Authorization
+
+After **successful authentication**, Kubernetes uses **authorization modules** to determine whether API requests are allowed or denied. It evaluates attributes such as:
+
+- **User**
+- **Group**
+- **Resource**
+- **Namespace**
+- **API Group**
+
+Authorization modes: Node, ABAC, Webhooks, and RBAC
+
+#### RBAC Example
+
+While in the default minikube context, create a new deployment in the lfs158 namespace:
+
+```bash
+~/rbac$ kubectl -n lfs158 create deployment nginx --image=nginx:alpine
+deployment.apps/nginx created
+```
+
+From the new context bob-context try to list pods. The attempt fails because user bob has no permissions configured for the bob-context:
+
+```bash
+~/rbac$ kubectl --context=bob-context get pods
+```
+
+Error from server (Forbidden): pods is forbidden: User "bob" cannot list resource "pods" in API group "" in the namespace "lfs158"
+
+The following steps will assign a limited set of permissions to user bob in the bob-context. 
+
+Create a YAML configuration manifest for a pod-reader Role object, which allows only get, watch, list actions/verbs in the lfs158 namespace against pod resources. Then create the role object and list it from the default minikube context, but from the lfs158 namespace:
+
+```bash
+~/rbac$ vim role.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-reader
+  namespace: lfs158
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+
+~/rbac$ kubectl create -f role.yaml
+role.rbac.authorization.k8s.io/pod-reader created
+
+~/rbac$ kubectl -n lfs158 get roles
+NAME         CREATED AT
+pod-reader   2022-04-11T03:47:45Z
+```
+
+Create a YAML configuration manifest for a rolebinding object, which assigns the permissions of the pod-reader Role to user bob. Then create the rolebinding object and list it from the default minikube context, but from the lfs158 namespace:
+
+```bash
+~/rbac$ vim rolebinding.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-read-access
+  namespace: lfs158
+subjects:
+- kind: User
+  name: bob
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+
+~/rbac$ kubectl create -f rolebinding.yaml 
+rolebinding.rbac.authorization.k8s.io/pod-read-access created
+
+~/rbac$ kubectl -n lfs158 get rolebindings
+NAME              ROLE              AGE
+pod-read-access   Role/pod-reader   28s
+```
+
+Now that we have assigned permissions to bob, we can successfully list pods from the new context bob-context.
+
+```bash
+~/rbac$ kubectl --context=bob-context get pods
+
+NAME                     READY   STATUS    RESTARTS   AGE
+nginx-565785f75c-kl25r   1/1     Running   0          7m41s
+```
+
+### Admission Controllers
+
+- Admission controllers in Kubernetes enforce fine-grained access policies after authentication and authorization, handling tasks like resource quota checks and enforcing default settings.
+- To use admission controls, we must start the Kubernetes API server with the **--enable-admission-plugins**, which takes a comma-delimited, ordered list of controller names, such as:
+
+```bash
+--enable-admission-plugins=NamespaceLifecycle,ResourceQuota,PodSecurity,DefaultStorageClass
+```
 
 ## Extending the API with CRDs
 
