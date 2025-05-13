@@ -1406,13 +1406,14 @@ spec:
 
 ### Summary Table
 
-| Service Type     | Internal Only | External Access     | Use Case                              |
-| ---------------- | ------------- | ------------------- | ------------------------------------- |
-| **ClusterIP**    | ✅ Yes        | ❌ No               | Internal communication                |
-| **NodePort**     | ✅ Yes        | ✅ Yes (Node IP)    | Access from outside the cluster       |
-| **LoadBalancer** | ✅ Yes        | ✅ Yes (Cloud LB)   | External access in cloud environments |
-| **ExternalName** | ❌ No         | ✅ Yes (DNS Alias)  | External service aliasing             |
-| **Headless**     | ✅ Yes        | ❌ No (Direct Pods) | Stateful apps & service discovery     |
+| Service Type     | Internal Only | External Access    | Use Case                                                                             |
+| ---------------- | ------------- | ------------------ | ------------------------------------------------------------------------------------ |
+| **ClusterIP**    | ✅ Yes         | ❌ No               | Internal communication                                                               |
+| **NodePort**     | ✅ Yes         | ✅ Yes (Node IP)    | Access from outside the cluster                                                      |
+| **LoadBalancer** | ✅ Yes         | ✅ Yes (Cloud LB)   | External access in cloud environments                                                |
+| **ExternalName** | ❌ No          | ✅ Yes (DNS Alias)  | External service aliasing                                                            |
+| **Headless**     | ✅ Yes         | ❌ No (Direct Pods) | Stateful apps & service discovery. This is not a new service. It is a configuration. |
+|                  |               |                    |                                                                                      |
 
 ## Kubernetes Jobs
 
