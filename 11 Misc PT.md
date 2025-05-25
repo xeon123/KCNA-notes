@@ -1,4 +1,4 @@
-### 1. **Conceitos Fundamentais do Kubernetes**
+### 2. **Conceitos Fundamentais do Kubernetes**
 
 - **Pergunta**: Qual componente foi introduzido especificamente para substituir os ReplicationControllers?
     - **Resposta**: Deployments
@@ -7,17 +7,17 @@
 - **Pergunta**: Qual componente faz parte da infraestrutura do nó em vez do plano de controle?
     - **Resposta**: O kube-proxy roda em cada nó no cluster e é responsável por manter regras de rede para a comunicação de Pods, garantindo o balanceamento de carga adequado entre os pods. Ele opera no nível do nó e não interage diretamente com o plano de controle em termos de agendamento ou gestao de estado.
 - **Pergunta**: Em um Pod, qual namespace Linux os containers geralmente compartilham?
-    - **Resposta**: Os containers em um Pod geralmente compartilham o mesmo namespace de rede, o que permite que eles se comuniquem uns com os outros usando localhost ou o endereço IP do pod. Essa partilha do namespace de rede permite que os containers trabalhem juntos de forma integrada e fornece um modelo de rede simplificado.
+    - **Resposta**: Os containers em um Pod geralmente compartilham network namespace, o que permite que eles se comuniquem uns com os outros usando localhost ou o endereço IP do pod.
 - **Pergunta**: Qual é a relação entre Deployments e ReplicaSets?
     - **Resposta**: Quando se cria um Deployment, ele automaticamente cria um ReplicaSet para gerir o número desejado de réplicas de pods. O ReplicaSet garante que o número especifico de pods esteja em execução e disponível, enquanto o Deployment gerencia a implementação de novas versões da aplicação.
 - **Pergunta**: Como as especificações de container em Deployments e StatefulSets são semelhantes?
-    - **Resposta**: Tanto Deployments quanto StatefulSets usam a mesma especificação de container dentro de seus modelos de pod. A principal diferença entre esses dois recursos está em como eles gerem o ciclo de vida e a ordenação dos pods, mas a especificação de container dentro do modelo de pod permanece consistente para todas as réplicas em ambos os casos.
+    - **Resposta**: Tanto Deployments quanto StatefulSets usam a mesma especificação de container dentro de seus modelos de pod. A principal diferença dos recursos é está em como eles gerem o ciclo de vida e a ordenação dos pods, mas a especificação de container dentro do modelo de pod permanece consistente para todas as réplicas em ambos os casos.
 
 ---
 
 ### 2. **Serviços e Rede**
 
-- **Pergunta**: Qual componente serve como a solução padrão de DNS DNS para Service Discoverys e resolução de nomes dentro do cluster?
+- **Pergunta**: Qual componente serve como a solução padrão de DNS para Service Discovery?
     - **Resposta**: CoreDNS
 - **Pergunta**: Quais dois tipos de recursos são usados para expor aplicações ao tráfego externo, incluindo opções como ClusterIP, NodePort e LoadBalancer?
     - **Resposta**: Um Serviço fornece um endereço IP estável e um nome DNS para acessar uma aplicação, enquanto um recurso Ingress atua como um ponto de entrada para requisições HTTP, permitindo definir regras de roteamento e terminação SSL.
@@ -37,7 +37,39 @@
     - **Resposta**: Envvars e DNS são os modos primários de Service Discovery dentro de um cluster Kubernetes. Quando um pod é criado, o Kubernetes configura automaticamente variáveis de ambiente para o container do pod que apontam para outros serviços rodando no mesmo namespace. Além disso, o Kubernetes fornece um serviço DNS embedded que permite que os pods descubram e se comuniquem uns com os outros usando nomes DNS.
 - **Pergunta**: Qual afirmação é verdadeira sobre o Ingress no Kubernetes em relação ao roteamento de tráfego?
     - **Resposta**: O Ingress no Kubernetes fornece uma maneira de rotear tráfego HTTP e HTTPS externo para serviços dentro do cluster. Ele atua como um ponto de entrada para requisições recebidas e pode ser configurado para direcionar o tráfego com base em várias regras, incluindo caminhos de URL, hostnames e mais.
+    - Ingress -> service -> proxy -> pod
+* **Pergunta:** Poque é que o tráfego passa primeiro pelo service?
+	* **Resposta**: O tráfego nao funciona de forma sequencial entre o service e o pod. O ingress direciona o tráfego para o service, e o proxy faz routing do tráfego transparentemente para o pod.
 
+```text
+[External Client]
+      ↓
+[Ingress Controller Pod]
+      ↓ (sends to Service ClusterIP)
+[kube-proxy (via iptables/IPVS)]
+      ↓ (forwards to Pod)
+[Backend Pod]
+```
+
+```text
+- O que acontece é o seguinte:
+- 1. **Ingress Controller receives external traffic** (typically via a LoadBalancer or NodePort).
+    - It’s a **Pod** running in the cluster (e.g., NGINX, Traefik).
+    - It examines the Ingress rules (host/path/etc.) to determine where to send the request.
+2. **Ingress Controller sends traffic to the Service's ClusterIP and port** defined in the Ingress rule.
+    - From the Ingress Controller's point of view, this is like any Pod trying to reach a Service in the cluster.
+3. **`kube-proxy` handles this request internally.**
+    - When traffic is sent to a **Service ClusterIP**, **`kube-proxy`** (running on each node) has previously installed **iptables or IPVS rules** that:
+	- Match the destination IP (Service IP)
+	- Select a backend Pod IP (via round-robin or similar)
+	- Rewrite destination to the Pod IP:Port
+	- Forward the packet
+```
+
+* **Pergunta:** No contexto da contenarizaçao, qual abordagem de rede emprega um padrão Sidecar, colocalizando um contêiner auxiliar com o contêiner primário, para lidar com tarefas de mapeamento de portas e gerenciamento de tráfego?
+	* **Resposta**: Service Mesh
+* **Pergunta:** Quais são os componentes comuns encontrados em uma implementação de service mesh?
+	- **Resposta:** Em uma implementação de **service mesh**, existem dois componentes principais: o **plano de dados** (data plane) e o **plano de controle** (control plane).   O plano de dados refere-se aos **proxies** que interceptam e gerenciam o tráfego entre os serviços, enquanto o plano de controle gerencia a configuração e o comportamento do plano de dados. Exemplos de service mesh incluem **Istio**, **Linkerd** e **Envoy**.
 ---
 
 ### 3. **Gestao de Recursos e Objetos**
@@ -57,7 +89,7 @@
 - **Pergunta**: Qual recurso é eficaz para gerir custos, permitindo a categorização e organização de recursos?
 	    - **Resposta**: Labels são pares chave-valor anexados a objetos, como pods ou serviços, e fornecem uma maneira flexível de categorizar e organizar recursos. Ao usar Labels, você pode selecionar e gerir grupos de recursos com base em critérios específicos, facilitando o gestao de custos ao alocar recursos para equipes, projetos ou ambientes específicos.
 - **Pergunta**: Quais são os namespaces padrão em uma instalação do Kubernetes?
-    - **Resposta**: default, kube-system, kube-public, kube-node-lease. Em uma instalação do Kubernetes, há quatro namespaces padrão que são criados durante o processo de configuração do cluster. Esses namespaces são 'default', 'kube-system', 'kube-public' e 'kube-node-lease'. O namespace 'default' é onde as aplicações implantadas pelo usuário geralmente rodam. O namespace 'kube-system' contém objetos criados pelo sistema Kubernetes, como o API Server, o gerenciador de controladores e o agendador. O namespace 'kube-public' é usado para informações de todo o cluster que podem ser expostas publicamente com segurança sem autenticação. O namespace 'kube-node-lease' é usado para objetos de locação de nós.
+    - **Resposta**: default, kube-system, kube-public, kube-node-lease. Em uma instalação do Kubernetes, há quatro namespaces padrão que são criados durante o processo de configuração do cluster. O namespace 'default' é onde as aplicações implantadas pelo usuário geralmente rodam. O namespace 'kube-system' contém objetos criados pelo sistema Kubernetes, como o API Server, o gerenciador de controladores e o scheduler. O namespace 'kube-public' é usado para informações de todo o cluster que podem ser expostas publicamente com segurança sem autenticação. O namespace 'kube-node-lease' é usado para objetos de locação de nós.
 
 ---
 
@@ -68,7 +100,7 @@
 - **Pergunta**: Qual objeto é recomendado para gerir jobs que precisam ser executados várias vezes de acordo com um processo em batch?
     - **Resposta**: Um CronJob é um objeto Kubernetes projetado especificamente para gerir jobs que precisam ser executados várias vezes de acordo com um processo em batch, como executar um job a cada hora ou diariamente. Ele permite especificar um agendamento usando uma expressão cron e garante que o job seja executado no horário especificado.
 - **Pergunta**: Como você habilitaria o compartilhamento de dados entre diferentes cronjobs executados em vários horários?
-    - **Resposta**: Um PVC Claim permite que vários pods acessem um volume de armazenamento compartilhado, possibilitando o compartilhamento de dados entre diferentes cronjobs executados em vários horários. Ao usar uma PVC, você pode montar um volume persistente em vários pods, permitindo que eles leiam e escrevam dados no mesmo local de armazenamento.
+    - **Resposta**: Um PVC Claim permite que vários pods acessem um volume de armazenamento compartilhado, possibilitando o compartilhamento de dados entre diferentes cronjobs executados em vários horários. Ao usar um PVC, você pode montar um volume persistente em vários pods, permitindo que eles leiam e escrevam dados no mesmo local de armazenamento.
 
 ---
 
@@ -78,8 +110,8 @@
     - **Resposta**: OpenID Connect. Este é um protocolo de autenticação construído sobre o OAuth 2.0.
 - **Pergunta**: Perfis de Segurança do Kubernetes, como PodSecurityPolicies (PSP) e Kyverno, são essenciais para impor padrões de segurança em um ambiente Kubernetes. Qual das seguintes opções descreve melhor a função primária desses Perfis de Segurança do Kubernetes?
     - **Resposta**: Perfis de Segurança do Kubernetes, como PodSecurityPolicies (PSP) e Kyverno, são usados principalmente para definir e impor configurações de segurança no nível do pod, garantindo que os pods cumpram padrões e requisitos de segurança específicos. Esses perfis permitem que os administradores controlem vários aspectos do comportamento do pod, incluindo políticas de rede, controles de acesso e alocação de recursos.
-- **Pergunta**: Qual ferramenta focada em segurança é comumente usada para monitoramento de segurança em tempo de execução e detecção de atividades anômalas dentro de containers e pods?
-    - **Resposta**: O Falco é uma ferramenta de segurança nativa da nuvem de código aberto que fornece monitoramento de segurança em tempo de execução e detecção de atividades anômalas dentro de containers e pods em ambientes Kubernetes. Ele usa chamadas de sistema para monitorar a atividade do container e pode detectar comportamentos incomuns, como escalonamento de privilégios ou acesso não autorizado.
+- **Pergunta**: Qual ferramenta focada em segurança é comumente usada para monitoramento de segurança em tempo de execução e detecção de atividades anómalas dentro de containers e pods?
+    - **Resposta**: O Falco é uma ferramenta de segurança nativa da nuvem de código aberto que fornece monitoramento de segurança em tempo de execução e detecção de atividades anómalas dentro de containers e pods em ambientes Kubernetes. Ele usa chamadas de sistema para monitorar a atividade do container e pode detectar comportamentos incomuns, como escalonamento de privilégios ou acesso não autorizado.
 - **Pergunta**: Qual função é primariamente associada aos SecurityContext do Kubernetes?
     - **Resposta**: Os SecurityContext estão primariamente associados à definição de configurações de segurança no nível do container ou pod. Um SecurityContext define as configurações de segurança para um container ou pod, como executar um container como um usuário específico, definir permissões de sistema de arquivos e configurar Labels SELinux. Essas configurações podem ser aplicadas a um único container ou a todos os containers em um pod.
 - **Pergunta**: Na segurança do Kubernetes, o que diferencia os SecurityContext das SecurityPolicy (como PodSecurityPolicies ou Kyverno) em termos de scope e foco?
@@ -88,25 +120,27 @@
     - **Resposta**: O KubeScape é uma ferramenta de código aberto projetada especificamente para avaliar a postura de segurança de clusters Kubernetes com base nas diretrizes da NSA e da CISA. Ela fornece uma avaliação de risco abrangente e identifica possíveis vulnerabilidades na configuração do cluster.
 - **Pergunta**: Quando um Pod é criado no Kubernetes sem especificar uma ServiceAccount, qual ServiceAccount padrão é usada?
     - **Resposta**: Default ServiceAccount
+- **Pergunta**: Qual é o sucessor do PSP para garantir fine-grained security policies?
+    - **Resposta**: Kubernetes Admission Controllers
 
 ---
 
 ### 6. **Ferramentas e Integrações**
 
-- **Pergunta**: No domínio do Kubernetes, qual framework serverless se destaca por sua velocidade excepcional, abordagem centrada no desenvolvedor e desempenho otimizado, visando aumentar a produtividade do desenvolvedor?
-    - **Resposta**: Fission
+- **Pergunta**: No domínio do Kubernetes, qual framework serverless se destaca por sua velocidade excepcional, abordagem centrada no desenvolvedor e desempenho otimizado, visando aumentar a produtividade?
+    - **Resposta**: **Fission**
 - **Pergunta**: Quais ferramentas nativas da nuvem permitem que clusters Kubernetes sejam sincronizados automaticamente com repositórios Git?
-    - **Resposta**: Argo CD e Flux são ferramentas nativas da nuvem que permitem que clusters Kubernetes sejam sincronizados automaticamente com repositórios Git. O Argo CD é uma ferramenta de entrega contínua declarativa para Kubernetes que automatiza a implantação de aplicações a partir de repositórios Git. O Flux é uma ferramenta de código aberto que sincroniza recursos Kubernetes com repositórios Git, permitindo a implantação e gestao automatizados de aplicações.
-- **Pergunta**: Qual produto é construído usando o GitOps Toolkit, um conjunto de APIs componíveis e ferramentas especializadas para construir sistemas de entrega contínua baseados em GitOps?
-    - **Resposta**: O Flux é realmente construído usando o GitOps Toolkit, que fornece um conjunto de APIs e ferramentas especializadas para construir sistemas de entrega contínua baseados em GitOps. O GitOps Toolkit permite que os desenvolvedores criem fluxos de trabalho personalizados e integrações com outras ferramentas, tornando-o uma escolha ideal para construir pipelines de entrega contínua complexos.
+    - **Resposta**: **Argo CD e Flux.** O Argo CD é uma ferramenta de continuous delivery declarativa para Kubernetes que automatiza o deployment de aplicações a partir de repositórios Git. O Flux é uma ferramenta de código aberto que sincroniza recursos Kubernetes com repositórios Git, permitindo a implantação e gestao automatizados de aplicações.
+- **Pergunta**: Qual produto é construído usando o GitOps Toolkit, um conjunto de APIs e ferramentas especializadas para construir sistemas de entrega contínua baseados em GitOps?
+    - **Resposta**: O **Flux** é realmente construído usando o GitOps Toolkit, que fornece um conjunto de APIs e ferramentas especializadas para construir sistemas de entrega contínua baseados em GitOps. O GitOps Toolkit permite que se criem fluxos de trabalho personalizados e integrações com outras ferramentas, tornando-o uma escolha ideal para construir pipelines complexas.
 - **Pergunta**: Qual ferramenta é especificamente projetada como uma service mesh abrangente para controlar, proteger e observar as interações entre microsserviços, além de facilitar o gestao avançado de tráfego?
-    - **Resposta**: O Istio é uma service mesh que fornece um conjunto abrangente de recursos para controlar, proteger e observar interações entre microsserviços no Kubernetes. Ele oferece capacidades avançadas de gestao de tráfego, incluindo disjuntores, tentativas e injeção de falhas, além de recursos de segurança como TLS mútuo e políticas de autenticação.
+    - **Resposta**: O **Istio** é uma service mesh que fornece um conjunto abrangente de recursos para controlar, proteger e observar interações entre microsserviços no Kubernetes. Ele oferece capacidades avançadas de gestao de tráfego, incluindo disjuntores, tentativas e injeção de falhas, além de recursos de segurança como TLS mútuo e políticas de autenticação.
 - **Pergunta**: No domínio do Kubernetes, qual ferramenta é especificamente projetada para orquestrar e gerir fluxos de trabalho paralelos complexos e jobs em batch?
     - **Resposta**: O Argo Workflows é uma ferramenta de código aberto especificamente projetada para orquestrar e gerir fluxos de trabalho paralelos complexos e jobs em batch no Kubernetes. Ele fornece uma maneira flexível de definir fluxos de trabalho usando arquivos YAML ou JSON e suporta recursos como lógica condicional, loops e tentativas.
 - **Pergunta**: Em um ambiente Kubernetes, qual software é amplamente usado como um proxy leve para gerir o tráfego entre microsserviços?
-    - **Resposta**: O Envoy é um proxy leve amplamente usado, projetado para gerir o tráfego entre microsserviços em um ambiente Kubernetes. Ele fornece recursos como Service Discoverys, balanceamento de carga e quebra de circuito, tornando-o uma escolha ideal para gerir a comunicação entre microsserviços.
-- **Pergunta**: Qual ferramenta é comumente usada para instalar e gerir aplicações em um cluster Kubernetes?
-    - **Resposta**: O Helm é um gerenciador de pacotes para Kubernetes que simplifica o processo de instalação e gestao de aplicações em um cluster Kubernetes. Ele fornece uma maneira fácil de instalar, atualizar e gerir aplicações usando pacotes pré-configurados chamados charts. Não é o kubectl. O Kubectl é uma ferramenta de linha de comando para interagir com um cluster Kubernetes, mas não é especificamente projetada para instalar e gerir aplicações. Embora possa ser usado para implantar aplicações usando arquivos YAML ou JSON, requer mais esforço manual e não fornece o mesmo nível de gestao de pacotes que o Helm.
+    - **Resposta**: O **Envoy** é um proxy leve projetado para gerir o tráfego entre microsserviços em um ambiente Kubernetes. Ele fornece recursos como Service Discoverys, balanceamento de carga e quebra de circuito, tornando-o uma escolha ideal para gerir a comunicação entre microsserviços.
+- **Pergunta**: Qual ferramenta é usada para instalar e gerir aplicações em um cluster Kubernetes?
+    - **Resposta**: O Helm é um gerenciador de pacotes para Kubernetes que simplifica o processo de instalação e gestao de aplicações em um cluster Kubernetes. Ele fornece uma maneira fácil de instalar, atualizar e gerir aplicações usando pacotes pré-configurados chamados charts. **NOTA**: Não é o kubectl. O Kubectl é uma ferramenta de linha de comando para interagir com um cluster Kubernetes, mas não é especificamente projetada para instalar e gerir aplicações. Embora possa ser usado para implantar aplicações usando arquivos YAML ou JSON, requer mais esforço manual e não fornece o mesmo nível de gestao de pacotes que o Helm.
 - **Pergunta**: O que é OPA?
     - **Resposta**: O Agente de Políticas Abertas (OPA) é um motor de políticas que pode ser integrado ao Kubernetes para validar requisições e aplicar políticas em todo o cluster. O OPA fornece uma maneira unificada de definir e impor políticas em diferentes camadas da pilha, incluindo políticas de rede, controle de admissão e mais.
 
@@ -122,6 +156,8 @@
     - **Resposta**: Um Tracing registra toda a jornada de uma requisição enquanto ela percorre vários serviços, APIs ou componentes em um sistema distribuído.
 - **Pergunta**: Qual é o propósito primário do kube-state-metrics em um cluster Kubernetes?
     - **Resposta**: O kube-state-metrics é um serviço que **gera e expõe dados de estado do cluster no formato Prometheus**. Ele faz isso coletando informações do API Server do Kubernetes sobre o estado atual do cluster, incluindo métricas sobre implantações, pods, nós e mais.
+* **Pergunta:** O que é um trace e um span?
+	* **Resposta:** Um trace consiste em multiplos spans que representam uma transaçao. Um span refere a uma operaçao individual dentro de um trace.
 
 ---
 
@@ -139,6 +175,8 @@
     - **Resposta**: Kata Containers e gVisor são reconhecidos por fornecer recursos de segurança aprimorados por meio de virtualização. Eles usam uma combinação de containerização e virtualização para fornecer um isolamento mais forte entre containers. Kata Containers usa uma máquina virtual leve (VM) para executar cada container, enquanto o gVisor usa um kernel em espaço de usuário para fornecer um ambiente isolado para containers.
 - **Pergunta**: Qual componente do Kubernetes interage com a Interface de Runtime de container (CRI)?
     - **Resposta**: O Kubelet interage com a Interface de Runtime de container (CRI) para gerir operações de runtime de container, como criar e excluir containers. O CRI fornece uma interface padronizada entre o agente de nó do Kubernetes (Kubelet) e o runtime de container.
+* **Pergunta:** Em um nó Kubernetes, qual componente é diretamente responsável por executar os contêineres?
+	- **Resposta:** O **Runtime de Container** (Container Runtime) é diretamente responsável por executar os containeres em um nó Kubernetes.  É o componente de software que gerencia o ciclo de vida dos containeres, incluindo iniciá-los, finalizá-los e monitorá-los. Exemplos de runtimes de contêiner incluem o **Containerd** e o **CRI-O**. O container runtime recebe comandos do kubelet. O kubelet é um agente em cada nó que recebe comandos do API Server.
 
 ---
 
@@ -169,7 +207,7 @@
 - **Pergunta**: Qual é a função primária de um PDB?
     - **Resposta**: Manter um número mínimo de réplicas disponíveis durante interrupções voluntárias. Os PodDisruptionBudget (PDBs) foram introduzidos no Kubernetes para proteger contra interrupções voluntárias, como atualizações graduais ou dimensionamento. Sua função primária é manter um número mínimo de réplicas disponíveis durante essas interrupções, garantindo que um certo nível de disponibilidade de serviço seja sempre mantido.
 - **Pergunta**: Qual é a estratégia de atualização padrão usada pelos Deployments do Kubernetes para implementar atualizações?
-    - **Resposta**: RollingUpdate. RollingUpdate é a estratégia de atualização padrão usada pelos Deployments do Kubernetes para implementar atualizações. Ela permite uma implementação gradual de novas versões enquanto mantém a disponibilidade e minimiza o tempo de inatividade. Com RollingUpdate, novos pods são criados com a versão atualizada, e os pods antigos são encerrados assim que os novos estão disponíveis.
+	* **Resposta:** **RollingUpdates** permitem uma atualização gradual das novas versões, mantendo a disponibilidade e minimizando o tempo de inatividade. Com o RollingUpdate, novos pods são criados com a versão atualizada, e os pods antigos são finalizados assim que os novos estiverem disponíveis.
 - **Pergunta**: Durante a fase em que as imagens de container estão sendo baixadas para um Pod no Kubernetes, em que estado o Pod está tipicamente?
     - **Resposta**: Pending State. Quando um Pod está no estado Pendente, significa que o Pod foi criado, mas pelo menos um de seus containers ainda está esperando que os recursos sejam alocados ou ainda está baixando sua imagem. Esse é tipicamente o caso quando as imagens de container estão sendo baixadas para um Pod.
 - **Pergunta**: Qual kubectl comando é usado para listar todos os recursos da API, como Pods, Services e Deployments, disponíveis em um cluster Kubernetes?
@@ -209,6 +247,8 @@
     - **Resposta**: Um Site Reliability Engineer (SRE) é tipicamente responsável por garantir a confiabilidade e o tempo de atividade de um ambiente nativo da nuvem. Como parte desse papel, eles frequentemente estão envolvidos na criação e execução de procedimentos de gestao de incidentes para minimizar o tempo de inatividade e garantir uma recuperação rápida em caso de interrupção ou outros incidentes.
 - **Pergunta**: No campo de operações de TI e desenvolvimento de software, SRE representa uma disciplina que enfatiza automação, melhoria contínua e uma abordagem equilibrada para confiabilidade do sistema e recursos. O que significa SRE?
     - **Resposta**: Site Reliability Engineer
+* **Pergunta:** Como Engenheiro de Confiabilidade de Site (SRE), qual tarefa normalmente estaria sob sua responsabilidade, especialmente no contexto de garantir a confiabilidade do sistema?
+	- **Resposta:** Como **SRE**, implementar e ajustar **limiares e alertas para monitoramento da saúde do sistema** é uma tarefa crítica que está sob sua responsabilidade. Isso envolve configurar ferramentas de monitoramento para detectar anomalias e alertar as equipes sobre possíveis problemas antes que se tornem incidentes, garantindo a confiabilidade e o tempo de atividade do sistema.
 
 ---
 

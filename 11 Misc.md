@@ -251,6 +251,17 @@ $ kubectl get ds,po -l k8s-app=fluentd-agent**
 	- Environment Variables and DNS are the primary modes of service discovery within a Kubernetes cluster. When a pod is created, Kubernetes automatically configures environment variables for the pod's container that point to other services running in the same namespace. Additionally, Kubernetes provides a built-in DNS service that allows pods to discover and communicate with each other using DNS names.
 - What are the default namespaces in a Kubernetes installation?
 	- default, kube-system, kube-public, kube-node-lease. In a Kubernetes installation, there are four default namespaces that are created during the cluster setup process. These namespaces are 'default', 'kube-system', 'kube-public', and 'kube-node-lease'. The 'default' namespace is where user-deployed applications typically run. The 'kube-system' namespace contains objects created by the Kubernetes system, such as the API server, controller manager, and scheduler. The 'kube-public' namespace is used for cluster-wide information that can be safely exposed publicly without authentication. The 'kube-node-lease' namespace is used for node lease objects.
+* The cloud-native architecture centered around microservices proves to be a strong system that ensures what key quality in software systems?
+	* Resiliency. Cloud-native architecture centered around microservices ensures resiliency as a key quality in software systems. With microservices, if one service experiences issues or goes down, other services can continue to operate independently, reducing the impact of failures and ensuring overall system uptime.
+* What is the default update strategy used by Kubernetes Deployments for rolling out updates?
+	* RollingUpdates. It allows for a gradual rollout of new versions while maintaining availability and minimizing downtime. With RollingUpdate, new pods are created with the updated version, and old pods are terminated once the new ones are available.
+* What are common components found in a service mesh implementation?
+	*  In a service mesh implementation, there are two primary components: the data plane and the control plane. The data plane refers to the proxies that intercept and manage traffic between services, while the control plane manages the configuration and behaviour of the data plane. Examples of service meshes include Istio, Linkerd, and Envoy.
+* As a Site Reliability Engineer (SRE), which task would typically fall under your purview, especially in the context of ensuring system reliability?
+	* As an SRE, implementing and fine-tuning thresholds and alerts for monitoring system health is a critical task that falls under your purview. This involves setting up monitoring tools to detect anomalies and alert teams to potential issues before they become incidents, ensuring system reliability and uptime.
+* In a Kubernetes node, which component is directly responsible for running containers?
+	* The Container Runtime is directly responsible for running containers in a Kubernetes node. It is the software component that manages the lifecycle of containers, including starting, stopping, and monitoring them. Examples of container runtimes include Containerd and cri-o.
+
 ## Links
 
 https://glossary.cncf.io/
