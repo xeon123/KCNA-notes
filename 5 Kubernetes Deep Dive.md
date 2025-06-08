@@ -3035,7 +3035,7 @@ In a regular **Kubernetes cluster (without a service mesh)**, the **data plane a
 - In the context of containerized applications, which networking approach employs a Sidecar pattern, co-locating an auxiliary container with the primary container, to handle port mapping and traffic management tasks?
 	- Service Mesh
 - In the evolving landscape of Kubernetes, what is the recommended successor to PodSecurityPolicies (PSP) for enforcing fine-grained security policies?
-	- Admission Controllers
+	- Kubernetes Admission Controllers
 - Which component in Kubernetes continuously monitors the state of the cluster, detects any deviations from the desired state, and initiates or requests changes to ensure the cluster remains in the desired state?
 	- Controller Manager
 - What is the purpose of the kubelet?

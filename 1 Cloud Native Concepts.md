@@ -80,7 +80,7 @@ status: draft
 | **CRI** | Container Runtime Interface | Allows Kubernetes to interact with **container runtimes**                                                                                       | containerd, CRI-O, Docker (via shi |
 | **CSI** | Container Storage Interface | Enables dynamic provisioning and management of **storage volumes**                                                                              | Portworx, Ceph, AWS EBS, GCE       |
 | **OCI** | Open Container Initiative   | Defines **container image & runtime standards**, ensuring compatibility                                                                         | Docker, Podman, contai             |
-| **SMI** | Service Mesh Interface      | Provides a standard interface for **service meshes** to work with K8s                                                                           | Istio, Linkerd, C                  |
+| **SMI** | Service Mesh Interface      | Provides a standard interface for **service meshes** to work with K8s                                                                           | Istio, Linkerd, Cillium, Envoy     |
 | **CNI** | Container Network Interface | **Specification and set of libraries** for configuring network interfaces in Linux contain Calico, Flannel, Cillium, Weave, Canal, Multus anal, |                                    |
 ### 🔍 Details
 
