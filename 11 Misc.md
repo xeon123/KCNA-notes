@@ -1,248 +1,170 @@
 ## Questions
 
-### **Kubernetes Architecture and Components**
-
-1. **Which component acts as the central management entity in a Kubernetes cluster, processing RESTful requests to manage resources?**
-    - **Answer**: The **Kubernetes API Server** processes RESTful requests to manage and control cluster resources like pods, services, and deployments.
-2. **What is the default setting for the --authorization-mode flag in the Kubernetes API server if --authorization-config is not used?**
-    - **Answer**: **AlwaysAllow**.
-3. **Which component on a node is responsible for running containers as specified in Pod definitions?**
-    - **Answer**: The **Kubelet** runs on each node, managing containers as per Pod definitions by interacting with the container runtime.
-4. **Which component is responsible for managing the state of worker nodes and ensuring their proper functioning?**
-    - **Answer**: The **Kubelet** manages node state and ensures proper functioning.
-5. **Which component in a Kubernetes cluster is responsible for routing traffic for services and managing IP rules?**
-    - **Answer**: **Kube-Proxy** runs on each node, handling service traffic routing and IP rule management.
-6. **Which component serves as the default Domain Name System (DNS) solution for service discovery in Kubernetes?**
-    - **Answer**: **CoreDNS** provides service discovery and name resolution within the cluster.
-7. **Which component is a part of the node infrastructure rather than the control plane?**
-    - **Answer**: **Kube-Proxy** operates at the node level, managing network rules for pod communication.
-8. **In a Kubernetes node, which component is directly responsible for running containers?**
-    - **Answer**: The **Container Runtime** (e.g., Containerd, CRI-O) manages the lifecycle of containers.
-
----
-
-### **Kubernetes Resources and Objects**
-
-9. **Which Kubernetes component was introduced to supersede ReplicationControllers?**
-    - **Answer**: **Deployments** manage pod replicas and updates, replacing ReplicationControllers.
-10. **Which Kubernetes object is recommended for managing jobs that need to run multiple times according to a batch process?**
-    - **Answer**: **CronJobs** schedule jobs based on user-defined time intervals.
-11. **Which Kubernetes object is most suitable for deploying stateless applications?**
-    - **Answer**: **Deployments** manage identical, stateless pod replicas and their lifecycle.
-12. **Which Higher Level construct is primarily responsible for managing the desired state of identical, stateless pods?**
-    - **Answer**: **Deployment**.
-13. **To achieve consistent DNS naming for pods managed by a StatefulSet, what additional Kubernetes resource should you use?**
-    - **Answer**: A **Headless Service** (with clusterIP: None) ensures consistent DNS naming.
-14. **In Kubernetes, which entities can utilize the immutable: true attribute to ensure data cannot be modified after creation?**
-    - **Answer**: **ConfigMaps** and **Secrets** can be set as immutable to prevent modifications post-creation.
-15. **Which feature is crucial for managing distributed stateful applications to avoid conflicts like "split-brain" scenarios?**
-    - **Answer**: **StatefulSets** ensure unique pod identities and stable state management.
-16. **When the kubectl expose command is used, which component is created?**
-    - **Answer**: A **Service** is created to provide network access to pods.
-17. **Which Kubernetes component is responsible for exposing applications running on a set of Pods as a network service?**
-    - **Answer**: A **Service** provides a stable IP and DNS name for pod access.
-18. **In Kubernetes, what is a Service called when it is created without a ClusterIP?**
-    - **Answer**: A **Headless Service** (set with clusterIP: None) allows direct pod access without load balancing.
-19. **What is the relationship between Deployments and ReplicaSets in Kubernetes?**
-    - **Answer**: A **Deployment** creates and manages a **ReplicaSet**, which ensures the desired number of pod replicas are running.
-20. **Which two types of resources are used to expose applications to external traffic, including options like ClusterIP, NodePort, and LoadBalancer?**
-    - **Answer**: **Services** (e.g., ClusterIP, NodePort, LoadBalancer) and **Ingress** (for HTTP/HTTPS routing).
-
----
-
-### **Networking and Service Discovery**
-
-21. **What is the primary purpose of a Service in Kubernetes?**
-    - **Answer**: A **Service** exposes an application running on pods as a network service with a stable IP and DNS name.
-22. **What are the primary modes of service discovery within a Kubernetes cluster?**
-    - **Answer**: **Environment Variables** and **DNS** enable pods to locate services.
-23. **In Kubernetes, what does Service Discovery refer to?**
-    - **Answer**: **Service Discovery** is the process of services locating and communicating with each other using stable IPs or DNS names provided by Services.
-24. **In a Pod, which Linux namespace do containers usually share?**
-    - **Answer**: Containers in a pod share the **network namespace**, enabling localhost communication.
-25. **What modification is made to a ClusterIP service to create a headless service?**
-    - **Answer**: Set the clusterIP field to None.
-26. **What is true about Pod-to-Pod communication within the same node in Kubernetes?**
-    - **Answer**: Pods use **direct, NAT-less networking** for efficient communication on the same node.
-
----
-
-### **Security**
-
-27. **In Kubernetes security, what differentiates Security Contexts from Security Policies (e.g., PodSecurityPolicies or Kyverno)?**
-    - **Answer**: **Security Contexts** define settings at the pod/container level (e.g., user, permissions) that control privileges and access controls. **Security Policies** enforce rules at the cluster/namespace level.
-28. **Which function is primarily associated with Kubernetes Security Contexts?**
-    - **Answer**: Defining **container or pod-level security settings** (e.g., user IDs, SELinux labels).
-29. **What is the primary function of Kubernetes Security Profiles (e.g., PodSecurityPolicies, Kyverno)?**
-    - **Answer**: They **define and enforce security settings at the pod level** to ensure compliance with standards.
-30. **Which security-focused tool is commonly used for runtime security monitoring and detection of anomalous activities in Kubernetes?**
-    - **Answer**: **Falco** monitors container and pod activity for anomalies.
-31. **Which open-source tool is designed for assessing the security posture of Kubernetes clusters per NSA and CISA guidelines?**
-    - **Answer**: **KubeScape** evaluates cluster security based on NSA/CISA guidelines.
-32. **Which container runtimes are recognized for enhanced security features through virtualization?**
-    - **Answer**: **Kata Containers** and **gVisor** provide stronger isolation via virtualization.
-
-### 🔄 Summary Table
-
-|Feature|Security Context|Security Policy (PSP/Kyverno)|
-|---|---|---|
-|Who sets it?|Pod author (developer/operator)|Cluster admin or security team|
-|Where is it applied?|Pod/Container spec|Admission controller (before pod creation)|
-|Purpose|Define _how_ container runs|Enforce _what is allowed_ in the cluster|
-|Enforced by?|Kubelet (on node)|Admission Controller / Policy Engine|
-|Examples|`runAsUser`, `readOnlyRootFilesystem`|"Disallow root", "Require seccomp profile"|
-
----
-
-### **Storage and Data Management**
-
-33. **Which software is widely used in Kubernetes for cloud-native storage orchestration?**
-    - **Answer**: **Rook** automates storage systems like Ceph in Kubernetes.
-34. **In the context of etcd used in Kubernetes, what is the significance of the 1.5MB size limit?**
-    - **Answer**: The **1.5MB limit** is the recommended maximum size for individual values in etcd to maintain performance and stability.
-35. **In Kubernetes, how would you enable data sharing between different CronJobs running at various times?**
-    - **Answer**: Use a **Persistent Volume Claim (PVC)** to mount shared storage across pods.
-
----
-
-### **Observability and Telemetry**
-
-36. **What is the primary purpose of kube-state-metrics in a Kubernetes cluster?**
-    - **Answer**: **Kube-state-metrics** generates and exposes cluster state data in Prometheus format by scraping the API server.
-37. **In telemetry, which entity is primarily used to record and analyze the path of a request through services in a distributed system?**
-    - **Answer**: **Traces** record the request’s journey across services.
-38. **In distributed tracing, what is the relationship between a trace and a span?**
-    - **Answer**: A **Trace** consists of multiple **spans**, where a span represents an individual operation within the trace.
-39. **What are the three pillars of observability in a software system?**
-    - **Answer**: **Logs**, **Metrics**, and **Traces**.
-40. **Which CNCF project provides a unified framework for generating, managing, and analyzing logs, metrics, and traces?**
-    - **Answer**: **OpenTelemetry** offers tools, APIs, and SDKs for observability.
-
----
-
-### **CI/CD and GitOps**
-
-41. **Which product is built using the GitOps Toolkit for GitOps-based continuous delivery?**
-    - **Answer**: **Flux** leverages the GitOps Toolkit for building GitOps pipelines.
-42. **Which cloud-native tools enable Kubernetes clusters to synchronize with Git repositories?**
-    - **Answer**: **Argo CD** and **Flux** automate synchronization with Git repositories. ArgoCD automates the deployment. Flux synchronizes Kubernetes resources (built with GitOps Toolkit). 
-43. **What option aligns with the traditional workflow of a CI/CD pipeline, where "D" stands for Deployment?**
-    - **Answer**: The workflow follows **Build → Test → Release → Deployment**.
-
----
-
-### **Service Mesh and Traffic Management**
-
-44. **Which tool is designed as a comprehensive service mesh for controlling, securing, and observing microservices in Kubernetes?**
-    - **Answer**: **Istio** provides traffic management, security, and observability.
-45. **Which software is widely used as a lightweight proxy for traffic management between microservices in Kubernetes?**
-    - **Answer**: **Envoy** handles service discovery, load balancing, and circuit breaking.
-46. **What are common components found in a service mesh implementation?**
-    - **Answer**: **Data Plane** (proxies managing traffic) and **Control Plane** (configuring the data plane).
-
----
-
-### **Container Runtimes**
-
-47. **Which lightweight container runtime is specifically designed for Kubernetes and conforms to the Container Runtime Interface (CRI)?**
-    - **Answer**: **CRI-O** is optimized for Kubernetes.
-48. **What is the reference implementation of the Open Container Initiative (OCI) runtime specification?**
-    - **Answer**: **runc** is the OCI reference implementation.
-49. **Which container runtime is a lightweight, low-level runtime designed for running containers in Linux?**
-    - **Answer**: **LXC** provides lightweight virtualization.
-50. **What is the difference between LXC and CRI-O?**
-    - **Answer**: **LXC** is a general-purpose lightweight virtualization technology. **CRI-O** is a Kubernetes-specific runtime conforming to CRI.
-
----
-
-### **Autoscaling**
-
-51. **Which Kubernetes autoscaling solution can scale workloads down to zero pods?**
-    - **Answer**: **KEDA (Kubernetes Event-Driven Autoscaling)** supports scaling to zero based on events.
-52. **How does KEDA enable event-driven autoscaling, and what custom resource does it utilize?**
-    - **Answer**: KEDA scales based on external metrics (e.g., queue lengths) using the **ScaledObjects** custom resource.
-53. **Which two-layered approach does Kubernetes use for its autoscaling mechanism?**
-    - **Answer**: **Pod-based scaling (HPA)** and **Cluster-based scaling (Node-level scaling)**.
-
----
-
-### **Workflows and Jobs**
-
-54. **Which tool is designed for orchestrating complex parallel workflows and batch jobs in Kubernetes?**
-    - **Answer**: **Argo Workflows** manages workflows using YAML/JSON definitions.
-
----
-
-### **Cost Management**
-
-55. **Which feature is effective for managing costs by categorizing and organizing resources in Kubernetes?**
-    - **Answer**: **Labels** enable resource categorization for cost allocation.
-56. **In cloud-native environments, which persona focuses on optimizing cloud costs and financial management?**
-    - **Answer**: **FinOps (Financial Operations)** optimizes cloud spending.
-
----
-
-### **Roles and Responsibilities**
-
-57. **In a cloud-native organization, which role is responsible for building and maintaining platform infrastructure for developers?**
-    - **Answer**: **Platform Engineers** enable efficient application deployment.
-58. **Which persona is responsible for creating and executing incident management procedures in a cloud-native environment?**
-    - **Answer**: **Site Reliability Engineers (SREs)** manage incident response.
-59. **What roles and tasks are associated with a Site Reliability Engineer (SRE)?**
-    - **Answer**: All tasks, including designing automated incident response, enabling developer access to logs, and mitigating service disruptions.
-60. **As an SRE, which task is critical for ensuring system reliability?**
-    - **Answer**: Implementing and fine-tuning **thresholds and alerts** for monitoring system health.
-61. **In IT operations, what does SRE stand for?**
-    - **Answer**: **Site Reliability Engineering**.
-
----
-
-### **Miscellaneous**
-
-62. **Which serverless framework in Kubernetes is known for speed and developer productivity?**
-    - **Answer**: **Fission** enhances developer-centric serverless workflows.
-63. **What tool is commonly used for installing and managing applications in a Kubernetes cluster?**
-    - **Answer**: **Helm** simplifies application management with charts.
-64. **What are the supported authorization mechanisms in Kubernetes?**
-    - **Answer**: **All options are supported (e.g., RBAC, ABAC, Webhook)**.
-65. **Which mechanism enables specifying criteria for selecting Kubernetes objects based on fields like name or namespace?**
-    - **Answer**: **Field Selectors**.
-66. **What defines Special Interest Groups (SIGs) in the Kubernetes community?**
-    - **Definition**: **Exclusive teams** focusing on specific project domains.
-67. **What are the default namespaces in a Kubernetes installation?**
-    - **Answer**: **default, kube-system, kube-public, kube-node-lease**.
-68. **For how long is the Kubernetes API guaranteed to be backward-compatible after a release?**
-    - **Answer**: **At least 1 year**.
-69. **What does OIDC stand for in authentication and authorization?**
-    - **Answer**: **OpenID Connect**.
-70. **What is OPA in Kubernetes?**
-    - **Answer**: **Open Policy Agent** enforces policies across the cluster.
-71. **What are CloudEvents in cloud computing?**
-    - **Answer**: A **standardized format** for describing event data.
-72. **Which Linux feature is used by Kubernetes for container isolation and resource limits?**
-    - **Answer**: **cgroups** isolate and limit resource usage.
-73. **What is the default Service Account used when none is specified for a Pod?**
-    - **Answer**: The **default** service account.
-74. **During container image downloading for a Pod, what state is the Pod typically in?**
-    - **State**: **Pending**.
-75. **What is the primary function of a Pod Disruption Budget (PDB)?**
-    - **Answer**: **Maintaining a minimum number of available replicas** during voluntary disruptions.
-76. **What is the default update strategy for Kubernetes Deployments?**
-    - **Answer**: **Deployment**: **RollingUpdate**.
-77. **Which kubectl command lists all API resources in a Kubernetes cluster?**
-    - **Answer**: **Command**: **kubectl api-resources**.
-78. **In cloud computing, which approach manages security threats and optimizes costs by identifying unusual activities?**
-    - **Answer**: **Cloud Anomaly Detection** identifies potential threats.
-79. **What ensures resiliency in cloud-native microservices architecture?**
-    - **Answer**: **Resilience** through independent service operation.
-80. **How are container specifications in Deployments and StatefulSets similar?**
-    - **Answer**: Both use the **same container specification** in pod templates.
-81. **When using kubectl apply, what is a potential drawback related to resource state tracking?**
-    - **Answer**: Removed resources in the manifest may be **deleted** from the cluster unintentionally.
-82. **Which Kubernetes component interacts with the Container Runtime Interface (CRI)?**
-    - **Answer**: The **Kubelet** manages container operations via CRI.
-83. **In multistage Docker builds, what technique reduces the final container image size?**
-    - **Answer**: Use **multiple build stages** to discard unnecessary artifacts.
+- In the realm of Kubernetes, which serverless framework stands out for its exceptional speed, developer-centric approach, and optimal performance, aiming to enhance developer productivity?
+	- Fission
+- In Kubernetes, which component was specifically introduced to supersede the outdated ReplicationControllers?
+	- Deployments
+- In Kubernetes, which component serves as the default Domain Name System (DNS) solution for service discovery and name resolution within the cluster?
+	- CoreDNS
+- Which mechanism in Kubernetes enables you to specify criteria for selecting information based on fields such as name, namespace, or status of a Kubernetes object?
+	- Field Selectors
+- What are the supported authorization mechanisms or modules in Kubernetes?
+	- All of the options are correct
+- Which CNCF project focuses on providing a unified framework for generating, managing, and analyzing logs, metrics, and traces through a comprehensive set of tools, APIs, and SDKs?
+	- OpenTelemetry
+- Which component in a Kubernetes cluster is responsible for managing the state of worker nodes and ensuring their proper functioning?
+	- kubelet
+- Which Kubernetes component enables developers to schedule jobs based on user-defined time intervals?
+	- CronJobs
+- Within the collaborative landscape of Kubernetes, what defines Special Interest Groups (SIGs)?
+	- Exclusive teams focusing on specific areas or domains of the project.
+- In Kubernetes, which two types of resources are used to expose applications to external traffic, including options like ClusterIP, NodePort, and LoadBalancer?
+	-  A Service provides a stable IP address and DNS name for accessing an application, while an Ingress resource acts as an entry point for HTTP requests, allowing you to define routing rules and SSL termination.
+- Which cloud-native tools enable Kubernetes clusters to be automatically synchronised with Git repositories?
+	- Argo CD and Flux are cloud-native tools that enable Kubernetes clusters to be automatically synchronized with Git repositories. Argo CD is a declarative continuous delivery tool for Kubernetes that automates the deployment of applications from Git repositories. Flux is an open-source tool that synchronizes Kubernetes resources with Git repositories, allowing for automated deployment and management of applications.
+- Which product is built using the GitOps Toolkit, a set of composable APIs and specialised tools for building GitOps-based continuous delivery systems?
+	- Flux is indeed built using the GitOps Toolkit, which provides a set of composable APIs and specialized tools for building GitOps-based continuous delivery systems. The GitOps Toolkit allows developers to create custom workflows and integrations with other tools, making it an ideal choice for building complex continuous delivery pipelines. 
+- In Kubernetes, which component is primarily responsible for managing a Node?
+	- Kubelet is an agent that runs on each Node in a Kubernetes cluster. Its primary responsibility is to manage the Node, ensuring that it is running the expected number of containers and maintaining the desired state. Kubelet communicates with the API Server to receive instructions and report the status of the Node.
+- To achieve consistent DNS naming for pods managed by a StatefulSet in Kubernetes, what additional Kubernetes resource should you use?
+	- Headless Service
+- In Kubernetes, which tool is specifically designed as a comprehensive service mesh to control, secure, and observe the interactions between microservices, apart from facilitating advanced traffic management?
+	- Istio is an open-source service mesh that provides a comprehensive set of features for controlling, securing, and observing interactions between microservices in Kubernetes. It offers advanced traffic management capabilities, including circuit breakers, retries, and fault injection, as well as security features like mutual TLS and authentication policies.
+- For how long is the Kubernetes API guaranteed to be backward compatible following a release?
+	- The Kubernetes API is guaranteed to be backward compatible for at least 1 year following a release. This means that if you write code against a specific version of the API, you can expect it to continue working without changes for at least 12 months after that version's release.
+- What are CloudEvents in the context of cloud computing?
+	- CloudEvents is indeed a set of standards for describing event data in a common way. It provides a standardized and interoperable format for expressing events, making it easier for different systems and applications to understand and process event data.
+- In the realm of Kubernetes, which tool is specifically designed for orchestrating and managing complex parallel workflows and batch jobs?
+	- Argo Workflows is an open-source tool specifically designed for orchestrating and managing complex parallel workflows and batch jobs on Kubernetes. It provides a flexible way to define workflows using YAML or JSON files and supports features like conditional logic, loops, and retries. 
+- What is true about Pod-to-Pod communication within the same node in Kubernetes?
+	- Pods use direct, NAT-less networking for communication on the same node'. This option is incorrect because Network Address Translation (NAT) is not required for Pod-to-Pod communication within the same node. In fact, one of the benefits of this type of communication is that it does not require NAT, making it more efficient and straightforward.
+- What is the reference implementation of the Open Container Initiative (OCI) runtime specification?
+	- `runc` is the reference implementation of the Open Container Initiative (OCI) runtime specification. It is a lightweight, portable, and highly performant runtime environment for containers that implements the OCI runtime specification. runc provides a minimalistic and flexible way to run containers, making it an ideal choice as the reference implementation.
+- What are the three pillars of observability in a software system?
+	- The three pillars of observability in a software system are indeed Logs, Metrics, and Traces. Observability refers to the ability to understand the internal state of a system by analyzing its outputs. These three pillars provide different types of insights into the system's behavior: logs provide detailed records of events, metrics offer quantitative measurements of performance and health, and traces allow for the analysis of complex interactions between components.
+- In the context of etcd used in Kubernetes, what is the significance of the 1.5MB size limit for etcd?
+	- In the context of etcd used in Kubernetes, the 1.5MB size limit represents the recommended maximum size for an individual value stored in etcd. This means that any value stored in etcd should be less than or equal to 1.5MB in size. This limit helps prevent large values from impacting the performance and stability of the etcd cluster.
+- In telemetry, which entity is primarily used to record and analyse the path that a request takes through various services in a distributed system?
+	- A Trace records the entire journey of a request as it travels through various services, APIs, or components in a distributed system.
+- What does the acronym OIDC stand for in the context of authentication and authorization?
+	- OpenID Connect. This is an authentication protocol built on top of OAuth 2.0.
+- Kubernetes Security Profiles, such as PodSecurityPolicies (PSP) and Kyverno, are essential for enforcing security standards in a Kubernetes environment. Which of the following best describes the primary function of these Kubernetes Security Profiles?
+	- Kubernetes Security Profiles such as PodSecurityPolicies (PSP) and Kyverno are primarily used to define and enforce security settings at the pod level, ensuring that pods comply with specific security standards and requirements. These profiles allow administrators to control various aspects of pod behaviour, including network policies, access controls, and resource allocation.
+- In a Kubernetes environment, which software is widely used as a lightweight proxy to handle the traffic management between microservices?
+	- Envoy is a widely used, open-source, lightweight proxy that is designed to handle traffic management between microservices in a Kubernetes environment. It provides features such as service discovery, load balancing, and circuit breaking, making it an ideal choice for managing communication between microservices.
+- What option aligns to the 'traditional' workflow of a CI/CD pipeline, where "D" in CI/CD stands for Deployment?
+- In a traditional CI/CD pipeline, the workflow typically follows this order:
+	1. Build: The code is compiled and packaged into a deployable artifact.
+	2. Testing: The built artifact is then tested to ensure it meets the required standards.
+	3. Release: The tested artifact is prepared for deployment, which may involve creating a release candidate or packaging the artifact for distribution.
+	4. Deployment: The released artifact is finally deployed to production, making it available to end-users.
+- In Kubernetes, which object is recommended for managing jobs that need to run multiple times according to a batch process?
+	- A CronJob is a Kubernetes object that is specifically designed to manage jobs that need to run multiple times according to a batch process, such as running a job every hour or daily. It allows you to specify a schedule using a cron expression and ensures that the job runs at the specified time.
+- When creating containers using multistage builds in Docker, what technique can you employ to reduce the size of the final container image?
+	- Multistage builds in Docker allow you to use multiple FROM statements in your Dockerfile. Each stage can be used to perform a specific task, such as building an application or installing dependencies. By utilizing multiple build stages, you can discard unnecessary build artifacts and dependencies at each stage, resulting in a smaller final container image.
+- In Kubernetes, what is a service called when it is created without a ClusterIP?
+	- In Kubernetes, a headless service is created by setting the clusterIP field to None. This type of service does not have a cluster IP address and does not perform load balancing or proxying. Instead, it allows pods to be accessed directly using their pod IPs.
+- In Kubernetes, which entities can utilise the immutable:true attribute to ensure that their data cannot be modified after creation?
+	- In Kubernetes, ConfigMaps and Secrets can utilise the immutable:true attribute to ensure that their data cannot be modified after creation. When this attribute is set to true, any attempts to update the ConfigMap or Secret will result in an error.
+- In Kubernetes, how would you enable data sharing between different cronjobs running at various times?
+	- Persistent Volume Claim (PVC) allows multiple pods to access a shared storage volume, enabling data sharing between different cronjobs running at various times. By using a PVC, you can mount a persistent volume to multiple pods, allowing them to read and write data to the same storage location.
+- In Kubernetes, which component is a part of the node infrastructure rather than the control plane?
+	- kube-proxy runs on each node in the cluster and is responsible for maintaining network rules for Pod communication, ensuring proper load balancing across pods. It operates at the node level and doesn't directly interact with the control plane in terms of scheduling or state management.
+- What is the primary purpose of kube-state-metrics in a Kubernetes cluster?
+	- Kube-state-metrics is a service that generates and exposes cluster state data in Prometheus format. It does this by scraping the Kubernetes API server to gather information about the current state of the cluster, including metrics on deployments, pods, nodes, and more.
+- Which statement is true about Ingress in Kubernetes in relation to the routing of traffic?
+	- Ingress in Kubernetes provides a way to route external HTTP and HTTPS traffic to services within the cluster. It acts as an entry point for incoming requests and can be configured to direct traffic based on various rules, including URL paths, hostnames, and more.
+- Which open-source tool is specifically designed for assessing the security posture of Kubernetes clusters according to NSA and CISA guidelines?
+	- KubeScape is an open-source tool that is specifically designed to assess the security posture of Kubernetes clusters based on guidelines from the National Security Agency (NSA) and Cybersecurity and Infrastructure Security Agency (CISA). It provides a comprehensive risk assessment and identifies potential vulnerabilities in the cluster configuration.
+- In Kubernetes, which object is most suitable for deploying stateless applications?
+	- A Deployment is an object that manages a set of replicas of a Pod, which makes it suitable for deploying stateless applications. Deployments provide features like rolling updates and self-healing, making them ideal for managing multiple instances of a stateless application.
+- In a cloud-native organisation, which role is primarily responsible for building and maintaining the underlying platform infrastructure, enabling application developers to deploy and run their services efficiently?
+	- Platform Engineers
+- In a Kubernetes cluster, which component is responsible for routing traffic for services and managing IP rules?
+	- Kube-Proxy is a network proxy that runs on each node in a Kubernetes cluster and is responsible for routing traffic for services and managing IP rules. It ensures that incoming requests are directed to the correct pod, even if the pod is running on a different node.
+- In Kubernetes, which security-focused tool is commonly used for runtime security monitoring and detection of anomalous activities within containers and pods?
+	- Falco is a cloud-native, open-source security tool that provides runtime security monitoring and detection of anomalous activities within containers and pods in Kubernetes environments. It uses system calls to monitor container activity and can detect unusual behavior such as privilege escalation or unauthorized access.
+- Which function is primarily associated with Kubernetes Security Contexts?
+	- Kubernetes Security Contexts are primarily associated with defining container or pod level security settings. A Security Context defines the security settings for a container or pod, such as running a container as a specific user, setting file system permissions, and configuring SELinux labels. These settings can be applied to a single container or to all containers in a pod.
+- In Kubernetes, what is the relationship between Deployments and ReplicaSets?
+	- In Kubernetes, when you create a Deployment, it automatically creates a ReplicaSet to manage the desired number of pod replicas. The ReplicaSet ensures that the specified number of replicas are running and available, while the Deployment manages the rollout of new versions of the application.
+- In Kubernetes security, what differentiates Security Contexts from Security Policies (Like PodSecurityPolicies or Kyverno) in terms of their scope and focus? 
+	- Security Contexts are settings defined inside a pod or container spec. Scope: single pod or container.
+	- Security Policies are cluster-level or namespace-level enforcement tools. Scope: all pods in a cluster or namespace.
+- In Kubernetes, which feature is effective for managing costs by allowing for the categorisation and organisation of resources?
+	- Labels are key-value pairs attached to objects, such as pods or services, and provide a flexible way to categorize and organize resources. By using labels, you can select and manage groups of resources based on specific criteria, making it easier to manage costs by allocating resources to specific teams, projects, or environments.
+- In the context of cloud native environments, which persona primarily focuses on optimizing cloud costs and financial management?
+	- FinOps (Financial Operations) is a relatively new persona that has emerged in cloud native environments. They are primarily responsible for optimizing cloud costs, managing financial resources, and ensuring that the organization gets the best possible return on investment from its cloud spending. FinOps teams work closely with other stakeholders to identify areas of cost optimization, implement cost-saving measures, and develop strategies for financial management.
+- Which of the following is a lightweight container runtime specifically designed for Kubernetes, conforming to the Container Runtime Interface (CRI)?
+	- CRI-O is a lightweight container runtime that's specifically designed for Kubernetes and conforms to the Container Runtime Interface (CRI). It provides a minimalistic approach to running containers in a Kubernetes environment, making it an ideal choice for this ecosystem. It is not LXC, because LXC is a userspace interface for the Linux kernel containment features. While LXC does provide containerization capabilities, it's not specifically designed for Kubernetes or conforming to CRI.
+- Which of the following container runtimes is a lightweight, low-level runtime designed specifically for running containers in Linux?
+	- LXC
+- What is the difference between LXC and CRI-O?
+	- LXC is a lightweight virtualization technology for running multiple isolated Linux systems (containers) on a single control host. CRI-O is a container runtime specifically built for Kubernetes.
+- In cloud computing, which approach is best suited for simultaneously managing security threats and optimising costs by identifying unusual activities?
+	- Cloud Anomaly Detection is a approach that involves monitoring and analyzing cloud-based systems to identify unusual patterns of activity that could indicate potential security threats. By detecting anomalies, organizations can take proactive measures to mitigate risks and optimize costs associated with managing security threats.
+- When a Pod is created in Kubernetes without specifying a Service Account, which default Service Account is used?
+	- default service account
+- In the field of IT operations and software development, SRE stands for a discipline that emphasizes automation, continuous improvement, and a balanced approach to system reliability and features. What does SRE stand for?
+	- Site reliability engineering
+- In Kubernetes, how are the container specifications in Deployments and StatefulSets similar?
+	- Both Deployments and StatefulSets use the same container specification within their pod templates. The key difference between these two resources is in how they manage the lifecycle and ordering of pods, but the container specification within the pod template remains consistent for all replicas in both cases. 
+- What is the primary function of a PDB?
+	- Maintaining a minimum number of available replicas during voluntary disruptions. Pod Disruption Budgets (PDBs) were introduced in Kubernetes to protect against voluntary disruptions, such as rolling updates or scaling. Their primary function is to maintain a minimum number of available replicas during these disruptions, ensuring that a certain level of service availability is always maintained.
+- When the kubectl expose command is used in Kubernetes, which component is created?
+	- Service. When you run kubectl expose, it creates a Service, which is a Kubernetes resource that provides a network identity and load balancing for accessing one or more pods. The expose command takes an existing pod or replication controller and creates a new Service that exposes the specified port.
+- What is the default update strategy used by Kubernetes Deployments for rolling out updates?
+	- RollingUpdate. RollingUpdate is the default update strategy used by Kubernetes Deployments for rolling out updates. It allows for a gradual rollout of new versions while maintaining availability and minimizing downtime. With RollingUpdate, new pods are created with the updated version, and old pods are terminated once the new ones are available. 
+- Which Kubernetes component is responsible for exposing applications running on a set of Pods as a network service?
+	- A Service in Kubernetes is a resource that provides a stable IP address and DNS name for accessing an application running on a set of Pods. It acts as a network proxy, routing traffic to the appropriate Pod, allowing applications to be exposed to the outside world.
+- Which kubectl command is used to list all the API resources, such as Pods, Services, and Deployments, available in a Kubernetes cluster?
+	- kubectl api-resources is used to list all the API resources, such as Pods, Services, and Deployments, available in a Kubernetes cluster. It provides a comprehensive list of all the resources that can be managed using the Kubernetes API.
+- What is OPA?
+	- The Open Policy Agent (OPA) is a policy engine that can be integrated with Kubernetes to validate requests and apply policies across the cluster. OPA provides a unified way to define and enforce policies across different layers of the stack, including network policies, admission control, and more. 
+- In Kubernetes, what does Service Discovery refer to?
+	-  Service Discovery refers to the process by which services can locate and communicate with each other on the network. This is achieved through the use of Services, which provide a stable IP address and DNS name for accessing pods that are running in the cluster. This allows services to be decoupled from specific pod instances and enables communication between services.
+- In a Pod, which Linux namespace do containers usually share?
+	- Containers in a Pod usually share the same network namespace, which allows them to communicate with each other using localhost or the pod's IP address. This sharing of the network namespace enables containers to work together seamlessly and provides a simplified networking model.
+- In Kubernetes, what modification is made to a ClusterIP service to create a headless service?
+	- To create a headless service in Kubernetes, you need to set the clusterIP field of the Service object to 'None'. This tells Kubernetes not to allocate an IP address for the Service, effectively making it headless. A headless service allows you to access pods directly without going through a load balancer or proxy.
+- In Kubernetes, which feature is crucial for managing distributed stateful applications to avoid conflicts like "split-brain" scenarios?
+	-  StatefulSets are a type of controller in Kubernetes that provides guarantees about the deployment and management of stateful applications. They ensure that each replica has a unique identity and that the application can maintain its state even in the event of failures or network partitions, thus avoiding "split-brain" scenarios.
+- Which Linux feature is utilised by Kubernetes for container isolation, limits the resource usage of a process or a set of processes?
+	- cgroups (control groups) is a Linux feature that provides a way to limit, account, and isolate the resource usage of a process or a set of processes running on a system. Kubernetes utilizes this feature for container isolation, ensuring that each container has its own isolated environment with limited resources.
+- In a cloud-native environment, which persona is typically responsible for the creation and execution of an incident management procedure?
+	- A Site Reliability Engineer (SRE) is typically responsible for ensuring the reliability and uptime of a cloud-native environment. As part of this role, they are often involved in creating and executing incident management procedures to minimize downtime and ensure rapid recovery in case of an outage or other incidents.
+- What tool is commonly used for installing and managing applications in a Kubernetes cluster?
+	- Helm is a package manager for Kubernetes that simplifies the process of installing and managing applications in a Kubernetes cluster. It provides a way to easily install, upgrade, and manage applications using pre-configured packages called charts. It is not kubectl. Kubectl is a command-line tool for interacting with a Kubernetes cluster, but it's not specifically designed for installing and managing applications. While it can be used to deploy applications using YAML or JSON files, it requires more manual effort and doesn't provide the same level of package management as Helm.
+- During the phase when container images are being downloaded for a Pod in Kubernetes, what state is the Pod typically in?
+	- Pending State. When a Pod is in the Pending state, it means that the Pod has been created but at least one of its containers is still waiting for resources to be allocated or is still downloading its image. This is typically the case when container images are being downloaded for a Pod.
+- Which Kubernetes autoscaling solution has the capability to scale workloads down to zero pods?
+	- Kubernetes Event-Driven Autoscaling (KEDA) is an autoscaling solution that allows you to scale your workloads down to zero pods based on events such as message queue lengths or HTTP requests. KEDA uses a pull-based approach, where it periodically checks for new events and scales accordingly.
+- How does KEDA enable event-driven autoscaling in Kubernetes, and what custom resource does it utilise for this purpose?
+	- KEDA enables event-driven autoscaling in Kubernetes by scaling applications based on external metrics, such as message queue lengths or HTTP requests. It utilizes a custom resource called ScaledObjects for this purpose. ScaledObjects define how to scale an application based on these external metrics.
+- When using kubectl apply in Kubernetes, what is a potential drawback related to tracking the state of resources?
+	- If you remove resources from the applied manifest, kubectl apply may not track them and can inadvertently delete those resources. If you remove resources from the applied manifest and reapply it, kubectl apply may interpret the missing resources as no longer necessary and will delete them from the cluster. This behavior is particularly important in situations where a manifest was pruned or modified without intending to delete resources from the cluster.
+- Which Kubernetes component interacts with the Container Runtime Interface (CRI)?
+	- The Kubelet interacts with the Container Runtime Interface (CRI) to manage container runtime operations, such as creating and deleting containers. The CRI provides a standardized interface between the Kubernetes node agent (Kubelet) and the container runtime.
+- Which of the following container runtimes are recognized for providing enhanced security features, such as stronger isolation through virtualization?
+	- Kata Containers and gVisor are recognized for providing enhanced security features through virtualization. They use a combination of containerization and virtualization to provide stronger isolation between containers. Kata Containers uses a lightweight virtual machine (VM) to run each container, while gVisor uses a user-space kernel to provide a sandboxed environment for containers.
+- What are common components found in a service mesh implementation?
+	- In a service mesh implementation, there are two primary components: the data plane and the control plane. The data plane refers to the proxies that intercept and manage traffic between services, while the control plane manages the configuration and behaviour of the data plane. Examples of service meshes include Istio, Linkerd, and Envoy.
+- In Kubernetes, what is a Service primarily used for?
+	- In Kubernetes, a Service is primarily used for exposing an application running on a set of Pods as a network service. It provides a stable network identity and load balancing for accessing the application, allowing clients to access the application without needing to know the individual IP addresses of the Pods.
+- What are the primary modes of service discovery within a Kubernetes cluster?
+	- Environment Variables and DNS are the primary modes of service discovery within a Kubernetes cluster. When a pod is created, Kubernetes automatically configures environment variables for the pod's container that point to other services running in the same namespace. Additionally, Kubernetes provides a built-in DNS service that allows pods to discover and communicate with each other using DNS names.
+- What are the default namespaces in a Kubernetes installation?
+	- default, kube-system, kube-public, kube-node-lease. In a Kubernetes installation, there are four default namespaces that are created during the cluster setup process. These namespaces are 'default', 'kube-system', 'kube-public', and 'kube-node-lease'. The 'default' namespace is where user-deployed applications typically run. The 'kube-system' namespace contains objects created by the Kubernetes system, such as the API server, controller manager, and scheduler. The 'kube-public' namespace is used for cluster-wide information that can be safely exposed publicly without authentication. The 'kube-node-lease' namespace is used for node lease objects.
+* The cloud-native architecture centered around microservices proves to be a strong system that ensures what key quality in software systems?
+	* Resiliency. Cloud-native architecture centered around microservices ensures resiliency as a key quality in software systems. With microservices, if one service experiences issues or goes down, other services can continue to operate independently, reducing the impact of failures and ensuring overall system uptime.
+* What is the default update strategy used by Kubernetes Deployments for rolling out updates?
+	* RollingUpdates. It allows for a gradual rollout of new versions while maintaining availability and minimizing downtime. With RollingUpdate, new pods are created with the updated version, and old pods are terminated once the new ones are available.
+* What are common components found in a service mesh implementation?
+	*  In a service mesh implementation, there are two primary components: the data plane and the control plane. The data plane refers to the proxies that intercept and manage traffic between services, while the control plane manages the configuration and behaviour of the data plane. Examples of service meshes include Istio, Linkerd, and Envoy.
+* As a Site Reliability Engineer (SRE), which task would typically fall under your purview, especially in the context of ensuring system reliability?
+	* As an SRE, implementing and fine-tuning thresholds and alerts for monitoring system health is a critical task that falls under your purview. This involves setting up monitoring tools to detect anomalies and alert teams to potential issues before they become incidents, ensuring system reliability and uptime.
+* In a Kubernetes node, which component is directly responsible for running containers?
+	* The Container Runtime is directly responsible for running containers in a Kubernetes node. It is the software component that manages the lifecycle of containers, including starting, stopping, and monitoring them. Examples of container runtimes include Containerd and cri-o.
 
 ## Links
 

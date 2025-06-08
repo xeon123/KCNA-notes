@@ -9,13 +9,12 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
 **Simple Explanation**: A Kubernetes cluster is like a city where different parts work together to keep things running. The **control plane** is the city hall, making big decisions, while **nodes** are neighborhoods doing the actual work (running apps). Key components like the **API Server**, **Kubelet**, and **Kube-Proxy** ensure everything communicates and operates smoothly.
 
 - **API Server**: The city’s communication hub. Everyone (users, other components) talks to it to give orders or check status. It handles RESTful requests (like web forms) to manage resources (e.g., pods, services).
-    
+
 - **Kubelet**: The neighborhood manager on each node. It makes sure containers (houses) are built and running as per city hall’s (API Server’s) instructions.
-    
+
 - **Kube-Proxy**: The traffic cop on each node, directing network traffic to the right containers so apps can talk to each other.
-    
+
 - **CoreDNS**: The phonebook of the city, helping services find each other by name (DNS for service discovery).
-    
 
 **Analogy**: Think of the API Server as a mayor’s office receiving requests, Kubelet as a construction worker building homes, and Kube-Proxy as a traffic light system guiding cars (data) to the right places.
 
@@ -34,7 +33,6 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
 - **CRI-O** is a lightweight runtime built for Kubernetes, following the **Container Runtime Interface (CRI)**, like a specialized builder for Kubernetes homes.
 - Containers share the **network namespace**, meaning they use the same IP and can communicate via localhost.
     
-
 **Analogy**: A pod is a shared apartment where containers are roommates. They share utilities (network, storage) but each has its own job (app). CRI-O is the contractor ensuring the apartment is built correctly.
 
 **Test Yourself**:
@@ -56,15 +54,12 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
     
 - **ReplicaSets**: Created by Deployments to maintain the desired number of pod copies. Think of them as assistant managers under Deployments.
     
-
 **Analogy**: Deployments are like managing chain stores (all identical), StatefulSets are like custom homes (each unique), and CronJobs are like scheduling a cleaning service. ReplicaSets are the staff ensuring enough stores are open.
 
 **Test Yourself**:
 
 - When would you use a Deployment vs. a StatefulSet?
-    
 - What does a CronJob do, and give an example of its use?
-    
 
 ---
 
@@ -84,7 +79,6 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
     
 - **Service Discovery**: Pods find services via **DNS** (CoreDNS) or **environment variables**, like looking up a phone number.
     
-
 **Analogy**: A Service is a post office giving pods a stable address, even if they move. A Headless Service is like a direct line to each pod. Ingress is a smart receptionist routing web visitors.
 
 **Test Yourself**:
@@ -93,7 +87,6 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
     
 - How does Ingress differ from a Service?
     
-
 ---
 
 ## 5. Storage: Saving Data
@@ -106,7 +99,6 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
     
 - **etcd**: The cluster’s memory, storing all state. The 1.5MB limit prevents slow performance, like not overloading a filing cabinet.
     
-
 **Analogy**: PVCs are like shared Google Drive folders for pods. Rook is a robot organizing the storage room. etcd is a librarian keeping records, but only small ones to stay fast.
 
 **Test Yourself**:
@@ -115,7 +107,6 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
     
 - Why does etcd have a 1.5MB size limit?
     
-
 ---
 
 ## 6. Security: Keeping the Cluster Safe
@@ -123,6 +114,7 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
 **Simple Explanation**: Kubernetes security uses **Security Contexts**, **Security Policies**, and tools like **Falco** and **KubeScape** to protect the cluster, like locks and guards for a city.
 
 - **Security Contexts**: Settings for pods/containers (e.g., run as a specific user), like a keycard for an apartment.
+- Security Profiles: 
 - **Security Policies (e.g., PodSecurity, Kyverno)**: Cluster-wide rules, like city laws ensuring all buildings meet safety standards.
 - **Falco**: Watches for suspicious activity at runtime, like a security camera spotting intruders.
 - **KubeScape**: Checks cluster security against NSA/CISA guidelines, like a safety inspector.
@@ -147,7 +139,6 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
 - **OpenTelemetry**: A toolset for collecting logs, metrics, and traces, like a universal data logger.
 - **Three Pillars**: Logs (event records), Metrics (numbers like CPU usage), Traces (request paths).
     
-
 **Analogy**: Logs are a diary of events, Metrics are a fitness tracker’s stats, and Traces are a GPS log of a delivery route. OpenTelemetry is a smartwatch collecting all three.
 
 **Test Yourself**:
@@ -156,7 +147,6 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
     
 - What does kube-state-metrics provide, and how is it used?
     
-
 ---
 
 ## 8. CI/CD and GitOps: Deploying Apps
@@ -169,7 +159,6 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
     
 - **CI/CD Workflow**: Build (make app) → Test (check it works) → Release (package it) → Deploy (launch it).
     
-
 **Analogy**: GitOps is like a chef following a recipe book stored in Git. Flux and Argo CD are kitchen assistants fetching the latest recipe. CI/CD is the full cooking process.
 
 **Test Yourself**:
@@ -178,7 +167,6 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
     
 - List the steps in a traditional CI/CD pipeline.
     
-
 ---
 
 ## 9. Service Mesh: Advanced Traffic Control
@@ -191,7 +179,6 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
     
 - **Components**: **Data Plane** (proxies handling traffic) and **Control Plane** (configuring proxies).
     
-
 **Analogy**: Istio is a city traffic planner, Envoy is a traffic light, and the service mesh is the road network ensuring smooth travel.
 
 **Test Yourself**:
@@ -200,7 +187,6 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
     
 - Name the two main components of a service mesh.
     
-
 ---
 
 ## 10. Autoscaling: Adjusting Resources
@@ -213,7 +199,6 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
     
 - **Cluster Autoscaler**: Adds/removes nodes, like expanding the city.
     
-
 **Analogy**: KEDA is a manager who hires workers only when there’s work (events). HPA adds more cashiers during a rush. Cluster Autoscaler builds new stores when the town grows.
 
 **Test Yourself**:
@@ -222,7 +207,6 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
     
 - What does the Cluster Autoscaler do?
     
-
 ---
 
 ## 11. Roles and Responsibilities
@@ -235,7 +219,6 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
     
 - **FinOps**: Optimize cloud costs, like a budget officer.
     
-
 **Analogy**: Platform Engineers build roads, SREs keep the city running, and FinOps ensure the city doesn’t overspend.
 
 **Test Yourself**:
@@ -244,7 +227,6 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
     
 - How does FinOps help in a cloud-native environment?
     
-
 ---
 
 ## 12. Miscellaneous Tools and Concepts
@@ -267,26 +249,19 @@ This guide simplifies Kubernetes concepts using the Feynman Technique, explainin
     
 - **CloudEvents**: Standard event format for describing event data, like a common language for notifications.
     
-
 **Analogy**: Helm is IKEA for apps, Argo Workflows is a festival planner, and Labels are sticky notes organizing tasks. PDBs keep the city running during repairs, and OPA checks building permits.
 
 **Test Yourself**:
 
 - What’s the purpose of Helm?
-    
 - How do Labels help manage costs?
-    
 - What is OPA, and what does it do?
-    
 
 ---
 
 ## Study Tips
 
 1. **Teach Back**: Explain each section to a friend or yourself without looking at the guide.
-    
 2. **Answer Test Questions**: Write answers to “Test Yourself” prompts on flashcards.
-    
 3. **Draw It**: Sketch a Kubernetes cluster, labeling components like API Server and Kubelet.
-    
 4. **Practice**: Revisit tough sections after a day and simplify them again in your own words.
